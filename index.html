@@ -13,33 +13,34 @@
 
 
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-	  <a class="navbar-brand" href="/mission_statement">FNB YEG</a>
+	  <a class="navbar-brand" href="/index">FNB YEG</a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 	    <span class="navbar-toggler-icon"></span>
 	  </button>
 	  <div class="collapse navbar-collapse" id="navbarNav">
 	    <ul class="navbar-nav">
-	      <li class="nav-item nav-item-home" {% if id == active_page %} class="active"{% endif%}>
+	      <li class="nav-item nav-item-home active">
 	        <a class="nav-link" href="/index">Home<span class="sr-only">(current)</span></a>
 	      </li>
-	      <li class="nav-item nav-item-rua" {% if id == active_page %} class="active"{% endif%}>
+	      <li class="nav-item nav-item-rua">
 	        <a class="nav-link" href="/recent_and_upcoming_activity">Recent and Upcoming Activities</a>
 	      </li>
-	      <li class="nav-item nav-item-htj" {% if id == active_page %} class="active"{% endif%}>
+	      <li class="nav-item nav-item-htj">
 	        <a class="nav-link" href="/how_to_join">How to Join</a>
 	      </li>
-	      <li class="nav-item nav-item-contact" {% if id == active_page %} class="active"{% endif%}>
+	      <li class="nav-item nav-item-contact">
 	        <a class="nav-link" href="/contact_us">Contact Us / Social Media</a>
 	      </li>
-	      <li class="nav-item nav-item-ao" {% if id == active_page %} class="active"{% endif%}>
+	      <li class="nav-item nav-item-ao">
 	        <a class="nav-link" href="/affiliated_organizations">Affiliated Organizations</a>
 	      </li>
-  	      <li class="nav-item nav-item-history" {% if id == active_page %} class="active"{% endif%}>
+  	      <li class="nav-item nav-item-history">
 	        <a class="nav-link" href="/history">History</a>
 	      </li>
 	    </ul>
 	  </div>
 	</nav>
+
 
 	<div class="row justify-content-center">
 	    <h1>Mission Statement</h1>
