@@ -1,3 +1,6 @@
+# TO view website - 
+fnb-yeg.github.io/index.html
+
 # fnb-yeg.github.io
 
 ### To set up development environment on Windows (first time):
