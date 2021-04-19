@@ -1,17 +1,1 @@
-Note: Flask won't work with GitHub pages, because GitHub pages only supports static sites.
-However, we can apparently used Heroku to deploy instead? Apparently it works fairly similarly.
-In the meantime, we still can use this repository. See the README.md file for how to set up
-a development environment in Flask.
-
-# TODO
-- If Heroku is something we want to use, then we'll have to set that up. Otherwise, 
-I don't think we can use the jinja2 templating.
-
-- Make navbar links show which page we're on 
-(Will have to use toggler classes - see documentation here: https://getbootstrap.com/docs/4.1/components/navbar/#nav)
-
-- Refactor templates/template inheritance so that the minimum amount of stuff is on
-each template file - we want as much as possible in base.html. That will make it easier
-for non-technical, or less-technical people to make edits to a page. 
-
-- Make FNB-YEG a global variable so that the org name isn't hardcoded into the website
+Note - Not going to use Flask because that seems like overkill, especially since then we can no longer use GitHub Pages for hosting. 
