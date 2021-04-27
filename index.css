@@ -20,8 +20,8 @@ html, body{
 }
 
 body {
-	background: linear-gradient(to top left, #ffcc99 0%, #ffffcc 100%) fixed;
-    /*background: linear-gradient(to top left, #cc66ff 0%, #66ff99 100%) fixed;*/
+	/*background: linear-gradient(to top left, #ffcc99 0%, #ffffcc 100%) fixed;*/
+    background: linear-gradient(to top left, #cc66ff 0%, #66ff99 100%) fixed;
 }
 
 .container{
