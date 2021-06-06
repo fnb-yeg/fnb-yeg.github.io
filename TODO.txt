@@ -1,1 +1,3 @@
-Note - Not going to use Flask because that seems like overkill, especially since then we can no longer use GitHub Pages for hosting. 
+- Fix spacing issue on news items for news page.
+- The images look a bit squishy if you center them completely. For now I'll divide into two
+rows and only center the second, but this should really just be fixed. 
