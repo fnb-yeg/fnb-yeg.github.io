@@ -53,6 +53,9 @@
 					</div>
 					<div class="content">
 						<h3>Content Here</h3>
+						<p class="lead"> This is the lead line </p>
+						<p> Here is one paragraph. </p>
+						<p> Here is another paragraph. </p>
 					</div>
 				</div>
 			</div>
