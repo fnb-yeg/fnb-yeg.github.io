@@ -1,3 +1,1 @@
-- Fix spacing issue on news items for news page.
-- The images look a bit squishy if you center them completely. For now I'll divide into two
-rows and only center the second, but this should really just be fixed. 
+- Add history section.
