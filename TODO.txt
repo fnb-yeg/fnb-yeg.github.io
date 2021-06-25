@@ -1,1 +1,4 @@
 - Add history section.
+- Add land acknowledgment (?)
+- Add "Values" section (?) 
+- Add recipes section
