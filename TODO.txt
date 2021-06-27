@@ -1,2 +1,5 @@
 - Add history section.
 - Add "Values" section (?) 
+- Fix footer in land acknowledgement
+- Fix footer in history section for mobile
+- Fix images in news and in recipes sectio
