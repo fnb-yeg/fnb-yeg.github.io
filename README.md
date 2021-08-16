@@ -48,7 +48,16 @@ To the list of links. (Refresh your page to see how it looks. Resize your browse
 
 Go back to your new page. Change the `<a>` tag to `<a class="nav-link active" aria-current="page" href="#">My Example</a>` . Now when they are on your page, the navigation bar will show that they are on your page, and if they click it, it will keep them where they are. 
 
-8. All done! Add, commit and push your changes. Then either submit a PR or shoot me a message and I'll merge your changes so that they show up on our website :) 
+8. All done! Add, commit and push your changes. Then submit a Pull Request and shoot me a message and I'll merge your changes so that they show up on our website :) 
+
+9. Note - If you're making a new page in a subdirectory, you'll have to change all the relative URLs.
+This means - if you're making a new page and you save it as "new_page.html" (for example) in this folder, you can access it by opening up your page in a browser and your address displayed will look something like 
+".../fnb-yeg.github.io/new_page.html" (and when your changes are merged it will show up as "edmonton.foodnotbombs.us/new_page" on the internet). However if you decide to add a new folder and save your new page there, the address will be ".../fnb-yeg.github.io/new_folder/new_page" (and similarly for accessing online after changes are merged). That new page is saved in subdirectory (subfolder) rather than root (this folder). 
+Now there are a few places on the webpage that point to other spots in the project, either as links or as images, mostly. This looks like 'src="/some_relative_url"' or 'href=/some_relative_url' in an html tag. A relative url means that we are specifying where something is relative to the root of the project. The first slash means "the folder we are in" and then what comes after is pointing to a file name that is (hopefully) in the folder we are in. Compare to an absolute URL, e.g. https://www.google.com, which will point to the same place no matter where *we* are. 
+Now if you were to copy and paste the template_page.html into a subdirectory, it has a bunch of relative urls. But because we have changed "the folder we are in", all those links will be broken!
+The fix is simple once you understand the cause. ctrl+f in the file for all `src` attributes in the html and check if they are relative or absolute. If they are relative, change them so that they begin with `../`. Do the same for `href` attributes.
+
+The recipe template does this for you already if you're adding a new recipe, so you shouldn't come across this. However if you're a beginner this would be a hard problem to troubleshoot so I wanted to make a note!
 
 #### Adding a news item
 1. Open news.html in your text editor.
