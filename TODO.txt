@@ -1,5 +1,6 @@
 - Add history section.
-- Add "Values" section (?) 
+- Add political agenda section (?) 
+	-i.e. what we are fighting for and what we believe
 - Fix footer in land acknowledgement
 - Fix footer in history section for mobile
 - Fix images in news and in recipes sectio
