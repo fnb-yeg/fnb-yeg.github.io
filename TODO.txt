@@ -3,3 +3,5 @@
 - Fix footer in land acknowledgement
 - Fix footer in history section for mobile
 - Fix images in news and in recipes sectio
+- Fix alignment on volunteer sign up page
+- Fix arrow colors on carousel
