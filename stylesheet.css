@@ -36,3 +36,8 @@ body {
     left: 0 !important;
     top: 0 !important;
 }
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);
+}
