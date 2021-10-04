@@ -1,8 +1,22 @@
+-- add "survivors still live here" post to twitter
+-- on projects page:
+	-- click on a poster to enlarge it. 
+-- add image gallery to garden section of the website.
+-- Add page for each initiative/project 
+		-- nested: ~/projects/hth
+					~/projects/community_fridge
+				etc.
+
+		-- so that the news page is an amalgamation of everything
+		and the projects page is where people can check up on individual initiatives. 
+
 - Add history section.
-- Add political agenda section (?) 
+- Add political agenda section
 	-i.e. what we are fighting for and what we believe
-- Fix footer in land acknowledgement
 - Fix footer in history section for mobile
-- Fix images in news and in recipes sectio
+- Fix images in news and in recipes section (?)
 - Fix alignment on volunteer sign up page
 - Fix arrow colors on carousel
+- mobile-style navbar does not work on desktop
+
+
