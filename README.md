@@ -68,23 +68,25 @@ The recipe template does this for you already if you're adding a new recipe, so 
 
 There is no limit to the number of cards you can put in a row. Bootstrap will decide, depending on width of the card and the width of the user's screen, how many to actually show in a row before wrapping it. You can play around with this by resizing your browser window.
 
-3. If you want an image on your card, save a copy of it in the images folder. Keep in mind that as you're developing, the images won't show up in the browser. They will only display once the changes are live. However your browser shoud show how much space the image will take up. 
+3. If you want an image on your card, save a copy of it in the images folder. On the page where you would like the image to display, create an `<img>` tag. Create a `src=""` attribute within your image tag, and write the path to your image as the value for that attribute. Add an `alt=""` attribute to your image tag and describe the image. See html tutorials on inserting images for more details.  
 
 4. This is what each card looks like in HTML. 
 ```
 <div class="col-sm">
-	<div class="card" style="width: 18rem;">
+	<div class="card">
 		<img class="card-img-top" src="/images/image_name.jpeg" alt="image description">
 		<div class="card-body">
 			<div class="d-flex w-100 justify-content-between">
 				<h5 class="mb-1">Header</h5>
-				<small>Date</small>
+				<small>Date Goes Here</small>
 			</div>
 			<p class="mb-1">Card text goes here. This is a description of what is happening in the image, or what we want to announce.</p>
 		</div>
 	</div>
 </div>
 ```
+Note - some new features have been added to some cards since this tutorial was written. See "card_templates.html"
+for a more in-depth description/explanation of each card. 
 
 5. Copy and paste this card into your desired row (either newly created, or just at the beginning of an existing one). Open the news page in your browser to see how it looks.
 
@@ -95,3 +97,6 @@ There is no limit to the number of cards you can put in a row. Bootstrap will de
 8. Refresh the page in your browser to see how it looks. 
 
 9. Once you're happy with how it looks, add, commit and push your changes. Then either submit a PR or shoot me a message and I'll merge your changes so that they show up on our website :) 
+
+
+
