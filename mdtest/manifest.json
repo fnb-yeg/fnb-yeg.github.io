@@ -1,0 +1,10 @@
+{
+    "targets": {
+        "card1": [
+            {
+                "type": "card",
+                "src": "/mdtest/card1.md"
+            }
+        ]
+    }
+}
