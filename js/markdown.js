@@ -116,8 +116,8 @@ class NestableEntity extends MarkupEntity {
  * Defines bootstrap classes as MarkupEntities
  */
 class BootstrapEntities {
-    get card() {
-
+    static get card() {
+        return new NestableEntity("div", {"class": "card"});
     }
 }
 
@@ -162,7 +162,6 @@ function parseMarkdown(markdown, root) {
         let line = markdown[i];
         let match;
 
-
         // Handle special cases
         if (line === '') {
             // Blank lines
@@ -179,6 +178,8 @@ function parseMarkdown(markdown, root) {
                 root.addChild(element);
                 continue;
             }
+        } else if (line[0] === '$') {  // insert div
+
         }
 
         if (parentType === NONE || parentType === PARAGRAPH) {  // figure out what kind of parent should be on this line
@@ -203,7 +204,7 @@ function parseMarkdown(markdown, root) {
 
                 let element = new NestableEntity("li");
 
-                applyInlineFormatting(element, match[2]);
+                applyInlineFormatting(element, match[3]);
 
                 parent.addChild(element);
                 root.addChild(parent);
@@ -384,7 +385,7 @@ function parseMarkdown(markdown, root) {
                 parent.lastChild.addChild(paragraph);
             } else if ((match = blockquoteAttributionRegex.exec(line)) !== null) {
                 // no longer a blockquote, but has an attribution
-                let attribution = new NestableEntity("div");
+                let attribution = new NestableEntity("div", {"class": "quote-attrib"});
 
                 applyInlineFormatting(attribution, match[1]);
 
@@ -611,14 +612,14 @@ function listItem(tag, parent, match, indent) {
 
         let element = new NestableEntity("li");
 
-        applyInlineFormatting(element, match[2]);
+        applyInlineFormatting(element, match[3]);
 
         sublist.addChild(element);
         parent.addChild(sublist);
     } else {
         let element = new NestableEntity("li");
 
-        applyInlineFormatting(element, match[2]);
+        applyInlineFormatting(element, match[3]);
         parent.addChild(element);
     }
 
@@ -644,7 +645,7 @@ function getListClasses(tag, marker) {
             return "list-arabic";
         }
     } else if (tag === "ul") {
-        if (chars[0] === '-') {
+        if (chars[0] === 0x2D) {
             return "list-dashed";
         }
     }
@@ -698,14 +699,13 @@ document.addEventListener("DOMContentLoaded", async function() {
                 let root;
 
                 if (entry["type"] === "card") {
-                    root = new NestableEntity("div", {"class": "card"});
+                    root = BootstrapEntities.card;
                     hasSrc = true;
                 }
 
                 if (hasSrc) {
                     let markdown = await getMarkdown(entry["src"]);
                     root = parseMarkdown(markdown, root);
-                    console.log(root.generateEntity());
                     targetDiv.innerHTML += root.generateEntity();
                 }
 

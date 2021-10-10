@@ -1,9 +1,21 @@
 {
     "targets": {
+        "demo": [
+            {
+                "type": "card",
+                "src": "/mdtest/markdown.md"
+            }
+        ],
         "card1": [
             {
                 "type": "card",
                 "src": "/mdtest/card1.md"
+            }
+        ],
+        "card2": [
+            {
+                "type": "card",
+                "src": "/mdtest/card2.md"
             }
         ]
     }
