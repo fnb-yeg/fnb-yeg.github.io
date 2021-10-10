@@ -3,8 +3,41 @@
         "card1": [
             {
                 "type": "card",
-                "header": "Card Header",
-                "src": "/mdtest/card1.md"
+                "src": "/mdtest/card1.md",
+                "properties": {
+                    "header": "Card Header"
+                }
+            }
+        ],
+        "card2": [
+            {
+                "type": "img-card",
+                "src": "/mdtest/card2.md",
+                "properties": {
+                    "src": "/images/FNB_logo_color_large.png",
+                    "alt": "FNB Logo",
+                    "title": "Title of News Item",
+                    "date": "Date event took place"
+                }
+            }
+        ],
+        "card3": [
+            {
+                "type": "img-card-collapse",
+                "src": "/mdtest/card3.md",
+                "properties": {
+                    "src": "/images/FNB_logo_color_large.png",
+                    "alt": "FNB Logo"
+                }
+            }
+        ],
+        "demo": [
+            {
+                "type": "card",
+                "src": "/mdtest/markdown.md",
+                "properties": {
+                    "header": "Demo of markdown features"
+                }
             }
         ]
     }

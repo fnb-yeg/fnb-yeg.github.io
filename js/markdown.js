@@ -1,3 +1,13 @@
+// Keeps track of all generated unique ids
+let generatedIDs = [];
+let genUniqueID = () => {
+	let id;
+	// IDs use low 16 bits of current UNIX time + random integer from 0 to 65535
+	do { id = "" + Math.floor(Math.random() * 0x10000) + (Date.now() & 0xFFFF) } while (generatedIDs.includes(id));
+	generatedIDs.push(id);
+	return id;
+}
+
 /*
  * Base class for all entities
  */
@@ -106,6 +116,8 @@ class NestableEntity extends MarkupEntity {
 			}
 		}
 		this.children.push(child);
+
+		return this;  // allow .addChild calls to be chained together
 	}
 
 	/*
@@ -146,13 +158,75 @@ class NestableEntity extends MarkupEntity {
  * Defines bootstrap classes as MarkupEntities
  */
 class BootstrapEntities {
-	static card(header) {
+	/*
+	 * Returns a NestableEntity for a card with a header but no image. The lastChild element
+	 * of this NestableEntity can have more entities put in it.
+	 *
+	 * properties should be an object with the following keys:
+	 *   header - The text to go in the header.
+	 */
+	static card(properties) {
 		let card = new NestableEntity("div", {"class": "card"});
 		let headerEntity = new NestableEntity("h3", {"class": "card-header"});
-		applyInlineFormatting(headerEntity, header);
+		applyInlineFormatting(headerEntity, properties["header"]);
 		card.addChild(headerEntity);
+
 		card.addChild(new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}}));
 		return card;
+	}
+
+	/*
+	 * Returns a NestableEntity for a news item card with an image at the top. The lastChild
+	 * element of this NestableEntity can have more entities put in it.
+	 *
+	 * properties should be an object with the following keys
+	 *   src - The source of the image
+	 *   alt - The alt text of the image
+	 *   title - The title of the news item
+	 *   date - The date of the news item. This is optional
+	 */
+	static imgCard(properties) {
+		let card = new NestableEntity("div", {"class": "card"});
+		card.addChild(new NestableEntity("img", {"src": properties["src"], "alt": properties["alt"], "class": "card-img-top"}));
+
+		let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}});
+		let cardTitleDiv = new NestableEntity("div", {"class": "d-flex w-100 justify-content-between"});
+		cardBody.addChild(cardTitleDiv);
+		
+		let cardTitle = new NestableEntity("h5", {"class": "mb-1"});
+		applyInlineFormatting(cardTitle, properties["title"]);
+		cardTitleDiv.addChild(cardTitle);
+
+		if (properties["date"]) {
+			let cardDate = new NestableEntity("small");
+			applyInlineFormatting(cardDate, properties["date"]);
+			cardTitleDiv.addChild(cardDate);
+		}
+
+		card.addChild(cardBody);
+		return card;
+	}
+
+	static imgCardCollapse(properties) {
+		let card = new NestableEntity("div", {"class": "card"});
+		card.addChild(new NestableEntity("img", {"src": properties["src"], "alt": properties["alt"], "class": "card-img-top"}));
+
+		let collapseID = genUniqueID();
+		let cardBody = new NestableEntity("div", {"class": "card-body"});
+		// Add expand button
+
+		cardBody.addChild(new NestableEntity("p").addChild(new NestableEntity("a", {
+			"data-toggle": "collapse",
+			"href": `#${collapseID}`,
+			"role": "button",
+			"aria-expanded": "false",
+			"aria-controls": collapseID
+		}).addChild(new TextEntity("[View Image Transcription]"))));
+
+		cardBody.addChild(new NestableEntity("div", {"class": "collapse", "id": collapseID}));
+
+		card.addChild(cardBody);
+		return card
 	}
 }
 
@@ -252,7 +326,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 					// also why tf are tables so complicated like wtf the thead and tbody tags are totally unnecessary when you also have a special tag for table header cells
 					// i guarantee that if anyone put more than 8 seconds of thought into it they could come up with an infinitely better system for table formatting in html
 					// no i wont do it
-					parent = new NestableEntity("table");
+					parent = new NestableEntity("table", {"class": "table table-bordered"});
 
 					let head = new NestableEntity("thead");  // This is a useless fucking element
 					let row = new NestableEntity("tr");
@@ -269,7 +343,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 						}
 					}
 
-					let column;
+					let column = 0;
 					while ((match = tableRegex.exec(line)) !== null) {
 						let style;
 
@@ -287,7 +361,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 
 						let cell = new NestableEntity("th", {"style": style});  // this is the element that makes the aforementioned fucking element useless
 
-						applyInlineFormatting(cell, match[1]);
+						applyInlineFormatting(cell, match[1].trim());
 
 						row.addChild(cell);
 						++column;
@@ -397,7 +471,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 
 					let cell = new NestableEntity("td", {"style": style});
 
-					applyInlineFormatting(cell, match[1]);
+					applyInlineFormatting(cell, match[1].trim());
 
 					row.addChild(cell);
 					++column;
@@ -729,23 +803,28 @@ document.addEventListener("DOMContentLoaded", async function() {
 					continue;  // type is required; skip this
 				}
 
-				let hasSrc = false;
 				let root;
 
 				if (entry["type"] === "card") {
-					root = BootstrapEntities.card(entry["header"]);
-					hasSrc = true;
-				}
+					root = BootstrapEntities.card(entry["properties"]);
 
-				if (hasSrc) {
 					let markdown = await getMarkdown(entry["src"]);
 					root.lastChild = parseMarkdown(markdown, root.lastChild);
 					targetDiv.innerHTML += root.generateEntity();
-				}
+				} else if (entry["type"] === "img-card") {
+					root = BootstrapEntities.imgCard(entry["properties"]);
 
+					let markdown = await getMarkdown(entry["src"]);
+					root.lastChild = parseMarkdown(markdown, root.lastChild);
+					targetDiv.innerHTML += root.generateEntity();
+				} else if (entry["type"] === "img-card-collapse") {
+					root = BootstrapEntities.imgCardCollapse(entry["properties"]);
+
+					let markdown = await getMarkdown(entry["src"]);
+					root.lastChild.lastChild = parseMarkdown(markdown, root.lastChild.lastChild);
+					targetDiv.innerHTML += root.generateEntity();
+				}
 			}
 		}
-	} else {
-		console.log("Failed to find manifest.json");
 	}
 });

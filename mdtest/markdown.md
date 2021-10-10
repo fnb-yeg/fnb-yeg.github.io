@@ -1,4 +1,4 @@
-# Test markdown features
+# h1
 ## h2
 ### h3
 #### h4
@@ -16,7 +16,7 @@ another paragraph
 <email@example.com>
 
 ![An image](/images/FNB_logo_color_large.png)
-![An image (but this one wont load)](sdfg)
+![alt text demo](sdfg)
 
 ---
 
@@ -43,7 +43,7 @@ B. uppercase
 C. too
 
 | A       | Table |      with |
-|:--------|-------|----------:|
+|:--------|:-----:|----------:|
 | various | text  | alignment |
 
 | and|one| with |
