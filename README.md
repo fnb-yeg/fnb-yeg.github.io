@@ -2,6 +2,8 @@
 
 ## This website allows us to share the work we do with the world, hopefully to inspire you, and includes a sign up page so that you can join us. 
 
+View website here: https://edmonton.foodnotbombs.us
+
 ## To make changes to this website:
 
 You'll need GitHub, a Text Editor and some basic understanding of HTML. We use Bootstrap to make everything look nice. 
