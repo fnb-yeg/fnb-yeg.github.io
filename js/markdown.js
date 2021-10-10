@@ -2,7 +2,13 @@
  * Base class for all entities
  */
 class MarkupEntity {
-    constructor(tag, attributes=null) {
+    /*
+     * Creates a new MarkupEntity.
+     *
+     * tag - The HTML tag for this entity
+     * attributes - Any attributes this tag might have. This is optional.
+     */
+    constructor(tag, attributes={}) {
         this.tag = tag;
         this.attributes = attributes;
     }
@@ -19,6 +25,11 @@ class MarkupEntity {
  * A plaintext entity.
  */
 class TextEntity extends MarkupEntity {
+    /*
+     * Creates a new TextEntity
+     *
+     * content - The content for the entity.
+     */
     constructor(content) {
         super(null);
 
@@ -51,13 +62,11 @@ class TerminatingEntity extends MarkupEntity {
     generateEntity() {
         let attributeString = "";
 
-        if (this.attributes !== null) {
-            for (let [key, value] of Object.entries(this.attributes)) {
-                if (value !== null) {
-                    attributeString += ` ${key}="${value}"`;
-                } else {
-                    attributeString += ` ${key}`;
-                }
+        for (let [key, value] of Object.entries(this.attributes)) {
+            if (value !== null) {
+                attributeString += ` ${key}="${value}"`;
+            } else {
+                attributeString += ` ${key}`;
             }
         }
 
@@ -69,9 +78,17 @@ class TerminatingEntity extends MarkupEntity {
  * An HTML entity with children
  */
 class NestableEntity extends MarkupEntity {
-    constructor(tag, attributes=null) {
+    /*
+     * Creates a new NestableEntity
+     *
+     * tag - The HTML tag for this entity
+     * attributes - Any attributes this tag might have. This is optional.
+     * childAttributes - Attributes which will be automatically applied to children of this entity
+     */
+    constructor(tag, attributes={}, childAttributes={}) {
         super(tag, attributes);
 
+        this.childAttributes = childAttributes;
         this.children = [];
     }
 
@@ -81,6 +98,13 @@ class NestableEntity extends MarkupEntity {
      * child - A MarkupEntity
      */
     addChild(child) {
+        if (Object.keys(this.childAttributes).includes(child.tag)) {
+            for (let attrib of Object.keys(this.childAttributes[child.tag])) {
+                // replace with nullish coalescing operator when all modern browsers support it
+                // child.attributes[attrib] = (child.attributes[attrib] ?? "") + this.childAttributes[child.tag];
+                child.attributes[attrib] = (child.attributes[attrib] ? child.attributes[attrib] : "") + this.childAttributes[child.tag][attrib];
+            }
+        }
         this.children.push(child);
     }
 
@@ -88,19 +112,25 @@ class NestableEntity extends MarkupEntity {
      * Returns the last child of this entity
      */
     get lastChild() {
-        return this.children[this.children.length - 1];
+        // return this.children.filter((e, i) => i === this.children.length-1)[0];
+        return this.children[this.children.length-1];
+    }
+
+    /*
+     * Updates the last child of this entity
+     */
+    set lastChild(child) {
+        this.children[this.children.length-1] = child;
     }
 
     generateEntity() {
         let attributeString = "";
 
-        if (this.attributes !== null) {
-            for (let [key, value] of Object.entries(this.attributes)) {
-                if (value !== null) {
-                    attributeString += ` ${key}="${value}"`;
-                } else {
-                    attributeString += ` ${key}`;
-                }
+        for (let [key, value] of Object.entries(this.attributes)) {
+            if (value !== null) {
+                attributeString += ` ${key}="${value}"`;
+            } else {
+                attributeString += ` ${key}`;
             }
         }
 
@@ -116,8 +146,13 @@ class NestableEntity extends MarkupEntity {
  * Defines bootstrap classes as MarkupEntities
  */
 class BootstrapEntities {
-    static get card() {
-        return new NestableEntity("div", {"class": "card"});
+    static card(header) {
+        let card = new NestableEntity("div", {"class": "card"});
+        let headerEntity = new NestableEntity("h3", {"class": "card-header"});
+        applyInlineFormatting(headerEntity, header);
+        card.addChild(headerEntity);
+        card.addChild(new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}}));
+        return card;
     }
 }
 
@@ -126,8 +161,9 @@ class BootstrapEntities {
  *
  * markdown - An array of lines of markdown
  * root - A MarkupEntity that the output will be put into.
+ * tagClasses - An object containing HTML tags and a class string to be added to them.
  */
-function parseMarkdown(markdown, root) {
+function parseMarkdown(markdown, root, tagClasses) {
     // Block element types
     const NONE = 0;
     const PARAGRAPH = 1;
@@ -284,7 +320,6 @@ function parseMarkdown(markdown, root) {
                 line = line.slice(level);
 
                 if (parentType === PARAGRAPH) {
-                    console.log(level);
                     if (level === 0) {
                         // Append to the previous paragraph
                         applyInlineFormatting(parent, ' ' + line);
@@ -400,7 +435,6 @@ function parseMarkdown(markdown, root) {
         }
     }
 
-    console.log(root);
     return root;
 }
 
@@ -699,13 +733,13 @@ document.addEventListener("DOMContentLoaded", async function() {
                 let root;
 
                 if (entry["type"] === "card") {
-                    root = BootstrapEntities.card;
+                    root = BootstrapEntities.card(entry["header"]);
                     hasSrc = true;
                 }
 
                 if (hasSrc) {
                     let markdown = await getMarkdown(entry["src"]);
-                    root = parseMarkdown(markdown, root);
+                    root.lastChild = parseMarkdown(markdown, root.lastChild);
                     targetDiv.innerHTML += root.generateEntity();
                 }
 
