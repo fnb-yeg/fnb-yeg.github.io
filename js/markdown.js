@@ -1,12 +1,5 @@
-// Keeps track of all generated unique ids
-let generatedIDs = [];
-let genUniqueID = () => {
-	let id;
-	// IDs use low 16 bits of current UNIX time + random integer from 0 to 65535
-	do { id = "" + Math.floor(Math.random() * 0x10000) + (Date.now() & 0xFFFF) } while (generatedIDs.includes(id));
-	generatedIDs.push(id);
-	return id;
-}
+// generates a unique id
+let genUniqueID = () => Number(((Math.floor(Math.random() * 0x10000) << 16) | (Date.now() & 0xFFFF)) >>> 0).toString(16);
 
 /*
  * Base class for all entities

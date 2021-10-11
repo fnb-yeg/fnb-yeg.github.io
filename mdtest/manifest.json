@@ -34,7 +34,7 @@
         "demo": [
             {
                 "type": "card",
-                "src": "/mdtest/markdown.md",
+                "src": "/mdtest/demo.md",
                 "properties": {
                     "header": "Demo of markdown features"
                 }
