@@ -148,78 +148,91 @@ class NestableEntity extends MarkupEntity {
 }
 
 /*
- * Defines bootstrap classes as MarkupEntities
+ * Context-based card generators. These methods pass extra arguments to the markdown
+ * generator to produce cards with context-based styling
  */
-class BootstrapEntities {
-	/*
-	 * Returns a NestableEntity for a card with a header but no image. The lastChild element
-	 * of this NestableEntity can have more entities put in it.
-	 *
-	 * properties should be an object with the following keys:
-	 *   header - The text to go in the header.
-	 */
-	static card(properties) {
-		let card = new NestableEntity("div", {"class": "card"});
-		let headerEntity = new NestableEntity("h3", {"class": "card-header"});
-		applyInlineFormatting(headerEntity, properties["header"]);
-		card.addChild(headerEntity);
-
-		card.addChild(new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}}));
-		return card;
-	}
-
-	/*
-	 * Returns a NestableEntity for a news item card with an image at the top. The lastChild
-	 * element of this NestableEntity can have more entities put in it.
-	 *
-	 * properties should be an object with the following keys
-	 *   src - The source of the image
-	 *   alt - The alt text of the image
-	 *   title - The title of the news item
-	 *   date - The date of the news item. This is optional
-	 */
-	static imgCard(properties) {
-		let card = new NestableEntity("div", {"class": "card"});
-		card.addChild(new NestableEntity("img", {"src": properties["src"], "alt": properties["alt"], "class": "card-img-top"}));
-
-		let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}});
-		let cardTitleDiv = new NestableEntity("div", {"class": "d-flex w-100 justify-content-between"});
-		cardBody.addChild(cardTitleDiv);
-		
-		let cardTitle = new NestableEntity("h5", {"class": "mb-1"});
-		applyInlineFormatting(cardTitle, properties["title"]);
-		cardTitleDiv.addChild(cardTitle);
-
-		if (properties["date"]) {
-			let cardDate = new NestableEntity("small");
-			applyInlineFormatting(cardDate, properties["date"]);
-			cardTitleDiv.addChild(cardDate);
-		}
-
-		card.addChild(cardBody);
-		return card;
-	}
-
-	static imgCardCollapse(properties) {
-		let card = new NestableEntity("div", {"class": "card"});
-		card.addChild(new NestableEntity("img", {"src": properties["src"], "alt": properties["alt"], "class": "card-img-top"}));
-
-		let collapseID = genUniqueID();
+class Cards {
+	static recipe(markdown, root) {
 		let cardBody = new NestableEntity("div", {"class": "card-body"});
-		// Add expand button
 
-		cardBody.addChild(new NestableEntity("p").addChild(new NestableEntity("a", {
-			"data-toggle": "collapse",
-			"href": `#${collapseID}`,
-			"role": "button",
-			"aria-expanded": "false",
-			"aria-controls": collapseID
-		}).addChild(new TextEntity("[View Image Transcription]"))));
+		// es6 guarantees that string keys will remain in insertion order
+		parseMarkdown(markdown, cardBody, {
+			"1": () => new NestableEntity("div", {"class": "row justify-content-center"}),
+			"2:": () => new NestableEntity("div", {"class": "content"}),
+			"2:4": () => new NestableEntity("div", {"class": "row"}),
+			"2,3,4": () => new NestableEntity("div", {"class": "col-sm-12 col-md-4"}, {"p": {"class": "lead"}})
+		});
 
-		cardBody.addChild(new NestableEntity("div", {"class": "collapse", "id": collapseID}));
+		root.addChild(cardBody);
+	}
+}
 
-		card.addChild(cardBody);
-		return card
+/*
+ * Determines whether the schema applies to this line.
+ *
+ * Returns 0 if the state should be unchanged, 1 if it should be added to the stack,
+ * -1 if it should be removed from the stack, and -2 if it should be removed and re-added
+ */
+function doesSchemaApplyToLine(lineno, schema) {
+	const RANGE = -1;  // from the previous item to the next, or the end if this is the last item
+	let lines = [];
+	let currentNo = 0;
+
+	for (let i=0; i < schema.length; ++i) {
+		let charCode = schema.charCodeAt(i);
+
+		if (charCode >= 0x30 && charCode <= 0x39) {
+			// number
+			currentNo *= 10;
+			currentNo += charCode - 0x30;
+		} else {
+			lines.push(currentNo);
+			currentNo = 0;
+
+			if (charCode === 0x3A) {
+				// colon
+				if (i === 0 || lines[lines.length-1] === RANGE) return 0;  // invalid schema
+
+				lines.push(RANGE);
+			} else if (charCode === 0x2C) {
+				// comma
+				continue;
+			} else {
+				// Invalid schema
+				return 0;
+			}
+		}
+	}
+
+	if (currentNo !== 0) lines.push(currentNo);
+
+	let shouldAdd = false;
+	let shouldRemove = false;
+
+	for (let i=0; i < lines.length; ++i) {
+		if (lines[i] === RANGE) {
+			if (i === 0) return 0;  // invalid schema
+
+			// x:y or x:
+			if (lineno >= lines[i-1] && (i+1 === lines.length || lineno <= lines[i+1])) {
+				if (shouldAdd) return 1;
+				return 0;  // dont change state
+			}
+		} else if (lines[i] === lineno) {
+			shouldAdd = true;
+		} else if (lines[i] === lineno-1 && lines[i+1] !== RANGE) {
+			shouldRemove = true;
+		}
+	}
+
+	if (shouldAdd && shouldRemove) {
+		return -2;
+	} else if (shouldAdd) {
+		return 1;
+	} else if (shouldRemove) {
+		return -1;
+	} else {
+		return 0;
 	}
 }
 
@@ -228,9 +241,9 @@ class BootstrapEntities {
  *
  * markdown - An array of lines of markdown
  * root - A MarkupEntity that the output will be put into.
- * tagClasses - An object containing HTML tags and a class string to be added to them.
+ * schema - A Map which gives the parser additional content to add to lines
  */
-function parseMarkdown(markdown, root, tagClasses) {
+function parseMarkdown(markdown, root, schema) {
 	// Block element types
 	const NONE = 0;
 	const PARAGRAPH = 1;
@@ -255,34 +268,60 @@ function parseMarkdown(markdown, root, tagClasses) {
 	const CENTER = 1;
 	const RIGHT = 2;
 
+	let rootStack = [];
 	let parent = null;
 	let parentType = NONE;
 	let listIndent = 0;
 	let columnAlignment = [];
+	let lineno = 1;  // this should increment on each non-blank line
+
+	let getLowestRoot = () => rootStack.length > 0 ? rootStack[rootStack.length-1]["entity"] : root;
 
 	// Iterate through the source line by line
-	for (let i=0; i < markdown.length; ++i) {
+	for (let i=0; i < markdown.length; ++i, ++lineno) {
 		let line = markdown[i];
 		let match;
 
-		// Handle special cases
+		// skip blank lines
 		if (line === '') {
-			// Blank lines
 			parentType = NONE;  // reset any formatting
+			--lineno;  // lineno shouldn't be increased
 			continue;
-		} else if (line === '---') {
+		}
+
+		// update rootStack
+		while (rootStack.length > 0) {
+			// pop anything which no longer applies
+			let applies = doesSchemaApplyToLine(lineno, rootStack[rootStack.length-1]["target"]);
+			if (applies === -1 || applies === -2) {
+				let lastItem = rootStack.pop();
+				getLowestRoot().addChild(lastItem["entity"]);
+			} else {
+				break;
+			}
+		}
+
+		// apply new schemas
+		for (let k of Object.keys(schema)) {
+			// push new entries
+			let applies = doesSchemaApplyToLine(lineno, k);
+			if (applies === 1 || applies === -2) {
+				rootStack.push({"target": k, "entity": schema[k]()});
+			}
+		}
+
+		// Handle special cases
+		if (line === '---') {
 			// Horizontal lines
-			root.addChild(new TerminatingEntity("hr"));
+			getLowestRoot().addChild(new TerminatingEntity("hr"));
 			continue;
 		} else if (line[0] === '!') {  // Just so we don't always run the regex
 			// Images
 			if ((match = imageRegex.exec(line)) !== null) {
 				let element = new TerminatingEntity("img", {"alt": match[1], "src": match[2]});
-				root.addChild(element);
+				getLowestRoot().addChild(element);
 				continue;
 			}
-		} else if (line[0] === '$') {  // insert div
-
 		}
 
 		if (parentType === NONE || parentType === PARAGRAPH) {  // figure out what kind of parent should be on this line
@@ -298,7 +337,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 				applyInlineFormatting(element, match[3]);
 
 				parent.addChild(element);
-				root.addChild(parent);
+				getLowestRoot().addChild(parent);
 				parentType = UL;
 			} else if ((match = olRegex.exec(line)) !== null) {
 				// ol
@@ -310,7 +349,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 				applyInlineFormatting(element, match[3]);
 
 				parent.addChild(element);
-				root.addChild(parent);
+				getLowestRoot().addChild(parent);
 				parentType = OL;
 			} else if (line.match(tableRegex) !== null) {
 				// table
@@ -362,7 +401,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 
 					head.addChild(row);
 					parent.addChild(head);
-					root.addChild(parent);
+					getLowestRoot().addChild(parent);
 					++i;  // Skip table alignment/formatting thingy bcuz i dont actually use it
 					parentType = TABLE;
 				}
@@ -379,7 +418,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 
 				body.addChild(paragraph);
 				parent.addChild(body);
-				root.addChild(parent);
+				getLowestRoot().addChild(parent);
 				parentType = QUOTE;
 			} else {
 				let level = 0;
@@ -407,7 +446,7 @@ function parseMarkdown(markdown, root, tagClasses) {
 
 					applyInlineFormatting(parent, line);
 
-					root.addChild(parent);
+					getLowestRoot().addChild(parent);
 					parent = (level === 0) ? parent : null;
 				}
 			}
@@ -501,6 +540,14 @@ function parseMarkdown(markdown, root, tagClasses) {
 			}
 		}
 	}
+
+	// unravel rootStack
+	for (let i=rootStack.length; i > 0; --i) {
+		let lastItem = rootStack.pop();
+		getLowestRoot().addChild(lastItem["entity"]);
+	}
+
+	console.log(root);
 
 	return root;
 }
@@ -771,13 +818,10 @@ function encodeEmail(email) {
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
-	let root = window.location.href;
-	root = root.slice(0, root.lastIndexOf('/'));
-
 	// Load manifest.json
-	let manifestReq = await fetch(root + "/manifest.json", {
+	let manifestReq = await fetch("manifest.json", {
 		"mode": "same-origin"
-	});//.then(response => response.text().then(text => text.split('\n')));
+	});
 
 	if (manifestReq.ok) {
 		let manifest = await manifestReq.json();
@@ -790,33 +834,16 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 		for (let target in manifest["targets"]) {
 			let targetDiv = document.querySelector(`div.markdown-target#${target}`);
+			let entry = manifest["targets"][target];
 
-			for (let entry of manifest["targets"][target]) {
-				if (!"type" in entry) {
-					continue;  // type is required; skip this
-				}
+			// skip invalid entries
+			if (!("type" in entry || "src" in entry)) continue;
 
-				let root;
-
-				if (entry["type"] === "card") {
-					root = BootstrapEntities.card(entry["properties"]);
-
-					let markdown = await getMarkdown(entry["src"]);
-					root.lastChild = parseMarkdown(markdown, root.lastChild);
-					targetDiv.innerHTML += root.generateEntity();
-				} else if (entry["type"] === "img-card") {
-					root = BootstrapEntities.imgCard(entry["properties"]);
-
-					let markdown = await getMarkdown(entry["src"]);
-					root.lastChild = parseMarkdown(markdown, root.lastChild);
-					targetDiv.innerHTML += root.generateEntity();
-				} else if (entry["type"] === "img-card-collapse") {
-					root = BootstrapEntities.imgCardCollapse(entry["properties"]);
-
-					let markdown = await getMarkdown(entry["src"]);
-					root.lastChild.lastChild = parseMarkdown(markdown, root.lastChild.lastChild);
-					targetDiv.innerHTML += root.generateEntity();
-				}
+			if (entry["type"] === "recipe") {
+				let card = new NestableEntity("div", {"class": "card"});
+				let markdown = await getMarkdown(entry["src"]);
+				Cards.recipe(markdown, card);
+				targetDiv.innerHTML = card.generateEntity();
 			}
 		}
 	}

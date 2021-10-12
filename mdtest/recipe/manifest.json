@@ -1,0 +1,8 @@
+{
+    "targets": {
+        "recipeTest": {
+            "type": "recipe",
+            "src": "recipe.md"
+        }
+    }
+}
