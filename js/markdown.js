@@ -124,8 +124,6 @@ class NestableEntity extends MarkupEntity {
 	}
 
 	get root() {
-		// replace with nullish coalescing operator when all modern browsers support it
-		// return this.parent ?? this;
 		return this.parent ? this.parent.root : this;
 	}
 
@@ -195,14 +193,24 @@ class Cards {
 		parseMarkdown(markdown, root, {
 			"1": () => new NestableEntity("div", {}, {"img": {"class": "card-img-top"}}),
 			"2:": () => new NestableEntity("div", {"class": "card-body"}),
-			"2<": () => new NestableEntity("p").addChild(new NestableEntity("a", {
-				"data-toggle": "collapse",
-				"href": `#${collapseID}`,
-				"role": "button",
-				"aria-expanded": "false",
-				"aria-controls": collapseID
-			}).addChild(new TextEntity("[View Image Transcription]"))).root
-		});  // TODO: modify schema to allow multiple definitions with the same line schema
+			",2:": () => new NestableEntity("div", {
+				"class": "collapse",
+				"id": collapseID
+			})
+		});  // TODO: find nicer solution to have two schemas with identical targets
+
+		// Add collapse button
+		for (let i=0; i < root.children.length; ++i) {
+			if ("class" in root.children[i].attributes && root.children[i].attributes["class"].includes("card-body")) {
+				root.children[i].children.unshift(new NestableEntity("p").addChild(new NestableEntity("a", {
+					"data-toggle": "collapse",
+					"href": `#${collapseID}`,
+					"role": "button",
+					"aria-expanded": "false",
+					"aria-controls": collapseID
+				}).addChild(new TextEntity("[View Image Transcription]"))));
+			}
+		}
 	}
 }
 
@@ -919,26 +927,24 @@ document.addEventListener("DOMContentLoaded", async function() {
 			markdown = target.textContent.replace('\r', '').split('\n').map(line => line.trim());
 		}
 
+		let card = new NestableEntity("div", {"class": "card"});
+
 		if (type === "default") {
-			let card = new NestableEntity("div", {"class": "card"});
 			let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}});
 			parseMarkdown(markdown, cardBody);
 			card.addChild(cardBody);
-			target.innerHTML = card.generateEntity();
 		} else if (type === "recipe") {
-			let card = new NestableEntity("div", {"class": "card"});
 			Cards.recipe(markdown, card);
-			target.innerHTML = card.generateEntity();
 		} else if (type === "news-basic") {
-			let card = new NestableEntity("div", {"class": "card"});
 			Cards.news_basic(markdown, card);
-			target.innerHTML = card.generateEntity();
 		} else if (type === "news-img") {
-			let card = new NestableEntity("div", {"class": "card"});
 			Cards.news_img(markdown, card);
-			target.innerHTML = card.generateEntity();
 		} else if (type === "news-img-collapse") {
-			let card
+			Cards.news_img_collapse(markdown, card);
+		} else {
+			continue;
 		}
+
+		target.innerHTML = card.generateEntity();
 	}
 });
