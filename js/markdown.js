@@ -93,6 +93,7 @@ class NestableEntity extends MarkupEntity {
 
 		this.childAttributes = childAttributes;
 		this.children = [];
+		this.parent = null;
 	}
 
 	/*
@@ -108,6 +109,7 @@ class NestableEntity extends MarkupEntity {
 				child.attributes[attrib] = (child.attributes[attrib] ? child.attributes[attrib] : "") + this.childAttributes[child.tag][attrib];
 			}
 		}
+		child.parent = this;
 		this.children.push(child);
 
 		return this;  // allow .addChild calls to be chained together
@@ -119,6 +121,12 @@ class NestableEntity extends MarkupEntity {
 	get lastChild() {
 		// return this.children.filter((e, i) => i === this.children.length-1)[0];
 		return this.children[this.children.length-1];
+	}
+
+	get root() {
+		// replace with nullish coalescing operator when all modern browsers support it
+		// return this.parent ?? this;
+		return this.parent ? this.parent.root : this;
 	}
 
 	/*
@@ -172,6 +180,30 @@ class Cards {
 			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}})
 		});
 	}
+
+	static news_img(markdown, root) {
+		parseMarkdown(markdown, root, {
+			"1": () => new NestableEntity("div", {}, {"img": {"class": "card-img-top"}}),
+			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}}),
+			"2:3": () => new NestableEntity("div", {"class": "d-flex w-100 justify-content-between"}, {"h5": {"class": "mb-1"}, "p": {"style": "font-size:0.8em"}})
+		});
+	}
+
+	static news_img_collapse(markdown, root) {
+		let collapseID = genUniqueID();
+
+		parseMarkdown(markdown, root, {
+			"1": () => new NestableEntity("div", {}, {"img": {"class": "card-img-top"}}),
+			"2:": () => new NestableEntity("div", {"class": "card-body"}),
+			"2<": () => new NestableEntity("p").addChild(new NestableEntity("a", {
+				"data-toggle": "collapse",
+				"href": `#${collapseID}`,
+				"role": "button",
+				"aria-expanded": "false",
+				"aria-controls": collapseID
+			}).addChild(new TextEntity("[View Image Transcription]"))).root
+		});  // TODO: modify schema to allow multiple definitions with the same line schema
+	}
 }
 
 /*
@@ -182,6 +214,8 @@ class Cards {
  */
 function doesSchemaApplyToLine(lineno, schema) {
 	const RANGE = -1;  // from the previous item to the next, or the end if this is the last item
+	const AFTER = -2;  // insert after the specified line
+	const BEFORE = -3;  // insert before the specified line
 	let lines = [];
 	let currentNo = 0;
 
@@ -204,6 +238,16 @@ function doesSchemaApplyToLine(lineno, schema) {
 			} else if (charCode === 0x2C) {
 				// comma
 				continue;
+			} else if (charCode === 0x3E) {
+				// >
+				if (i === 0 || lines[lines.length-1] === AFTER) return 0;  // invalid schema
+
+				lines.push(AFTER);
+			} else if (charCode === 0x3C) {
+				// <
+				if (i === 0 || lines[lines.length-1] === BEFORE) return 0;  // invalid schema
+
+				lines.push(BEFORE);
 			} else {
 				// Invalid schema
 				return 0;
@@ -224,6 +268,22 @@ function doesSchemaApplyToLine(lineno, schema) {
 			if (lineno >= lines[i-1] && (i+1 === lines.length || lineno <= lines[i+1])) {
 				if (shouldAdd) return 1;
 				return 0;  // dont change state
+			}
+		} else if (lines[i] === BEFORE || lines[i] === AFTER) {
+			if (i === 0) return 0;  // invalid schema
+			if (lines[i-1] === AFTER || lines[i-1] === RANGE || lines[i-1] === BEFORE) return 0;  // invalid schema
+
+			let delta = (lines[i] === BEFORE) ? 1 : -1;
+
+			if (lineno + delta === lines[i-1]) {
+				// The next line is the one this should be inserted before
+				return 1;
+			} else if (lineno === lines[i-1]) {
+				// It was inserted before this line
+				return -1;
+			} else {
+				// maintain state (off)
+				return 0;
 			}
 		} else if (lines[i] === lineno) {
 			shouldAdd = true;
@@ -554,8 +614,6 @@ function parseMarkdown(markdown, root, schema={}) {
 		getLowestRoot().addChild(lastItem["entity"]);
 	}
 
-	console.log(root);
-
 	return root;
 }
 
@@ -570,12 +628,13 @@ function parseMarkdown(markdown, root, schema={}) {
  */
 function applyInlineFormatting(parent, line) {
 	// also had to rewrite these regexs to remove lookbehinds. did i mention fuck edge? actually fuck browser compatibility. why cant everyone just use the same browser and browser settings i do?
-	const boldRegex = /(.*?)\*{2}(.*?)\*{2}(?!\*)(.*)/;  // Bold and italics need to be done as regex because 
+	const boldRegex = /(.*?)\*\*(.*?)\*\*(?!\*)(.*)/;  // Bold and italics need to be done as regex because 
 	const italicRegex = /(.*?)\*(.*?)\*(.*)/;
-	const underlineRegex = /(.*?)_{2}(.*?)_{2}(.*)/;
+	const underlineRegex = /(.*?)__(.*?)__(.*)/;
 	const preformattedRegex = /(.*?)`(.*?)`(.*)/;
 	const superscriptRegex = /(.*?)\^\((.*?)\)(.*)/;
 	const subscriptRegex = /(.*?)\_\((.*?)\)(.*)/;
+	const strikethroughRegex = /(.*?)~~(.*?)~~(.*)/;
 	const linkForm1 = /(.*?(?:^|[^!^]))\[([^\]]+)\]\(([^"]+?)\)(.*)/;  // [text](url)
 	const linkForm2 = /(.*?(?:^|[^!^]))\[([^\]]+)\]\(([^")]+?) "(.+?)"\)(.*)/;  // [text](url "title")
 	const linkForm3 = /(.*?)<([a-zA-Z0-9]+:\/\/[\w-.]+?.[\w-]+)>(.*)/;  // <url>
@@ -670,6 +729,22 @@ function applyInlineFormatting(parent, line) {
 		applyInlineFormatting(parent, match[1]);
 
 		let element = new NestableEntity("sub");
+		applyInlineFormatting(element, match[2]);
+
+		parent.addChild(element);
+
+		applyInlineFormatting(parent, match[3]);
+
+		return;
+	}
+
+	if ((match = strikethroughRegex.exec(line)) !== null) {
+		// match[1] = start of line
+		// match[2] = content to strikethrough
+		// match[3] = end of line
+		applyInlineFormatting(parent, match[1]);
+
+		let element = new NestableEntity("s");
 		applyInlineFormatting(element, match[2]);
 
 		parent.addChild(element);
@@ -825,38 +900,45 @@ function encodeEmail(email) {
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
-	// Load manifest.json
-	let manifestReq = await fetch("manifest.json", {
-		"mode": "same-origin"
-	});
+	let targetDivs = document.getElementsByClassName("markdown");
 
-	if (manifestReq.ok) {
-		let manifest = await manifestReq.json();
+	for (const target of targetDivs) {
+		if (!target instanceof HTMLElement) continue;  // This is an XML element; not what we want
+		if (!"type" in target.dataset) continue;  // Missing required attribute; skip
 
-		let getMarkdown = async (src) => {
-			return await fetch(src, {
+		let type = target.dataset.type;
+		let markdown;
+
+		if ("src" in target.dataset) {
+			// Load remote file
+			markdown = await fetch(target.dataset.src, {
 				"mode": "same-origin"
 			}).then(response => response.text().then(text => text.replace('\r', '').split('\n')));
-		};
+		} else {
+			// Render embedded markdown
+			markdown = target.textContent.replace('\r', '').split('\n').map(line => line.trim());
+		}
 
-		for (let target in manifest["targets"]) {
-			let targetDiv = document.querySelector(`div.markdown-target#${target}`);
-			let entry = manifest["targets"][target];
-
-			// skip invalid entries
-			if (!("type" in entry || "src" in entry)) continue;
-
-			if (entry["type"] === "recipe") {
-				let card = new NestableEntity("div", {"class": "card"});
-				let markdown = await getMarkdown(entry["src"]);
-				Cards.recipe(markdown, card);
-				targetDiv.innerHTML = card.generateEntity();
-			} else if (entry["type"] === "news-basic") {
-				let card = new NestableEntity("div", {"class": "card"});
-				let markdown = await getMarkdown(entry["src"]);
-				Cards.news_basic(markdown, card);
-				targetDiv.innerHTML = card.generateEntity();
-			}
+		if (type === "default") {
+			let card = new NestableEntity("div", {"class": "card"});
+			let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}});
+			parseMarkdown(markdown, cardBody);
+			card.addChild(cardBody);
+			target.innerHTML = card.generateEntity();
+		} else if (type === "recipe") {
+			let card = new NestableEntity("div", {"class": "card"});
+			Cards.recipe(markdown, card);
+			target.innerHTML = card.generateEntity();
+		} else if (type === "news-basic") {
+			let card = new NestableEntity("div", {"class": "card"});
+			Cards.news_basic(markdown, card);
+			target.innerHTML = card.generateEntity();
+		} else if (type === "news-img") {
+			let card = new NestableEntity("div", {"class": "card"});
+			Cards.news_img(markdown, card);
+			target.innerHTML = card.generateEntity();
+		} else if (type === "news-img-collapse") {
+			let card
 		}
 	}
 });
