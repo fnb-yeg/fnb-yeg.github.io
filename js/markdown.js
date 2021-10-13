@@ -165,6 +165,13 @@ class Cards {
 
 		root.addChild(cardBody);
 	}
+
+	static news_basic(markdown, root) {
+		parseMarkdown(markdown, root, {
+			"1": () => new NestableEntity("div", {"class": "card-header"}),
+			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}})
+		});
+	}
 }
 
 /*
@@ -243,7 +250,7 @@ function doesSchemaApplyToLine(lineno, schema) {
  * root - A MarkupEntity that the output will be put into.
  * schema - A Map which gives the parser additional content to add to lines
  */
-function parseMarkdown(markdown, root, schema) {
+function parseMarkdown(markdown, root, schema={}) {
 	// Block element types
 	const NONE = 0;
 	const PARAGRAPH = 1;
@@ -843,6 +850,11 @@ document.addEventListener("DOMContentLoaded", async function() {
 				let card = new NestableEntity("div", {"class": "card"});
 				let markdown = await getMarkdown(entry["src"]);
 				Cards.recipe(markdown, card);
+				targetDiv.innerHTML = card.generateEntity();
+			} else if (entry["type"] === "news-basic") {
+				let card = new NestableEntity("div", {"class": "card"});
+				let markdown = await getMarkdown(entry["src"]);
+				Cards.news_basic(markdown, card);
 				targetDiv.innerHTML = card.generateEntity();
 			}
 		}

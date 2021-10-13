@@ -1,0 +1,8 @@
+{
+    "targets": {
+        "article1": {
+            "type": "news-basic",
+            "src": "article1.md"
+        }
+    }
+}
