@@ -1,0 +1,14 @@
+How To Use serve.pl
+==========================
+
+The intention of serve.pl is to allow users who have cloned the repository to test the website on a server, thus allowing for absolute URLs between pages.
+
+serve.pl is designed to operate using the copy of perl that should exist on every modern Unix-based operating system (with the possible exception of FreeBSD), and is fully compatible with the copy of perl that is included in Git for Windows, thus making it compatible with every machine that is expected to edit this repository.
+
+The script should be invoked as follows:
+
+perl serve.pl /dir/to/serve <port>
+
+This will make the website available at http://127.0.0.1/, or simply http://localhost
+
+The port will default to 80 if not specified. This should only be changed if you already are running a server on port 80. The server only serves on localhost, and only supports GET and HEAD requests. HTTP headers are ignored.

@@ -24,8 +24,6 @@ sub main {
 	print "Server started on localhost:$port\n";
 
 	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
-		print "Recieved Request ";
-
 		# Read request line
 		my ($method, $target, $protoVersion) = split(/\s/, <$client>);
 

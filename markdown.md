@@ -6,13 +6,14 @@ Headings are defined by adding `#`s in front of a line. One `#` will make a top-
 
 The following basic formatting can be applied to any text in both paragraphs and headings.
 
-| Syntax           | Result                 |
-|------------------|------------------------|
-| `**bold**`       | **bold**               |
-| `*italic*`       | *italic*               |
-| `__underlined__` | <u>underlined</u>      |
-| `^(superscript)` | <sup>superscript</sup> |
-| `_(subscript)`   | <sub>subscript</sub>   |
+| Syntax              | Result                 |
+|---------------------|------------------------|
+| `**bold**`          | **bold**               |
+| `*italic*`          | *italic*               |
+| `__underlined__`    | <u>underlined</u>      |
+| `^(superscript)`    | <sup>superscript</sup> |
+| `_(subscript)`      | <sub>subscript</sub>   |
+| `~~strikethrough~~` | <s>strikethrough</s>   |
 
 Hyperlinks can also be put in both paragraphs and headings. There are three syntaxes for hyperlinks.
 
@@ -67,122 +68,127 @@ Blockquotes are defined with the `>` symbol at the start of a line. Several of t
 > Blockquote
  -- Attribution
 
-## Getting the Markdown onto a webpage
+## Using Markdown with HTML
 
-Each subpage is sorted into its own directory (i.e. the news page is in the news folder). This is the directory where you will be putting the markdown files you've written for this page. This folder also contains two important files: `index.html`, and `manifest.json`. These are the two files which will have to be edited to put your markdown on the webpage.
-
-The first thing you need to do is add the following code to `index.html` in the spot where you want your markdown to appear on the page. Replace `templateID` with an unique name to represent what you're adding to the page.
+Since Markdown cannot be used to create webpages on its own, you need to combine it with some HTML. To use Markdown with HTML, first make sure that the following code is in the HTML file's head. If the page already has Markdown in it then you don't need to worry about this.
 
 ```html
-<div class="markdown-target" id="templateID"></div>
+<script src="/js/markdown.min.js"></script>
 ```
 
-The default `manifest.json` file should look something like this
+This will enable Markdown on this HTML page. Next you need to define the div in which the Markdown will go. To do this, just find the place in the HTML file where you want your Markdown to appear, and add a div with the class `markdown`.
 
-```json
-{
-    "targets": {
-
-    }
-}
+```html
+<div class="markdown"></div>
 ```
 
-After you've added the div to `index.html`, make an entry in `manifest.json` for your div. Inside the `targets` object, add the ID of your div and an array. Each item in this array will be placed inside the div with the ID `templateID`. In this example, we will add just one item to the array.
+Next, specify how you want the Markdown to be rendered using the `data-type` attribute. There are five valid values:
 
-```json
-{
-    "targets": {
-        "templateID": [
-            {
+ - `default`, which creates a basic card to contain the Markdown
+ - `recipe`, which creates a card specifically for displaying recipes
+ - `news-basic`, which creates a basic news card with only a text header
+ - `news-img`, which creates a news card with an image at the top
+ - `news-img-collapse`, which creates a news card with an image at the top and a collapsible transcription.
 
-            }
-        ]
-    }
-}
+In this example, we will use the `default` type. Your div should look something like this now.
+
+```html
+<div class="markdown" data-type="default"></div>
 ```
 
-All entries have a type, which can be one of `card`, `img-card`, and `img-card-collapse`. See the Manifest Entries section for details
+Now, we can finally add the Markdown to the page. This can be done either by loading it from a file, or by embedding the Markdown directly into the div.
 
-```json
-{
-    "targets": {
-        "templateID": [
-            {
-                "type": "card"
-            }
-        ]
-    }
-}
+To load the Markdown from a file, use the `data-src` attribute with the path to the file as its value.
+
+```html
+<div class="markdown" data-type="default" data-src="/path/to/file.md"></div>
 ```
 
-## Manifest Entries
+To embed the Markdown directly, simply start writing it inside the div! Keep in mind that any HTML tags you write in this div will be ignored, however HTML comments will work inside Markdown. Angle brackets (`<` and `>`) must be encoded as HTML entities as well. Indentation of your Markdown doesn't matter, it will be ignored.
 
-### The `src` property
-
-Some types of entries require the `src` property. This is a string containing the url to the markdown file that should be loaded with this entry.
-
-```json
-{
-    "type": "card",
-    "src": "/path/to/file.md"
-}
+```html
+<div class="markdown" data-type="default">
+# Put your Markdown here!
+</div>
 ```
 
-### Other Properties
+### Card Types
 
-Other properies are defined in the `properties` element of the entry.
+The `data-type` attribute specifies what kind of Bootstrap card to render. When this is used, it also determines what kind of context-based styling will be applied to any Markdown inside the content for this card. This section documents that context-based styling.
 
-```json
-{
-    "type": "card",
-    "properties": {
+### `default`
 
-    }
-}
+`default` defines no context-based styling.
+
+### `recipe`
+
+ - The first non-blank line will be turned into the header. This line should be followed by a blank line.
+ - The next three non-blank lines will be placed next to each other in a row. Each of these lines should be followed by a blank line.
+
+A sample `recipe` card looks like this
+
+```md
+## Name of Dish
+
+**Makes**: # servings
+
+**Prep Time**: # mins
+
+**Cook Time**: # minutes
+
+Ingredients:
+ * **Quantity 1** Ingredient 1
+ * **Quantity 2** Ingredient 2
+&emsp;Other Options
+ * **Quantity 3** Ingredient 3
+
+Equipment:
+ * **Size** equipment
+
+Type up the recipe instructions here. Sauté.
 ```
 
-### `card`
+### `news-basic`
 
-The `card` type is a basic card with a header. This type requires the `src` property.
+ - The first non-blank line will be turned into the header. This line should be followed by a blank line.
 
-`card`s have the following properties
+A sample `news-basic` card looks like this
 
-#### `header`
+```md
+### Card Header
 
-The text to display as the heading for this card. This string may contain markdown.
+Brief description of event or project.
+```
 
-### `img-card`
+### `news-img`
 
-The `img-card` type is a card with an image at the top. This type requires the `src` property.
+ - The first non-blank line should be an image, and it will be pinned at the top of the card.
+ - The next two non-blank lines should be the title of the event, and the date if applicable. If the date is not applicable, replace it with `&nbsp;`
 
-`img-card`s have the following properties
+A sample `news-img` card looks like this
 
-#### `src`
+```md
+![Briefly describe your image here. If it is a poster, transcribe it.](/path/to/img)
 
-The URL of the image to display. This is distinct from the `src` property that contains the URL to the markdown file to render.
+##### Title of News Item
+Date event took place
 
-#### `alt`
+Description of event.
+```
 
-Alt text for the image. This is plaintext, and cannot contain markdown.
+### `news-img-collapse`
 
-#### `title`
+ - The first non-blank line should be an image, and it will be pinned at the top of the card.
+ - All other text is used as the image transcription. It is hidden by default
 
-The title of the card. This may contain markdown.
+`news-img-collapse` automatically inserts the expand/collapse toggle button.
 
-#### `date`
+A sample `news-img-collapse` card looks like this
 
-The date the event on the card took place. This is optional, and may contain markdown.
+```md
+![Briefly describe your image here. If it is a poster, transcribe it.](/path/to/img)
 
-### `img-card-collapse`
-
-The `img-card-collapse` type is an image card with a collapsible transcription. This type requires the `src` property.
-
-`img-card-collapse`s have the following properties
-
-#### `src`
-
-The URL of the image to display. This is distinct from the `src` property that contains the URL to the markdown file to render.
-
-#### `alt`
-
-Alt text for the image. This is plaintext, and cannot contain markdown.
+Type up the image transcription here.
+Remember that this will be rendered markdown, so you can use markdown formatting to format the
+transcription, unlike the alt text.
+```
