@@ -329,8 +329,8 @@ function parseMarkdown(markdown, root, schema={}) {
 
 	// Block element regexs
 	const imageRegex = /^!\[([^\]]+)\]\(([^"]+?)\)$/;
-	const ulRegex = /^([ \t]*?)([-*])[ \t](.*)$/;
-	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z])\.[ \t](.*)$/;  // TODO: update to support roman numerals and right parentheses
+	const ulRegex = /^([ \t]*?)([-–—*•])([ \t]*)(.*)$/;  // capture group 3 is there so that the capture group indices line up for ol and ul
+	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z]+)([.)])[ \t]*(.*)$/;
 	const tableRegex = /\|(.+?)(?=\|)/g;  // technically don't need a capture group here except my code breaks when i remove it and its 470 lines long and i cannot handle the emotional strain of debugging it
 									  // this previous comment is now out of date, because i had to change the regex because edge is a fucking shite browser and nobody should use it they should burn the fucking soujrce code aaaaaa fujk
 	const tableFmtRegex = /\|([:-]{3,})(?=\|)/g;  // same goes here i literally could not be assed to save two characters and 243μs
@@ -348,9 +348,34 @@ function parseMarkdown(markdown, root, schema={}) {
 	let parentType = NONE;
 	let listIndent = 0;
 	let columnAlignment = [];
+	let olMatches = [];
 	let lineno = 1;  // this should increment on each non-blank line
 
 	let getLowestRoot = () => rootStack.length > 0 ? rootStack[rootStack.length-1]["entity"] : root;
+
+	let terminateOl = () => {
+		// neural network to determine what kind of list markers to apply to the list
+		let listClass = "";
+		if (olMatches.every(e => e[1].split("").every(c => c.charCodeAt(0) >= 0x30 && c.charCodeAt(0) <= 0x39))) {
+			listClass = "arabic";
+		} else if (olMatches.every(e => e[1].split("").every(c => "ivxlcdm".includes(c)))) {
+			listClass = "lower-roman";
+		} else if (olMatches.every(e => e[1].split("").every(c => "IVXLCDM".includes(c)))) {
+			listClass = "upper-roman";
+		} else if (olMatches.every(e => e[1].split("").every(c => c.charCodeAt(0) >= 0x61 && c.charCodeAt(0) <= 0x7A))) {
+			listClass = "lower-latin";
+		} else if (olMatches.every(e => e[1].split("").every(c => c.charCodeAt(0) >= 0x41 && c.charCodeAt(0) <= 0x5A))) {
+			listClass = "upper-latin";
+		}
+
+		if (listClass !== "" && olMatches.every(e => e[2].charAt(0) === ')')) {
+			listClass += "-paren";
+		}
+
+		if (parent.attributes["class"]) listClass += parent.attributes["class"];
+		parent.attributes["class"] = listClass;
+		olMatches = [];
+	};
 
 	// Iterate through the source line by line
 	for (let i=0; i < markdown.length; ++i, ++lineno) {
@@ -359,6 +384,8 @@ function parseMarkdown(markdown, root, schema={}) {
 
 		// skip blank lines
 		if (line === '') {
+			if (parentType === OL) terminateOl();
+
 			parentType = NONE;  // reset any formatting
 			--lineno;  // lineno shouldn't be increased
 			continue;
@@ -402,26 +429,28 @@ function parseMarkdown(markdown, root, schema={}) {
 		if (parentType === NONE || parentType === PARAGRAPH) {  // figure out what kind of parent should be on this line
 			if ((match = ulRegex.exec(line)) !== null) {
 				// ul
-				let classString = getListClasses("ul", match[2]);
-				parent = new NestableEntity("ul", {"class": classString});
+				parent = new NestableEntity("ul", {
+					"class": !"*•".includes(match[2].codePointAt(0)) ? "list-dashed" : ""
+				});
 
 				let element = new NestableEntity("li");
 
 				listIndent = match[1].length;
 
-				applyInlineFormatting(element, match[3]);
+				applyInlineFormatting(element, match[4]);
 
 				parent.addChild(element);
 				getLowestRoot().addChild(parent);
 				parentType = UL;
 			} else if ((match = olRegex.exec(line)) !== null) {
 				// ol
-				let classString = getListClasses("ol", match[2]);
-				parent = new NestableEntity("ol", {"class": classString});
+				parent = new NestableEntity("ol");
 
 				let element = new NestableEntity("li");
 
-				applyInlineFormatting(element, match[3]);
+				applyInlineFormatting(element, match[4]);
+
+				olMatches.push([match[1], match[2], match[3]]);
 
 				parent.addChild(element);
 				getLowestRoot().addChild(parent);
@@ -544,6 +573,8 @@ function parseMarkdown(markdown, root, schema={}) {
 			if ((match = olRegex.exec(line)) !== null) {
 				let newIndent = listItem("ol", parent, match, listIndent);
 
+				olMatches.push([match[1], match[2], match[3]]);
+
 				if (newIndent > listIndent) {
 					listIndent = newIndent;
 					parent = parent.lastChild;
@@ -551,6 +582,9 @@ function parseMarkdown(markdown, root, schema={}) {
 			} else {
 				parentType = NONE;
 				listIndent = 0;
+
+				terminateOl();
+
 				--i;
 				continue;
 			}
@@ -850,45 +884,18 @@ function listItem(tag, parent, match, indent) {
 
 		let element = new NestableEntity("li");
 
-		applyInlineFormatting(element, match[3]);
+		applyInlineFormatting(element, match[4]);
 
 		sublist.addChild(element);
 		parent.addChild(sublist);
 	} else {
 		let element = new NestableEntity("li");
 
-		applyInlineFormatting(element, match[3]);
+		applyInlineFormatting(element, match[4]);
 		parent.addChild(element);
 	}
 
 	return indent;
-}
-
-/*
- * Determines which CSS classes to apply to a list element.
- *
- * tag - The string tag of the parent of this list
- * marker - The marker string.
- * Returns a string which should be added to the classes for this element.
- */
-function getListClasses(tag, marker) {
-	let chars = marker.split().map((e) => e.codePointAt(0));
-
-	if (tag === "ol") {
-		if (chars[0] >= 0x61 && chars[0] <= 0x7A) {
-			return "list-latin-lower";
-		} else if (chars[0] >= 0x41 && chars[0] <= 0x5A) {
-			return "list-latin-upper";
-		} else if (chars.every((v) => (v >= 0x30 && v <= 0x39))) {
-			return "list-arabic";
-		}
-	} else if (tag === "ul") {
-		if (chars[0] === 0x2D) {
-			return "list-dashed";
-		}
-	}
-
-	return "";
 }
 
 /*

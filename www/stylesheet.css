@@ -43,12 +43,52 @@ body {
 }
 
 /* Styles for markdown */
-ol.list-latin-lower {
-	list-style-type: lower-latin;
+div.markdown ol {
+	counter-reset: mdListCounter;
 }
 
-ol.list-latin-upper {
-	list-style-type: upper-latin;
+div.markdown li {
+	counter-increment: mdListCounter;
+}
+
+div.markdown ol.arabic > li::marker {
+	content: counter(mdListCounter, decimal) ". ";
+}
+
+div.markdown ol.lower-latin > li::marker {
+	content: counter(mdListCounter, lower-latin) ". ";
+}
+
+div.markdown ol.upper-latin > li::marker {
+	content: counter(mdListCounter, upper-latin) ". ";
+}
+
+div.markdown ol.upper-roman > li::marker {
+	content: counter(mdListCounter, upper-roman) ". ";
+}
+
+div.markdown ol.lower-roman > li::marker {
+	content: counter(mdListCounter, lower-roman) ". ";
+}
+
+div.markdown ol.arabic-paren > li::marker {
+	content: counter(mdListCounter, decimal) ") ";
+}
+
+div.markdown ol.lower-latin-paren > li::marker {
+	content: counter(mdListCounter, lower-latin) ") ";
+}
+
+div.markdown ol.upper-latin-paren > li::marker {
+	content: counter(mdListCounter, upper-latin) ") ";
+}
+
+div.markdown ol.upper-roman-paren > li::marker {
+	content: counter(mdListCounter, upper-roman) ") ";
+}
+
+div.markdown ol.lower-roman-paren > li::marker {
+	content: counter(mdListCounter, lower-roman) ") ";
 }
 
 ul.list-dashed {

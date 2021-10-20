@@ -36,14 +36,24 @@ This markdown is __dynamically loaded__ from a *Markdown* file on the server!
 1. arabic
 1. numbers
 
-a. OL
-a. with
-a. latin
-a. letters
+a) OL
+a) with
+a) latin
+a) letters
 
 A. and
 B. uppercase
 C. too
+
+I. OL
+II. with
+III. roman
+IV. numerals
+
+i) roman
+ii) numerals
+iii) and
+iv) parentheses!!
 
 | A       | Table |      with |
 |:--------|:-----:|----------:|
