@@ -7,6 +7,21 @@ sub sendHTTPErrPage {
 	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<h1>$code $reason</h1>";
 }
 
+sub isPathForbidden {
+	my ($path) = @_;
+	my @subdirs = split('/', $path);
+	my $depth = 0;
+	foreach (@subdirs) {
+		if ($_ eq ".." && $depth == ) {
+			return 0 if ($depth == 0) {  # going above server root
+			--$depth;
+		} else {
+			++$depth if $_ ne "";
+		}
+	}
+	return 1;
+}
+
 sub main {
 	# Get port from command line, otherwise default to 80
 	my ($workingDir, $port) = @ARGV;
@@ -41,6 +56,8 @@ sub main {
 		}
 
 		sendHTTPErrPage($client, 505, "HTTP Version Not Supported") if ($protoVersion ne "HTTP/1.1");
+		sendHTTPErrPage($client, 403, "Forbidden") if (!isPathForbidden($target));
+
 
 		# Collect headers
 		my %headers;
