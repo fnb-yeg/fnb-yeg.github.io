@@ -7,7 +7,7 @@ serve.pl is designed to operate using the copy of perl that should exist on ever
 
 The script should be invoked as follows:
 
-perl serve.pl /dir/to/serve <port>
+./serve.pl /dir/to/serve <port>
 
 This will make the website available at http://127.0.0.1/, or simply http://localhost
 
