@@ -846,8 +846,8 @@ function applyInlineFormatting(parent, line) {
 		// match[3] = end of line
 		applyInlineFormatting(parent, match[1]);
 
-		let element = new NestableEntity("a", {"href": `mailto:${match[2]}`});  // TODO: HTML encode emails
-		element.addChild(new TextEntity(encodeEmail(match[2])));
+		let element = new NestableEntity("a", {"href": `mailto:${match[2]}`});
+		element.addChild(new TextEntity(match[2]));
 
 		parent.addChild(element);
 
@@ -891,22 +891,6 @@ function listItem(tag, parent, match, indent) {
 	return indent;
 }
 
-/*
- * HTML-encodes an email address
- *
- * email - The email address to encode.
- * Returns an HTML-encoded string
- */
-function encodeEmail(email) {
-	let encoded = "";
-
-	for (let i=0; i < email.length; ++i) {
-		encoded += `&#${email.charCodeAt(i)};`;
-	}
-
-	return encoded;
-}
-
 document.addEventListener("DOMContentLoaded", async function() {
 	let targetDivs = document.getElementsByClassName("markdown");
 
@@ -925,7 +909,6 @@ document.addEventListener("DOMContentLoaded", async function() {
 		} else {
 			// Render embedded markdown
 			markdown = target.textContent.replace('\r', '').split('\n').map(line => line.trim());
-			console.log(markdown);
 		}
 
 		let card = new NestableEntity("div", {"class": "card"});
