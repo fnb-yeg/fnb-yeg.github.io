@@ -322,8 +322,8 @@ function parseMarkdown(markdown, root, schema={}) {
 
 	// Block element regexs
 	const imageRegex = /^!\[([^\]]+)\]\(([^"]+?)\)$/;
-	const ulRegex = /^([ \t]*?)([-–—*•])([ \t]+)(.*)$/;  // capture group 3 is there so that the capture group indices line up for ol and ul
-	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z]+)([.)])[ \t]+(.*)$/;
+	const ulRegex = /^([ \t]*?)([-–—*•])[ \t]+(?<content>.*)$/;
+	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z]+)([.)])[ \t]+(?<content>.*)$/;
 	const tableRegex = /\|(.+?)(?=\|)/g;  // technically don't need a capture group here except my code breaks when i remove it and its 470 lines long and i cannot handle the emotional strain of debugging it
 									  // this previous comment is now out of date, because i had to change the regex because edge is a fucking shite browser and nobody should use it they should burn the fucking soujrce code aaaaaa fujk
 	const tableFmtRegex = /\|([:-]{3,})(?=\|)/g;  // same goes here i literally could not be assed to save two characters and 243μs
@@ -430,7 +430,7 @@ function parseMarkdown(markdown, root, schema={}) {
 
 				listIndent = match[1].length;
 
-				applyInlineFormatting(element, match[4]);
+				applyInlineFormatting(element, match.groups.content);
 
 				parent.addChild(element);
 				getLowestRoot().addChild(parent);
@@ -441,7 +441,7 @@ function parseMarkdown(markdown, root, schema={}) {
 
 				let element = new NestableEntity("li");
 
-				applyInlineFormatting(element, match[4]);
+				applyInlineFormatting(element, match.groups.content);
 
 				olMatches.push([match[1], match[2], match[3]]);
 
@@ -877,14 +877,14 @@ function listItem(tag, parent, match, indent) {
 
 		let element = new NestableEntity("li");
 
-		applyInlineFormatting(element, match[4]);
+		applyInlineFormatting(element, match.groups.content);
 
 		sublist.addChild(element);
 		parent.addChild(sublist);
 	} else {
 		let element = new NestableEntity("li");
 
-		applyInlineFormatting(element, match[4]);
+		applyInlineFormatting(element, match.groups.content);
 		parent.addChild(element);
 	}
 
