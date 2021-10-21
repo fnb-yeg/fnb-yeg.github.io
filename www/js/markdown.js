@@ -36,21 +36,14 @@ class TextEntity extends MarkupEntity {
 	constructor(content) {
 		super(null);
 
-		this.content = this._escapeString(content);
-	}
-
-	_escapeString(str) {
-		str = str.replace(/&(?!.*?;)/g, "&amp;");  // Still allow regular html escapes
-		str = str.replace(/</g, "&lt;");
-		str = str.replace(/>/g, "&gt;");
-		return str;
+		this.content = content;
 	}
 
 	/*
 	 * Add more content to this entity
 	 */
 	addContent(content) {
-		this.content += this._escapeString(content);
+		this.content += content;
 	}
 
 	generateEntity() {
@@ -329,8 +322,8 @@ function parseMarkdown(markdown, root, schema={}) {
 
 	// Block element regexs
 	const imageRegex = /^!\[([^\]]+)\]\(([^"]+?)\)$/;
-	const ulRegex = /^([ \t]*?)([-–—*•])([ \t]*)(.*)$/;  // capture group 3 is there so that the capture group indices line up for ol and ul
-	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z]+)([.)])[ \t]*(.*)$/;
+	const ulRegex = /^([ \t]*?)([-–—*•])([ \t]+)(.*)$/;  // capture group 3 is there so that the capture group indices line up for ol and ul
+	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z]+)([.)])[ \t]+(.*)$/;
 	const tableRegex = /\|(.+?)(?=\|)/g;  // technically don't need a capture group here except my code breaks when i remove it and its 470 lines long and i cannot handle the emotional strain of debugging it
 									  // this previous comment is now out of date, because i had to change the regex because edge is a fucking shite browser and nobody should use it they should burn the fucking soujrce code aaaaaa fujk
 	const tableFmtRegex = /\|([:-]{3,})(?=\|)/g;  // same goes here i literally could not be assed to save two characters and 243μs
@@ -932,6 +925,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 		} else {
 			// Render embedded markdown
 			markdown = target.textContent.replace('\r', '').split('\n').map(line => line.trim());
+			console.log(markdown);
 		}
 
 		let card = new NestableEntity("div", {"class": "card"});
