@@ -6,7 +6,7 @@ View website here: https://edmonton.foodnotbombs.us
 
 ## To make changes to this website:
 
-You'll need GitHub, a Text Editor and some basic understanding of HTML. We use Bootstrap to make everything look nice. 
+You'll need GitHub, and a Text Editor. A basic understanding of HTML helps, but isn't necessary. We use Bootstrap to make everything look nice. 
 
 ### GitHub:
 You will need to know how to use github. There is a bit of a learning curve, but the good news
@@ -18,7 +18,7 @@ Read through the beginners guide to git to get set up (or message me for help!) 
 Don't worry about making mistakes or breaking things as you're developing! With git, I'll have to approve every pull request (PR) before your changes are applied to the actual website, and there's a complete history of every change made on our repository, so it's very easy to revert to old versions. Take chances, make mistakes, get messy. Have fun. 
 
 ### Text Editor
-You'll also need a text editor you can use to edit the files (you will not be able to use microsoft word). If you don't have one already, I'd recommend atom. You can download it here: https://atom.io . You can also use Sublime (https://www.sublimetext.com/download) or Notepad++ https://notepad-plus-plus.org . 
+You'll also need a text editor you can use to edit the files (you will not be able to use microsoft word). If you don't have one already, I'd recommend atom. You can download it here: https://atom.io . You can also use Sublime (https://www.sublimetext.com/download) or Notepad++ https://notepad-plus-plus.org .
 
 ### HTML
 If you're totally unfamiliar with HTML, here is a short intro: https://html.com . You DO NOT have to learn everything on this page. Learn what a tag is. Learn what an attribute is. If you're keen, read through the Basic Construction of an HTML Page section, too. That'll get you through. 
@@ -26,7 +26,18 @@ If you're totally unfamiliar with HTML, here is a short intro: https://html.com 
 ### Extra Credit: Bootstrap
 If you're interested in how it all looks so nice, the answer is with bootstrap. Bootstrap is a library for HTML/Javascript/CSS. Think of it as a bunch of pre-written bits of code. If you want to add something to the website and you can't find an existing bit of the website to copy-paste-change, you can google `bootstrap <the thing>` and it will show you how to add that thing. For example, to build the list shown on the "allies" page, I googled "bootstrap list", read through the bootstrap docs for the list, and then copy and pasted an example that I liked the look of and used that. If you read through the HTML and you're wondering what all the weird classes are doing, they're probably bootstrap classes, and you can google `bootstrap <the class name>` and you'll probably find information on it. 
 
+### Markdown
+As an alternative to HTML, you can use Markdown to format the text on pages. Markdown provides a syntax similar to Discord formatting (or to the source of this file). Markdown may be embedded into an HTML file or linked into HTML from a separete `.md` file. See [markdown.md](markdown.md) for a complete syntax reference.
+
 ### Making Changes:
+
+#### Testing your Changes
+To facilitate easy editing of pages, a minimal HTTP server is provided in `serve.pl`. It hosts the entire website at a URL that only your computer can access. Since Git depends on Perl, every machine that can clone this repo can run this server without installing any additional software. The script takes two arguments: the path to serve and the port to serve on. If no port is specified the server starts on port 80. However in the majority of cases, typing the following line into a terminal (Git CMD or Git Bash on Windows) will work.
+```
+./serve.pl www
+```
+After you start the server, you can view the website at [localhost](http://localhost/).
+
 #### Adding a new page: 
 1. Decide on the name for the page. You want it short and easy to type. I'll use `my_example` for the purposes of this example. 
 
@@ -34,9 +45,11 @@ If you're interested in how it all looks so nice, the answer is with bootstrap. 
 
 3. Open up template_page. Copy and paste it into your new file. Save the changes. 
 
-4. Open up your File Explorer, navigate to the project folder, and double click the file you created (`my_example.html`.) It should open in your browser. Note that the images won't display.
+4. Go to [localhost](http://localhost/). Add the end of the path to your new file (the part after `fnb-yeg.github.io/www/`) to the end of the url.
 
-5. Back in your text editor, scroll to where it says "Header Here". Put the name of your page there. For example, I'd remove `Header Here` and put `My Example` instead. Go to your browser and refresh the page. It should update "Header Here" to say "My Example".
+5. **To edit in HTML:** Back in your text editor, scroll to where it says "Header Here". Put the name of your page there. For example, I'd remove `Header Here` and put `My Example` instead. Go to your browser and refresh the page. It should update "Header Here" to say "My Example".
+
+   **To edit in Markdown:** In your text editor, replace everything from line 55 to line 66 with `<div class="markdown" data-type="default"></div>`. Within this div, you can write your Markdown directly in the HTML file, or you can add `data-src="/path/to/file.md"` to the div after `data-type="default"`, to point it to a separate markdown file.
 
 6. Make your content! Write what you wanna write! Keep refreshing your page as you go so you can see the changes as you go. That way when you mess up you'll know right away. Plus it's rewarding when you can see what you're doing. 
 
@@ -60,6 +73,9 @@ Now if you were to copy and paste the template_page.html into a subdirectory, it
 The fix is simple once you understand the cause. ctrl+f in the file for all `src` attributes in the html and check if they are relative or absolute. If they are relative, change them so that they begin with `../`. Do the same for `href` attributes.
 
 The recipe template does this for you already if you're adding a new recipe, so you shouldn't come across this. However if you're a beginner this would be a hard problem to troubleshoot so I wanted to make a note!
+
+##### Adding a new recipe page in Markdown:
+Adding a new recipe page works almost the same as adding a regular page, except that instead of typing `data-type="default"` in step 5, you type `data-type="recipe"`. This will instruct the Markdown parser to treat the first line of the Markdown as a header, and then the next three paragraphs (remember that paragraphs are separated by a blank line!) as the number of servings it makes, prep time, and the cook time, in that order.
 
 #### Adding a news item
 1. Open news.html in your text editor.
