@@ -1,2 +1,2 @@
 #!/bin/sh
-./serve.pl www
+./serve.pl .
