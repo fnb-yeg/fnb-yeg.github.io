@@ -41,3 +41,74 @@ body {
 .carousel-control-next-icon {
   filter: invert(100%);
 }
+
+/* Styles for markdown */
+div.markdown ol {
+	counter-reset: mdListCounter;
+}
+
+div.markdown li {
+	counter-increment: mdListCounter;
+}
+
+div.markdown ol.arabic > li::marker {
+	content: counter(mdListCounter, decimal) ". ";
+}
+
+div.markdown ol.lower-latin > li::marker {
+	content: counter(mdListCounter, lower-latin) ". ";
+}
+
+div.markdown ol.upper-latin > li::marker {
+	content: counter(mdListCounter, upper-latin) ". ";
+}
+
+div.markdown ol.upper-roman > li::marker {
+	content: counter(mdListCounter, upper-roman) ". ";
+}
+
+div.markdown ol.lower-roman > li::marker {
+	content: counter(mdListCounter, lower-roman) ". ";
+}
+
+div.markdown ol.arabic-paren > li::marker {
+	content: counter(mdListCounter, decimal) ") ";
+}
+
+div.markdown ol.lower-latin-paren > li::marker {
+	content: counter(mdListCounter, lower-latin) ") ";
+}
+
+div.markdown ol.upper-latin-paren > li::marker {
+	content: counter(mdListCounter, upper-latin) ") ";
+}
+
+div.markdown ol.upper-roman-paren > li::marker {
+	content: counter(mdListCounter, upper-roman) ") ";
+}
+
+div.markdown ol.lower-roman-paren > li::marker {
+	content: counter(mdListCounter, lower-roman) ") ";
+}
+
+ul.list-dashed {
+	list-style-type: "– ";
+}
+
+blockquote div.quote-body {
+	background-color: #ddd;
+	border-radius: 5px;
+	padding: 1px 10px;
+}
+
+blockquote div.quote-body p {
+	margin: 10px;
+}
+
+blockquote div.quote-attrib {
+	margin-left: 15px;
+}
+
+blockquote div.quote-attrib::before {
+	content: "\2014";
+}
