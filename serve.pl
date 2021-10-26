@@ -1,4 +1,8 @@
 #!/usr/bin/perl
+# serve.pl PATH <port>
+#  PATH is the path of the server root. This is required.
+#  port is the port to serve on. The default value is 80.
+
 use strict;
 use Socket;
 
@@ -82,7 +86,7 @@ sub main {
 	my $proto = getprotobyname("tcp");
 	socket(my $server, PF_INET, SOCK_STREAM, $proto) || die "socket: $!";
 	setsockopt($server, SOL_SOCKET, SO_REUSEADDR, pack("l", 1)) || die "setsockopt: $!";
-	bind($server, sockaddr_in($port, inet_aton("localhost"))) || die "bind: $!";
+	bind($server, sockaddr_in($port, inet_aton("127.0.0.1"))) || die "bind: $!";
 	listen($server, SOMAXCONN) || die "listen: $!";
 	print "Server started on localhost:$port\n";
 

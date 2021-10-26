@@ -20,23 +20,18 @@ Don't worry about making mistakes or breaking things as you're developing! With 
 ### Text Editor
 You'll also need a text editor you can use to edit the files (you will not be able to use microsoft word). If you don't have one already, I'd recommend atom. You can download it here: https://atom.io . You can also use Sublime (https://www.sublimetext.com/download) or Notepad++ https://notepad-plus-plus.org .
 
+### Markdown
+Markdown is a simple text formatting syntax that you can use to make and edit most pages on this website, with only a few exceptions. Although the specific flavour of Markdown used on this site is unique, it is very similar to the formatting used on sites like Discord and Reddit (and in the source for this file!). For a complete reference, see [markdown.md](markdown.md).
+
 ### HTML
-If you're totally unfamiliar with HTML, here is a short intro: https://html.com . You DO NOT have to learn everything on this page. Learn what a tag is. Learn what an attribute is. If you're keen, read through the Basic Construction of an HTML Page section, too. That'll get you through. 
+HTML is a more powerful but more complex format for formatting webpages. If you're totally unfamiliar with HTML, here is a short intro: https://html.com . You DO NOT have to learn everything on this page. Learn what a tag is. Learn what an attribute is. If you're keen, read through the Basic Construction of an HTML Page section, too. That'll get you through. 
 
 ### Extra Credit: Bootstrap
 If you're interested in how it all looks so nice, the answer is with bootstrap. Bootstrap is a library for HTML/Javascript/CSS. Think of it as a bunch of pre-written bits of code. If you want to add something to the website and you can't find an existing bit of the website to copy-paste-change, you can google `bootstrap <the thing>` and it will show you how to add that thing. For example, to build the list shown on the "allies" page, I googled "bootstrap list", read through the bootstrap docs for the list, and then copy and pasted an example that I liked the look of and used that. If you read through the HTML and you're wondering what all the weird classes are doing, they're probably bootstrap classes, and you can google `bootstrap <the class name>` and you'll probably find information on it. 
 
-### Markdown
-As an alternative to HTML, you can use Markdown to format the text on pages. Markdown provides a syntax similar to Discord formatting (or to the source of this file). Markdown may be embedded into an HTML file or linked into HTML from a separete `.md` file. See [markdown.md](markdown.md) for a complete syntax reference.
-
 ### Making Changes:
-
-#### Testing your Changes
-To facilitate easy editing of pages, a minimal HTTP server is provided in `serve.pl`. It hosts the entire website at a URL that only your computer can access. Since Git depends on Perl, every machine that can clone this repo can run this server without installing any additional software. The script takes two arguments: the path to serve and the port to serve on. If no port is specified the server starts on port 80. However in the majority of cases, typing the following line into a terminal (Git CMD or Git Bash on Windows) will work.
-```
-./serve.pl www
-```
-After you start the server, you can view the website at [localhost](http://localhost/).
+#### Starting the Test Server
+Before you start making changes, you should first start the test server. The test server is a simple web server that is already included in this repo to make testing easier. To start the server, double click on the file `serve.sh`. It should open a terminal window which will display the status of the server. You can now view the website on [localhost](http://127.0.0.1/).
 
 #### Adding a new page: 
 1. Decide on the name for the page. You want it short and easy to type. I'll use `my_example` for the purposes of this example. 
