@@ -896,9 +896,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 	for (const target of targetDivs) {
 		if (!target instanceof HTMLElement) continue;  // This is an XML element; not what we want
-		if (!"type" in target.dataset) continue;  // Missing required attribute; skip
 
-		let type = target.dataset.type;
 		let markdown;
 
 		if ("src" in target.dataset) {
@@ -913,20 +911,20 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 		let card = new NestableEntity("div", {"class": "card"});
 
-		if (type === "default") {
+		if (!"type" in target.dataset) {  // use default type
 			let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}});
 			parseMarkdown(markdown, cardBody);
 			card.addChild(cardBody);
-		} else if (type === "recipe") {
+		} else if (target.dataset.type === "recipe") {
 			Cards.recipe(markdown, card);
-		} else if (type === "news-basic") {
+		} else if (target.dataset.type === "news-basic") {
 			Cards.news_basic(markdown, card);
-		} else if (type === "news-img") {
+		} else if (target.dataset.type === "news-img") {
 			Cards.news_img(markdown, card);
-		} else if (type === "news-img-collapse") {
+		} else if (target.dataset.type === "news-img-collapse") {
 			Cards.news_img_collapse(markdown, card);
 		} else {
-			continue;
+			continue;  // unknown type; skip
 		}
 
 		target.innerHTML = card.generateEntity();
