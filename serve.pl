@@ -9,6 +9,7 @@ use Socket;
 sub sendHTTPErrPage {
 	my ($socket, $code, $reason) = @_;  # add support for additional headers
 	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<h1>$code $reason</h1>";
+	print $code;
 }
 
 sub isPathForbidden {
@@ -95,7 +96,7 @@ sub main {
 		my ($method, $target, $protoVersion) = split(/\s/, <$client>);
 
 		my $datetime = localtime();
-		print "[$datetime] $method $target\n";
+		print "[$datetime] $method $target ";
 
 		# only GET and HEAD are required to be implemented
 		if ($method ne "GET" && $method ne "HEAD") {
@@ -141,12 +142,14 @@ sub main {
 		}
 
 		print $client "HTTP/1.1 200 OK\r\n";
+		print "200";
 
 		# send headers
 		my $mimeType = getMimeType($target);
 		print $client "Content-Type: $mimeType\r\n" if ($mimeType ne "");
 
 		print $client "\r\n";
+		print "\n";
 
 		my $bytesRead;
 		do {
