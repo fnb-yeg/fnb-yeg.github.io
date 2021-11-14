@@ -172,7 +172,7 @@ sub main {
 			$headers{$headerField} = $headerValue;
 		}
 
-		# Handle headers
+		# Handle request headers
 
 		# Locate target
 		$target = "$workingDir/$target";  # move root to server working directory
@@ -194,7 +194,7 @@ sub main {
 		print $client "HTTP/1.1 200 OK\r\n";
 		print "200";
 
-		# send headers
+		# send response headers
 		my $mimeType = getMimeType($target);
 		print $client "Content-Type: $mimeType\r\n";
 		print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevents caching during testing
@@ -202,6 +202,8 @@ sub main {
 
 		print $client "\r\n";
 		print "\n";
+
+		next if ($method eq "HEAD");
 
 		my $bytesRead;
 		do {
