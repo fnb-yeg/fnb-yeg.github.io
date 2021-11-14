@@ -21,7 +21,7 @@ Don't worry about making mistakes or breaking things as you're developing! With 
 You'll also need a text editor you can use to edit the files (you will not be able to use microsoft word). If you don't have one already, I'd recommend atom. You can download it here: https://atom.io . You can also use Sublime (https://www.sublimetext.com/download) or Notepad++ https://notepad-plus-plus.org .
 
 ### Markdown
-Markdown is a simple text formatting syntax that you can use to make and edit most pages on this website, with only a few exceptions. Although the specific flavour of Markdown used on this site is unique, it is very similar to the formatting used on sites like Discord and Reddit (and in the source for this file!). For a complete reference, see [markdown.md](markdown.md).
+Markdown is a simple text formatting syntax that you can use to make and edit most pages on this website, with only a few exceptions. Although the specific flavour of Markdown used on this site is unique, it is very similar to the formatting used on sites like Discord and Reddit (and in the source for this file!). For a tutorial and complete reference, see [markdown.md](markdown.md).
 
 ### HTML
 HTML is a more powerful but more complex format for formatting webpages. If you're totally unfamiliar with HTML, here is a short intro: https://html.com . You DO NOT have to learn everything on this page. Learn what a tag is. Learn what an attribute is. If you're keen, read through the Basic Construction of an HTML Page section, too. That'll get you through. 
@@ -33,18 +33,18 @@ If you're interested in how it all looks so nice, the answer is with bootstrap. 
 #### Starting the Test Server
 Before you start making changes, you should first start the test server. The test server is a simple web server that is already included in this repo to make testing easier. To start the server, double click on the file `serve.sh`. It should open a terminal window which will display the status of the server. You can now view the website on [localhost](http://127.0.0.1/).
 
-#### Adding a new page: 
+#### Adding a new page:
+*This section is about adding a page in HTML, however the process for how to edit and add pages is the same between Markdown and HTML.*
+
 1. Decide on the name for the page. You want it short and easy to type. I'll use `my_example` for the purposes of this example. 
 
 2. Create a new file. Name it `my_example.html`. Save it in the root folder for the project (fnb-yeg.github.io).
 
 3. Open up template_page. Copy and paste it into your new file. Save the changes. 
 
-4. Go to [localhost](http://localhost/). Add the end of the path to your new file (the part after `fnb-yeg.github.io/www/`) to the end of the url.
+4. Go to [localhost](http://127.0.0.1/). Add the end of the path to your new file (the part after `fnb-yeg.github.io/`) to the end of the url.
 
-5. **To edit in HTML:** Back in your text editor, scroll to where it says "Header Here". Put the name of your page there. For example, I'd remove `Header Here` and put `My Example` instead. Go to your browser and refresh the page. It should update "Header Here" to say "My Example".
-
-   **To edit in Markdown:** In your text editor, replace everything from line 55 to line 66 with `<div class="markdown" data-type="default"></div>`. Within this div, you can write your Markdown directly in the HTML file, or you can add `data-src="/path/to/file.md"` to the div after `data-type="default"`, to point it to a separate markdown file.
+5. Back in your text editor, scroll to where it says "Header Here". Put the name of your page there. For example, I'd remove `Header Here` and put `My Example` instead. Go to your browser and refresh the page. It should update "Header Here" to say "My Example".
 
 6. Make your content! Write what you wanna write! Keep refreshing your page as you go so you can see the changes as you go. That way when you mess up you'll know right away. Plus it's rewarding when you can see what you're doing. 
 
