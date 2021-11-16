@@ -8,7 +8,7 @@ use Socket;
 
 sub sendHTTPErrPage {
 	my ($socket, $code, $reason) = @_;  # add support for additional headers
-	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<h1>$code $reason</h1>";
+	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE html><html><head><title>Error $code</title></head><body><h1>$code $reason</h1></body></html>";
 	print "$code\n";
 }
 
@@ -194,9 +194,15 @@ sub main {
 		print $client "HTTP/1.1 200 OK\r\n";
 		print "200";
 
+		# get file size
+		seek($fh, 0, 2);
+		my $fileSize = tell($fh);
+		seek($fh, 0, 0);
+
 		# send response headers
 		my $mimeType = getMimeType($target);
 		print $client "Content-Type: $mimeType\r\n";
+		print $client "Content-Length: $fileSize\r\n";
 		print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevents caching during testing
 		print $client "Expires: 0\r\n";
 
