@@ -8,7 +8,8 @@ use Socket;
 
 sub sendHTTPErrPage {
 	my ($socket, $code, $reason) = @_;  # add support for additional headers
-	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<h1>$code $reason</h1>";
+	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE html><html><head><title>Error $code</title></head><body><h1>$code $reason</h1></body></html>";
+	print "$code\n";
 }
 
 sub isPathForbidden {
@@ -17,26 +18,40 @@ sub isPathForbidden {
 	my $depth = 0;
 	foreach (@subdirs) {
 		if ($_ eq "..") {
-			return 0 if ($depth == 0);  # going above server root
+			return 1 if ($depth == 0);  # going above server root
 			--$depth;
 		} else {
 			++$depth if $_ ne "";
 		}
 	}
-	return 1;
+	return 0;
 }
 
 sub getMimeType {
 	my ($path) = @_;
 	my %mimeTypes = (  # sorted alphabetically by mime type
+		".es"		=> "application/ecmascript",
 		".json"		=> "application/json",
 		".doc"		=> "application/msword",
 		".ogx"		=> "application/ogg",
 		".pdf"		=> "application/pdf",
+		".ai"		=> "application/postscript",
+		".esp"		=> "application/postscript",
+		".ps"		=> "application/postscript",
 		".rtf"		=> "application/rtf",
+		".xls"		=> "application/vnd.ms-excel",
+		".eot"		=> "application/vnd.ms-fontobject",
 		".ppt"		=> "application/vnd.ms-powerpoint",
+		".odp"		=> "application/vnd.oasis.opendocument.presentation",
+		".ods"		=> "application/vnd.oasis.opendocument.spreadsheet",
+		".odt"		=> "application/vnd.oasis.opendocument.text",
 		".pptx"		=> "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 		".docx"		=> "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		".xlsx"		=> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		".wat"		=> "application/wasm",
+		".wasm"		=> "application/wasm",
+		".xhtml"	=> "application/xhtml+xml",
+		".indd"		=> "application/x-indesign",
 		".xml"		=> "application/xml",
 		".zip"		=> "application/zip",
 		".aac"		=> "audio/aac",
@@ -46,32 +61,58 @@ sub getMimeType {
 		".oga"		=> "audio/ogg",
 		".ogg"		=> "audio/ogg",
 		".opus"		=> "audio/opus",
+		".wav"		=> "audio/wav",
+		".weba"		=> "audio/webm",
 		".otf"		=> "font/otf",
 		".ttf"		=> "font/ttf",
 		".woff"		=> "font/woff",
 		".woff2"	=> "font/woff2",
 		".apng"		=> "image/apng",
+		".avci"		=> "image/avif",
+		".avcs"		=> "image/avif-sequence",
 		".avif"		=> "image/avif",
+		".avifs"	=> "image/avif-sequence",
+		".bmp"		=> "image/bmp",
+		".emf"		=> "image/emf",
 		".gif"		=> "image/gif",
+		".heic"		=> "image/heic",
+		".heics"	=> "image/heic-sequence",
+		".heif"		=> "image/heif",
+		".heifs"	=> "image/heif-sequence",
 		".jpg"		=> "image/jpeg",
 		".jpeg"		=> "image/jpeg",
 		".jfif"		=> "image/jpeg",
 		".pjpeg"	=> "image/jpeg",
 		".pjp"		=> "image/jpeg",
 		".png"		=> "image/png",
-		".svg"		=> "image/svg",
+		".svg"		=> "image/svg+xml",
+		".tif"		=> "image/tiff",
+		".tiff"		=> "image/tiff",
+		".psd"		=> "image/vnd.adobe.photoshop",
+		".apng"		=> "image/vnd.mozilla.apng",
 		".webp"		=> "image/webp",
+		".wmf"		=> "image/wmf",
 		".ico"		=> "image/x-icon",
+		".3mf"		=> "model/3mf",
+		".e57"		=> "model/e57",
+		".mtl"		=> "model/mtl",
+		".obj"		=> "model/obj",
+		".stl"		=> "model/stl",
 		".css"		=> "text/css",
+		".csv"		=> "text/csv",
 		".html"		=> "text/html",
 		".htm"		=> "text/html",
 		".js"		=> "text/javascript",
+		".mjs"		=> "text/javascript",
 		".txt"		=> "text/plain",
 		".mp4"		=> "video/mp4",
 		".mpeg"		=> "video/mpeg",
-		".ogv"		=> "video/ogg"
+		".ogv"		=> "video/ogg",
+		".webm"		=> "video/webm",
+		".avi"		=> "video/x-msvideo"
 	);
-	return %mimeTypes{substr($path, rindex($path, "."), length($path)-1)};
+	my $mimeType = %mimeTypes{substr($path, rindex($path, "."), length($path)-1)};
+	return $mimeType ne "" ? $mimeType : "application/octet-stream";
 }
 
 sub main {
@@ -91,11 +132,15 @@ sub main {
 	print "Server started on localhost:$port\n";
 
 	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
+		# Get client name
+		my ($cport, $ciaddr) = sockaddr_in($paddr);
+		my $name = gethostbyaddr($ciaddr, AF_INET);
+
 		# Read request line
 		my ($method, $target, $protoVersion) = split(/\s/, <$client>);
 
 		my $datetime = localtime();
-		print "[$datetime] $method $target\n";
+		print "[$datetime] $name:$cport: $method $target ";
 
 		# only GET and HEAD are required to be implemented
 		if ($method ne "GET" && $method ne "HEAD") {
@@ -107,8 +152,14 @@ sub main {
 			next;
 		}
 
-		sendHTTPErrPage($client, 505, "HTTP Version Not Supported") if ($protoVersion ne "HTTP/1.1");
-		sendHTTPErrPage($client, 403, "Forbidden") if (!isPathForbidden($target));
+		if ($protoVersion ne "HTTP/1.1") {
+			sendHTTPErrPage($client, 505, "HTTP Version Not Supported");
+			next;
+		}
+		if (isPathForbidden($target)) {
+			sendHTTPErrPage($client, 403, "Forbidden");
+			next;
+		}
 
 		# Collect headers
 		my %headers;
@@ -121,7 +172,7 @@ sub main {
 			$headers{$headerField} = $headerValue;
 		}
 
-		# Handle headers
+		# Handle request headers
 
 		# Locate target
 		$target = "$workingDir/$target";  # move root to server working directory
@@ -141,12 +192,24 @@ sub main {
 		}
 
 		print $client "HTTP/1.1 200 OK\r\n";
+		print "200";
 
-		# send headers
+		# get file size
+		seek($fh, 0, 2);
+		my $fileSize = tell($fh);
+		seek($fh, 0, 0);
+
+		# send response headers
 		my $mimeType = getMimeType($target);
-		print $client "Content-Type: $mimeType\r\n" if ($mimeType ne "");
+		print $client "Content-Type: $mimeType\r\n";
+		print $client "Content-Length: $fileSize\r\n";
+		print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevents caching during testing
+		print $client "Expires: 0\r\n";
 
 		print $client "\r\n";
+		print "\n";
+
+		next if ($method eq "HEAD");
 
 		my $bytesRead;
 		do {

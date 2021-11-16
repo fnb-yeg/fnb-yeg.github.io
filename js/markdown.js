@@ -159,7 +159,7 @@ class Cards {
 			"1": () => new NestableEntity("div", {"class": "row justify-content-center"}),
 			"2:": () => new NestableEntity("div", {"class": "content"}),
 			"2:4": () => new NestableEntity("div", {"class": "row"}),
-			"2,3,4": () => new NestableEntity("div", {"class": "col-sm-12 col-md-4"}, {"p": {"class": "lead"}})
+			"2,3,4": () => new NestableEntity("div", {"class": "col-sm-12 col-md-4"}, {"p": {"class": "lead"}}),
 		});
 
 		root.addChild(cardBody);
@@ -168,14 +168,14 @@ class Cards {
 	static news_basic(markdown, root) {
 		parseMarkdown(markdown, root, {
 			"1": () => new NestableEntity("div", {"class": "card-header"}),
-			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}})
+			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}, "img": {class: "img-fluid"}})
 		});
 	}
 
 	static news_img(markdown, root) {
 		parseMarkdown(markdown, root, {
 			"1": () => new NestableEntity("div", {}, {"img": {"class": "card-img-top"}}),
-			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}}),
+			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}, "img": {"class": "img-fluid"}}),
 			"2:3": () => new NestableEntity("div", {"class": "d-flex w-100 justify-content-between"}, {"h5": {"class": "mb-1"}, "p": {"style": "font-size:0.8em"}})
 		});
 	}
@@ -189,7 +189,7 @@ class Cards {
 			",2:": () => new NestableEntity("div", {
 				"class": "collapse",
 				"id": collapseID
-			})
+			}, {"p": {"class": "mb-1"}, "img": {"class": "img-fluid"}})
 		});  // TODO: find nicer solution to have two schemas with identical targets
 
 		// Add collapse button
@@ -523,7 +523,7 @@ function parseMarkdown(markdown, root, schema={}) {
 				line = line.slice(level);
 
 				if (parentType === PARAGRAPH) {
-					if (level === 0) {
+					if (level === 0 && level <= 6) {
 						// Append to the previous paragraph
 						applyInlineFormatting(parent, ' ' + line);
 					} else {
@@ -534,7 +534,7 @@ function parseMarkdown(markdown, root, schema={}) {
 					}
 				} else {
 					// Create new text element
-					if (level === 0) {
+					if (level === 0 && level <= 6) {
 						parent = new NestableEntity("p");
 						parentType = PARAGRAPH;
 					} else {
@@ -893,14 +893,12 @@ function listItem(tag, parent, match, indent) {
 
 document.addEventListener("DOMContentLoaded", async function() {
 	let targetDivs = document.getElementsByClassName("markdown");
-
+	
 	for (const target of targetDivs) {
 		if (!target instanceof HTMLElement) continue;  // This is an XML element; not what we want
-		if (!"type" in target.dataset) continue;  // Missing required attribute; skip
-
-		let type = target.dataset.type;
+		
 		let markdown;
-
+		
 		if ("src" in target.dataset) {
 			// Load remote file
 			markdown = await fetch(target.dataset.src, {
@@ -913,20 +911,21 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 		let card = new NestableEntity("div", {"class": "card"});
 
-		if (type === "default") {
-			let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}});
+		if (!target.dataset.type || target.dataset.type === "default") {  // use default type
+			let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}, "img": {class: "img-fluid"}});
 			parseMarkdown(markdown, cardBody);
 			card.addChild(cardBody);
-		} else if (type === "recipe") {
+		} else if (target.dataset.type === "recipe") {
 			Cards.recipe(markdown, card);
-		} else if (type === "news-basic") {
+		} else if (target.dataset.type === "news-basic") {
 			Cards.news_basic(markdown, card);
-		} else if (type === "news-img") {
+		} else if (target.dataset.type === "news-img") {
 			Cards.news_img(markdown, card);
-		} else if (type === "news-img-collapse") {
+		} else if (target.dataset.type === "news-img-collapse") {
 			Cards.news_img_collapse(markdown, card);
 		} else {
-			continue;
+			console.log(target.dataset.type);
+			continue;  // unknown type; skip
 		}
 
 		target.innerHTML = card.generateEntity();

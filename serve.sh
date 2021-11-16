@@ -1,2 +1,2 @@
 #!/bin/sh
-./serve.pl .
+./serve.pl . &>/dev/null
