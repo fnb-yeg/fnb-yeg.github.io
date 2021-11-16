@@ -2,9 +2,11 @@
 
 ## This website allows us to share the work we do with the world, hopefully to inspire you, and includes a sign up page so that you can join us. 
 
+View website here: https://edmonton.foodnotbombs.us
+
 ## To make changes to this website:
 
-You'll need GitHub, a Text Editor and some basic understanding of HTML. We use Bootstrap to make everything look nice. 
+You'll need GitHub, and a Text Editor. A basic understanding of HTML helps, but isn't necessary. We use Bootstrap to make everything look nice. 
 
 ### GitHub:
 You will need to know how to use github. There is a bit of a learning curve, but the good news
@@ -16,23 +18,31 @@ Read through the beginners guide to git to get set up (or message me for help!) 
 Don't worry about making mistakes or breaking things as you're developing! With git, I'll have to approve every pull request (PR) before your changes are applied to the actual website, and there's a complete history of every change made on our repository, so it's very easy to revert to old versions. Take chances, make mistakes, get messy. Have fun. 
 
 ### Text Editor
-You'll also need a text editor you can use to edit the files (you will not be able to use microsoft word). If you don't have one already, I'd recommend atom. You can download it here: https://atom.io . You can also use Sublime (https://www.sublimetext.com/download) or Notepad++ https://notepad-plus-plus.org . 
+You'll also need a text editor you can use to edit the files (you will not be able to use microsoft word). If you don't have one already, I'd recommend atom. You can download it here: https://atom.io . You can also use Sublime (https://www.sublimetext.com/download) or Notepad++ https://notepad-plus-plus.org .
+
+### Markdown
+Markdown is a simple text formatting syntax that you can use to make and edit most pages on this website, with only a few exceptions. Although the specific flavour of Markdown used on this site is unique, it is very similar to the formatting used on sites like Discord and Reddit (and in the source for this file!). For a tutorial and complete reference, see [markdown.md](markdown.md).
 
 ### HTML
-If you're totally unfamiliar with HTML, here is a short intro: https://html.com . You DO NOT have to learn everything on this page. Learn what a tag is. Learn what an attribute is. If you're keen, read through the Basic Construction of an HTML Page section, too. That'll get you through. 
+HTML is a more powerful but more complex format for formatting webpages. If you're totally unfamiliar with HTML, here is a short intro: https://html.com . You DO NOT have to learn everything on this page. Learn what a tag is. Learn what an attribute is. If you're keen, read through the Basic Construction of an HTML Page section, too. That'll get you through. 
 
 ### Extra Credit: Bootstrap
 If you're interested in how it all looks so nice, the answer is with bootstrap. Bootstrap is a library for HTML/Javascript/CSS. Think of it as a bunch of pre-written bits of code. If you want to add something to the website and you can't find an existing bit of the website to copy-paste-change, you can google `bootstrap <the thing>` and it will show you how to add that thing. For example, to build the list shown on the "allies" page, I googled "bootstrap list", read through the bootstrap docs for the list, and then copy and pasted an example that I liked the look of and used that. If you read through the HTML and you're wondering what all the weird classes are doing, they're probably bootstrap classes, and you can google `bootstrap <the class name>` and you'll probably find information on it. 
 
 ### Making Changes:
-#### Adding a new page: 
+#### Starting the Test Server
+Before you start making changes, you should first start the test server. The test server is a simple web server that is already included in this repo to make testing easier. To start the server, double click on the file `serve.sh`. It should open a terminal window which will display the status of the server. You can now view the website on [localhost](http://127.0.0.1/).
+
+#### Adding a new page:
+*This section is about adding a page in HTML, however the process for how to edit and add pages is the same between Markdown and HTML.*
+
 1. Decide on the name for the page. You want it short and easy to type. I'll use `my_example` for the purposes of this example. 
 
 2. Create a new file. Name it `my_example.html`. Save it in the root folder for the project (fnb-yeg.github.io).
 
 3. Open up template_page. Copy and paste it into your new file. Save the changes. 
 
-4. Open up your File Explorer, navigate to the project folder, and double click the file you created (`my_example.html`.) It should open in your browser. Note that the images won't display.
+4. Go to [localhost](http://127.0.0.1/). Add the end of the path to your new file (the part after `fnb-yeg.github.io/`) to the end of the url.
 
 5. Back in your text editor, scroll to where it says "Header Here". Put the name of your page there. For example, I'd remove `Header Here` and put `My Example` instead. Go to your browser and refresh the page. It should update "Header Here" to say "My Example".
 
@@ -58,6 +68,9 @@ Now if you were to copy and paste the template_page.html into a subdirectory, it
 The fix is simple once you understand the cause. ctrl+f in the file for all `src` attributes in the html and check if they are relative or absolute. If they are relative, change them so that they begin with `../`. Do the same for `href` attributes.
 
 The recipe template does this for you already if you're adding a new recipe, so you shouldn't come across this. However if you're a beginner this would be a hard problem to troubleshoot so I wanted to make a note!
+
+##### Adding a new recipe page in Markdown:
+Adding a new recipe page works almost the same as adding a regular page, except that instead of typing `data-type="default"` in step 5, you type `data-type="recipe"`. This will instruct the Markdown parser to treat the first line of the Markdown as a header, and then the next three paragraphs (remember that paragraphs are separated by a blank line!) as the number of servings it makes, prep time, and the cook time, in that order.
 
 #### Adding a news item
 1. Open news.html in your text editor.
