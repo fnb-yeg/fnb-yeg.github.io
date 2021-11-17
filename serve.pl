@@ -9,7 +9,6 @@ use Socket;
 sub sendHTTPErrPage {
 	my ($socket, $code, $reason) = @_;  # add support for additional headers
 	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE html><html><head><title>Error $code</title></head><body><h1>$code $reason</h1></body></html>";
-	print "$code\n";
 }
 
 sub isPathForbidden {
@@ -132,90 +131,98 @@ sub main {
 	print "Server started on localhost:$port\n";
 
 	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
-		# Get client name
-		my ($cport, $ciaddr) = sockaddr_in($paddr);
-		my $name = gethostbyaddr($ciaddr, AF_INET);
+		my $pid = fork();
+		if ($pid != 0) {
+			my $logLine = "";
 
-		# Read request line
-		my ($method, $target, $protoVersion) = split(/\s/, <$client>);
+			# Get client name
+			my ($cport, $ciaddr) = sockaddr_in($paddr);
+			my $name = gethostbyaddr($ciaddr, AF_INET);
 
-		my $datetime = localtime();
-		print "[$datetime] $name:$cport: $method $target ";
+			# Read request line
+			my ($method, $target, $protoVersion) = split(/\s/, <$client>);
 
-		# only GET and HEAD are required to be implemented
-		if ($method ne "GET" && $method ne "HEAD") {
-			if ($method eq "BREW") {
-				sendHTTPErrPage($client, 418, "I'm a teapot");
-			} else {
-				sendHTTPErrPage($client, 501, "Not Implemented");
+			my $datetime = localtime();
+			$logLine .= "[$datetime] $name:$cport: $method $target ";
+
+			# only GET and HEAD are required to be implemented
+			if ($method ne "GET" && $method ne "HEAD") {
+				if ($method eq "BREW") {
+					sendHTTPErrPage($client, 418, "I'm a teapot");
+					$logLine .= "418";
+				} else {
+					sendHTTPErrPage($client, 501, "Not Implemented");
+					$logLine .= "501";
+				}
+				next;
 			}
-			next;
-		}
 
-		if ($protoVersion ne "HTTP/1.1") {
-			sendHTTPErrPage($client, 505, "HTTP Version Not Supported");
-			next;
-		}
-		if (isPathForbidden($target)) {
-			sendHTTPErrPage($client, 403, "Forbidden");
-			next;
-		}
-
-		# Collect headers
-		my %headers;
-		while (my $headerLine = <$client>) {
-			$headerLine =~ s/\r?\n$//;
-			if ($headerLine eq "") {
-				last;
+			if ($protoVersion ne "HTTP/1.1") {
+				sendHTTPErrPage($client, 505, "HTTP Version Not Supported");
+				$logLine .= "505";
+				next;
 			}
-			my ($headerField, $headerValue) = split(/:/, $headerLine, 1);
-			$headers{$headerField} = $headerValue;
+			if (isPathForbidden($target)) {
+				sendHTTPErrPage($client, 403, "Forbidden");
+				$logLine .= "403";
+				next;
+			}
+
+			# Collect headers
+			my %headers;
+			while (my $headerLine = <$client>) {
+				$headerLine =~ s/\r?\n$//;
+				if ($headerLine eq "") {
+					last;
+				}
+				my ($headerField, $headerValue) = split(/:/, $headerLine, 1);
+				$headers{$headerField} = $headerValue;
+			}
+
+			# Handle request headers
+
+			# Locate target
+			$target = "$workingDir/$target";  # move root to server working directory
+			if (-d $target) {
+				$target = $target . '/index.html';
+			}
+			if (!-e $target) {
+				$target = $target . ".html";  # github pages infers html suffix
+				if (!-e $target) {
+					sendHTTPErrPage($client, 404, "Not Found");
+					$logLine .= "404";
+					next;
+				}
+			}
+
+			# The page exists!
+			open(my $fh, "<:raw", $target);
+			if (not defined $fh) {
+				sendHTTPErrPage($client, 500, "Internal Server Error");
+				$logLine .= "500";
+				next;
+			}
+
+			print $client "HTTP/1.1 200 OK\r\n";
+			$logLine .= "200";
+
+			# send response headers
+			my $mimeType = getMimeType($target);
+			print $client "Content-Type: $mimeType\r\n";
+			print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevents caching during testing
+			print $client "Expires: 0\r\n";
+
+			print $client "\r\n";
+			print "$logLine\n";
+
+			next if ($method eq "HEAD");
+
+			my $bytesRead;
+			do {
+				$bytesRead = read($fh, my $bytes, 1024);
+				print $client $bytes;
+			} while ($bytesRead == 1024);
 		}
-
-		# Handle request headers
-
-		# Locate target
-		$target = "$workingDir/$target";  # move root to server working directory
-		if (-d $target) {
-			$target = $target . '/index.html';
-		}
-		if (!-e $target) {
-			sendHTTPErrPage($client, 404, "Not Found");
-			next;
-		}
-
-		# The page exists!
-		open(my $fh, "<:raw", $target);
-		if (not defined $fh) {
-			sendHTTPErrPage($client, 500, "Internal Server Error");
-			next;
-		}
-
-		print $client "HTTP/1.1 200 OK\r\n";
-		print "200";
-
-		# get file size
-		seek($fh, 0, 2);
-		my $fileSize = tell($fh);
-		seek($fh, 0, 0);
-
-		# send response headers
-		my $mimeType = getMimeType($target);
-		print $client "Content-Type: $mimeType\r\n";
-		print $client "Content-Length: $fileSize\r\n";
-		print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevents caching during testing
-		print $client "Expires: 0\r\n";
-
-		print $client "\r\n";
-		print "\n";
-
-		next if ($method eq "HEAD");
-
-		my $bytesRead;
-		do {
-			$bytesRead = read($fh, my $bytes, 1024);
-			print $client $bytes;
-		} while ($bytesRead == 1024);
 	}
 }
 
