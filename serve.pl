@@ -131,8 +131,7 @@ sub main {
 	print "Server started on localhost:$port\n";
 
 	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
-		my $pid = fork();
-		if ($pid != 0) {
+		if (fork() != 0) {
 			my $logLine = "";
 
 			# Get client name
@@ -222,6 +221,8 @@ sub main {
 				$bytesRead = read($fh, my $bytes, 1024);
 				print $client $bytes;
 			} while ($bytesRead == 1024);
+			
+			exit 0;
 		}
 	}
 }
