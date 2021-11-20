@@ -131,7 +131,7 @@ sub main {
 	print "Server started on localhost:$port\n";
 
 	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
-		if (fork() != 0) {
+		if (fork() == 0) {
 			my $logLine = "";
 
 			# Get client name
@@ -208,7 +208,7 @@ sub main {
 			# send response headers
 			my $mimeType = getMimeType($target);
 			print $client "Content-Type: $mimeType\r\n";
-			print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevents caching during testing
+			print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevent caching during testing
 			print $client "Expires: 0\r\n";
 
 			print $client "\r\n";
@@ -221,7 +221,7 @@ sub main {
 				$bytesRead = read($fh, my $bytes, 1024);
 				print $client $bytes;
 			} while ($bytesRead == 1024);
-			
+
 			exit 0;
 		}
 	}
