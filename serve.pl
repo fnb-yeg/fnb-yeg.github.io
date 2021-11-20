@@ -11,6 +11,7 @@ sub sendHTTPErrPage {
 	print $socket "HTTP/1.1 $code $reason\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE html><html><head><title>Error $code</title></head><body><h1>$code $reason</h1></body></html>";
 }
 
+# returns 1 if the path is above the server root, otherwise 0
 sub isPathForbidden {
 	my ($path) = @_;
 	my @subdirs = split('/', $path);
@@ -26,8 +27,9 @@ sub isPathForbidden {
 	return 0;
 }
 
+# returns the MIME type of a file, or application/octet-stream if unknown
 sub getMimeType {
-	my ($path) = @_;
+	my ($filename) = @_;
 	my %mimeTypes = (  # sorted alphabetically by mime type
 		".es"		=> "application/ecmascript",
 		".json"		=> "application/json",
@@ -110,7 +112,7 @@ sub getMimeType {
 		".webm"		=> "video/webm",
 		".avi"		=> "video/x-msvideo"
 	);
-	my $mimeType = %mimeTypes{substr($path, rindex($path, "."), length($path)-1)};
+	my $mimeType = %mimeTypes{substr($filename, rindex($filename, "."), length($filename)-1)};
 	return $mimeType ne "" ? $mimeType : "application/octet-stream";
 }
 
@@ -118,9 +120,7 @@ sub main {
 	# Get port from command line, otherwise default to 80
 	my ($workingDir, $port) = @ARGV;
 
-	if (not defined $port) {
-		$port = 80;
-	}
+	$port = 80 if (not defined $port);
 
 	# Create tcp socket on localhost and listen
 	my $proto = getprotobyname("tcp");
@@ -130,7 +130,7 @@ sub main {
 	listen($server, SOMAXCONN) || die "listen: $!";
 	print "Server started on localhost:$port\n";
 
-	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
+	while (my $paddr = accept(my $client, $server)) {
 		if (fork() == 0) {
 			my $logLine = "";
 
@@ -153,27 +153,25 @@ sub main {
 					sendHTTPErrPage($client, 501, "Not Implemented");
 					$logLine .= "501";
 				}
-				next;
+				exit 0;
 			}
 
 			if ($protoVersion ne "HTTP/1.1") {
 				sendHTTPErrPage($client, 505, "HTTP Version Not Supported");
 				$logLine .= "505";
-				next;
+				exit 0;
 			}
 			if (isPathForbidden($target)) {
 				sendHTTPErrPage($client, 403, "Forbidden");
 				$logLine .= "403";
-				next;
+				exit 0;
 			}
 
 			# Collect headers
 			my %headers;
 			while (my $headerLine = <$client>) {
 				$headerLine =~ s/\r?\n$//;
-				if ($headerLine eq "") {
-					last;
-				}
+				last if ($headerLine eq "");
 				my ($headerField, $headerValue) = split(/:/, $headerLine, 1);
 				$headers{$headerField} = $headerValue;
 			}
@@ -182,15 +180,13 @@ sub main {
 
 			# Locate target
 			$target = "$workingDir/$target";  # move root to server working directory
-			if (-d $target) {
-				$target = $target . '/index.html';
-			}
+			$target = $target . '/index.html' if (-d $target);  # try redirecting to index page
 			if (!-e $target) {
 				$target = $target . ".html";  # github pages infers html suffix
 				if (!-e $target) {
 					sendHTTPErrPage($client, 404, "Not Found");
 					$logLine .= "404";
-					next;
+					exit 0;
 				}
 			}
 
@@ -199,7 +195,7 @@ sub main {
 			if (not defined $fh) {
 				sendHTTPErrPage($client, 500, "Internal Server Error");
 				$logLine .= "500";
-				next;
+				exit 0;
 			}
 
 			print $client "HTTP/1.1 200 OK\r\n";
@@ -214,16 +210,19 @@ sub main {
 			print $client "\r\n";
 			print "$logLine\n";
 
-			next if ($method eq "HEAD");
+			next if ($method eq "HEAD");  # don't need to send message body
 
-			my $bytesRead;
-			do {
-				$bytesRead = read($fh, my $bytes, 1024);
-				print $client $bytes;
-			} while ($bytesRead == 1024);
+			if ($method ne "HEAD") {
+				my $bytesRead;
+				do {
+					$bytesRead = read($fh, my $bytes, 8192);
+					print $client $bytes;
+				} while ($bytesRead == 8192);
+			}
 
 			exit 0;
 		}
+		close $client;
 	}
 }
 
