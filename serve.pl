@@ -227,4 +227,7 @@ sub main {
 	}
 }
 
+$SIG{HUP} = sub { exit 0; };
+$SIG{CHLD} = "IGNORE";
+
 &main();
