@@ -130,7 +130,7 @@ sub main {
 	listen($server, SOMAXCONN) || die "listen: $!";
 	print "Server started on localhost:$port\n";
 
-	for (my $paddr; $paddr = accept(my $client, $server); close $client) {
+	while (my $paddr = accept(my $client, $server)) {
 		if (fork() == 0) {
 			my $logLine = "";
 
@@ -153,18 +153,18 @@ sub main {
 					sendHTTPErrPage($client, 501, "Not Implemented");
 					$logLine .= "501";
 				}
-				next;
+				exit 0;
 			}
 
 			if ($protoVersion ne "HTTP/1.1") {
 				sendHTTPErrPage($client, 505, "HTTP Version Not Supported");
 				$logLine .= "505";
-				next;
+				exit 0;
 			}
 			if (isPathForbidden($target)) {
 				sendHTTPErrPage($client, 403, "Forbidden");
 				$logLine .= "403";
-				next;
+				exit 0;
 			}
 
 			# Collect headers
@@ -186,7 +186,7 @@ sub main {
 				if (!-e $target) {
 					sendHTTPErrPage($client, 404, "Not Found");
 					$logLine .= "404";
-					next;
+					exit 0;
 				}
 			}
 
@@ -195,7 +195,7 @@ sub main {
 			if (not defined $fh) {
 				sendHTTPErrPage($client, 500, "Internal Server Error");
 				$logLine .= "500";
-				next;
+				exit 0;
 			}
 
 			print $client "HTTP/1.1 200 OK\r\n";
@@ -212,14 +212,17 @@ sub main {
 
 			next if ($method eq "HEAD");  # don't need to send message body
 
-			my $bytesRead;
-			do {
-				$bytesRead = read($fh, my $bytes, 8192);
-				print $client $bytes;
-			} while ($bytesRead == 8192);
+			if ($method ne "HEAD") {
+				my $bytesRead;
+				do {
+					$bytesRead = read($fh, my $bytes, 8192);
+					print $client $bytes;
+				} while ($bytesRead == 8192);
+			}
 
 			exit 0;
 		}
+		close $client;
 	}
 }
 
