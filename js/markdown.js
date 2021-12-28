@@ -423,7 +423,7 @@ function parseMarkdown(markdown, root, schema={}) {
 			if ((match = ulRegex.exec(line)) !== null) {
 				// ul
 				parent = new NestableEntity("ul", {
-					"class": !"*•".includes(match[2].codePointAt(0)) ? "list-dashed" : ""
+					"class": "*•".includes(match[2].charAt(0)) ? "" : "list-dashed"
 				});
 
 				let element = new NestableEntity("li");
@@ -896,9 +896,9 @@ document.addEventListener("DOMContentLoaded", async function() {
 	
 	for (const target of targetDivs) {
 		if (!target instanceof HTMLElement) continue;  // This is an XML element; not what we want
-		
+
 		let markdown;
-		
+
 		if ("src" in target.dataset) {
 			// Load remote file
 			markdown = await fetch(target.dataset.src, {
