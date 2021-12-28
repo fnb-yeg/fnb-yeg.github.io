@@ -116,6 +116,22 @@ sub getMimeType {
 	return $mimeType ne "" ? $mimeType : "application/octet-stream";
 }
 
+# resolves a requested path into an actual path
+sub resolvePath {
+	my ($path) = @_;
+
+	# The requested path is valid
+	return $path if (-e $path && !-d _);
+
+	# try appending .html
+	return ($path . '.html') if (-e ($path . '.html'));
+
+	# serve index of directory if it exists
+	return $path . '/index.html' if (-d $path);
+
+	return undef;
+}
+
 sub main {
 	# Get port from command line, otherwise default to 80
 	my ($workingDir, $port) = @ARGV;
@@ -179,15 +195,11 @@ sub main {
 			# Handle request headers
 
 			# Locate target
-			$target = "$workingDir/$target";  # move root to server working directory
-			$target = $target . '/index.html' if (-d $target);  # try redirecting to index page
-			if (!-e $target) {
-				$target = $target . ".html";  # github pages infers html suffix
-				if (!-e $target) {
-					sendHTTPErrPage($client, 404, "Not Found");
-					$logLine .= "404";
-					exit 0;
-				}
+			$target = resolvePath("$workingDir/$target");  # move root to server working directory
+			if (!defined $target) {
+				sendHTTPErrPage($client, 404, "Not Found");
+				$logLine .= "404";
+				exit 0;
 			}
 
 			# The page exists!
