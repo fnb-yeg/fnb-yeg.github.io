@@ -14,34 +14,34 @@
 	<div class="content gradient">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="/"><img src="images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px"></a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+				<a class="navbar-brand" href="#">
+					<img src="images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-				<div class="collapse navbar-collapse" id="navbarsExample04">
+				<div class="collapse navbar-collapse" id="fnbnavbar">
 					<ul class="navbar-nav me-auto mb-2 mb-md-0">
 						<li class="nav-item">
-							<a class="nav-link" href="/">Home</a>
+							<a class="nav-link active" aria-current="page" href="#">Home</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/news">News</a>
 						</li>
+						<li class="nav-item">
 							<a class="nav-link" href="/projects">Projects</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="#">How to Join</a>
+							<a class="nav-link" href="/how_to_join">How to Join</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="https://surveyheart.com/form/61897fb534f0dd7db5a17b90">Request a Meal</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/links">Links</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/resources">Resources </a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/recipes">Recipes</a>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Request Food
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navCalendar">
+								<li><a class="dropdown-item" target="_blank" href="https://surveyheart.com/form/61897fb534f0dd7db5a17b90">Request a Meal</a></li>
+								<li><a class="dropdown-item" target="_blank" href="/https://surveyheart.com/form/61ecb696cf7d4566a985a68c">Join Our Birthday Club</a></li>
+							</ul>
 						</li>
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -51,6 +51,15 @@
 								<li><a class="dropdown-item" target="_blank" href="https://calendar.google.com/calendar/embed?src=foodnotbombsyeg%40gmail.com&ctz=America%2FEdmonton">Open Calendar</a></li>
 								<li><a class="dropdown-item" href="/request_calendar_access">Request Access</a></li>
 							</ul>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/library">Library</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/recipes">Recipes</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/local_orgs">Local</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/history">History</a>
