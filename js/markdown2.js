@@ -36,7 +36,7 @@ function splitLength(str, len) {
  * Returns an array containing the separated tokens
  */
 function tokenizeMarkdown(markdown) {
-	const specialChars = "#*_~`^![]()|:>.)\n";
+	const specialChars = "#*_~`^![]()\"|:>.)\n";
 
 	let tokens = [];
 	let currentToken = "";
@@ -71,6 +71,83 @@ function tokenizeMarkdown(markdown) {
 	tokens.push(currentToken);
 
 	return tokens;
+}
+
+/*
+ * Parses a resource like an image or a link into an object containing a
+ * source, alt text, and a title. Also returns the "offset"; how much of the
+ * stack was consumed.
+ */
+function parseResource(stack) {
+	console.log(stack);
+
+	if (stack.length < 3) return null;  // Not a valid image
+
+	let resource = {
+		src: null,
+		alt: null,
+		title: null,
+		offset: 0
+	};
+	let index = 0;
+
+	// look for alt text
+	if (stack[resource.offset] === '[') {
+		// Found beginning of alt text
+		let altText = "";
+		++resource.offset;
+
+		for (; resource.offset < stack.length; ++resource.offset) {
+			if (stack[resource.offset] === ']') {
+				// Found end of alt text
+				resource.alt = altText;
+				break;
+			} else {
+				altText += stack[resource.offset];
+			}
+		}
+
+		if (resource.alt === null) return null;  // Not a valid resource
+	}
+
+	++resource.offset;
+	if (resource.offset > stack.length) return resource;
+
+	// Look for src and title
+	if (stack[resource.offset] === '(') {
+		// Found beginning of src
+		let parseStep = 0;  // 0 = src, 1 = title, 2 = done
+		let str = "";
+		++resource.offset;
+
+		for (; parseStep !== 2 && resource.offset < stack.length; ++resource.offset) {
+			if (stack[resource.offset] === ')') {
+				if (parseStep === 0) {
+					// src
+					resource.src = str;
+				}
+
+				parseStep = 2;
+				break;
+			} else if (stack[resource.offset] === '"') {
+				if (parseStep === 0) {
+					// switch to title
+					resource.src = str;
+					str = "";
+					parseStep = 1;
+					continue;
+				} else if (parseStep === 1) {
+					// end title
+					resource.title = str;
+					parseStep = 2
+				}
+			}
+
+			str += stack[resource.offset];
+		}
+	}
+
+	return resource;
 }
 
 /*
@@ -237,6 +314,39 @@ function parseMarkdown(tokens) {
 			} else {
 				stack.push(token);
 			}
+		} else if (token === ']' || token === ")") {
+			/* Links */
+			stack.push(token);
+
+			if (token === ']') {
+				// Check if this is a longer link
+				if (i+1 < tokens.length && tokens[i+1] === '(') {
+					// This is a longer link, so itll get parsed later
+					continue;
+				}
+			}
+
+			// Search backwards through parse stack for beginning of link
+			let match = rfind_token('[');
+
+			if (match !== -1) {
+				if (match !== 0 && stack[match-1] === '!') {
+					// This is an image
+					continue;
+				}
+
+				let link = parseResource(stack.slice(match));
+				console.log(link);
+
+				if (link === null || (link.src === null && link.alt === null)) {
+					// Not a valid link
+					continue;
+				}
+
+				let linkHtml = `<a href="${link.src ?? link.alt}" title="${link.title ?? (link.src ?? link.alt)}">${link.alt}</a>`;
+				stack.splice(match, link.offset, linkHtml);
+
+			}
 		} else if (token.startsWith('\n')) {
 			// Handle block elements
 
@@ -257,56 +367,16 @@ function parseMarkdown(tokens) {
 				// '!', '[', ..., ']', '(', ..., ')'
 				if (stack.length - lineEnd < 5) continue;  // Not a valid image
 
-				let img = {
-					src: null,
-					alt: null,
-					title: null
-				};
-				let index = lineEnd + 2;
+				let img = parseResource(stack.slice(lineEnd + 2));
+				console.log(img);
 
-				// look for alt text
-				if (stack[index] === '[') {
-					// Found beginning of alt text
-					let altText = "";
-					++index;
-
-					for (; index < stack.length; ++index) {
-						if (stack[index] === ']') {
-							// Found end of alt text
-							img.alt = altText;
-							break;
-						} else {
-							altText += stack[index];
-						}
-					}
-
-					if (img.alt === null) continue;  // Not a valid image
-				}
-
-				++index;
-				if (index > stack.length) continue;
-
-				// Look for src
-				if (stack[index] === '(') {
-					// Found beginning of src
-					let src = "";
-					++index;
-
-					for (; index < stack.length; ++index) {
-						if (stack[index] === ')') {
-							// found end of src
-							img.src = src;
-							break;
-						} else {
-							src += stack[index];
-						}
-					}
-
-					if (img.src === null) continue;  // Not a valid immage
+				if (img.src === null || img.alt === null) {
+					// Not a valid image
+					continue;
 				}
 
 				let imgHtml = `<img src="${img.src}" alt="${img.alt}" title="${img.title ?? img.alt}" />`;
-				stack.splice(lineEnd+1, index - lineEnd, imgHtml);
+				stack.splice(lineEnd+1, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
 			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length) {
 				// Single newline inside a paragraph; ignore
 				continue;
