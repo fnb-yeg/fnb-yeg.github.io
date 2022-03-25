@@ -338,12 +338,12 @@ function parseMarkdown(tokens) {
 				let link = parseResource(stack.slice(match));
 				console.log(link);
 
-				if (link === null || (link.src === null && link.alt === null)) {
+				if (link === null || (link.src === null) && link.alt === null) {
 					// Not a valid link
 					continue;
 				}
 
-				let linkHtml = `<a href="${link.src ?? link.alt}" title="${link.title ?? (link.src ?? link.alt)}">${link.alt}</a>`;
+				let linkHtml = `<a href="${link.src ? link.src : link.alt}" title="${link.title ?? (link.src ?? link.alt)}">${link.alt}</a>`;
 				stack.splice(match, link.offset, linkHtml);
 
 			}
