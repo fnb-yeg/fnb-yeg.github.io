@@ -79,8 +79,6 @@ function tokenizeMarkdown(markdown) {
  * stack was consumed.
  */
 function parseResource(stack) {
-	console.log(stack);
-
 	if (stack.length < 3) return null;  // Not a valid image
 
 	let resource = {
@@ -336,7 +334,6 @@ function parseMarkdown(tokens) {
 				}
 
 				let link = parseResource(stack.slice(match));
-				console.log(link);
 
 				if (link === null || (link.src === null) && link.alt === null) {
 					// Not a valid link
@@ -344,7 +341,7 @@ function parseMarkdown(tokens) {
 				}
 
 				let linkHtml = `<a href="${link.src ? link.src : link.alt}" title="${link.title ?? (link.src ?? link.alt)}">${link.alt}</a>`;
-				stack.splice(match, link.offset, linkHtml);
+				stack.splice(match, link.offset+1, linkHtml);
 
 			}
 		} else if (token.startsWith('\n')) {
@@ -353,13 +350,23 @@ function parseMarkdown(tokens) {
 			if (stack.length === 0) continue;  // Ignore this token
 
 			let lineEnd = rfind_lf();  // Find index of last line ending
-			let firstToken = stack[lineEnd + 1].trimStart();  // lineEnd can never be last element, so +1 is always valid
+			let firstTokenIndex = null;
 
+			// lineEnd can never be last element, so +1 is always valid
+			for (let j=lineEnd+1; j < stack.length; ++j) {
+				if (!stack[j].split('').every(c => " \t".includes(c))) {
+					firstTokenIndex = j;
+					break;
+				}
+			}
+
+			firstToken = stack[firstTokenIndex];
+			if (firstToken === null || firstToken === undefined) continue;  // Ignore this token
 
 			if (firstToken.startsWith("#")) {
 				/* Headings */
 				let level = (firstToken.length <= 6) ? firstToken.length : 6;
-				stack[lineEnd+1] = `<h${level}>`;
+				stack[firstTokenIndex] = `<h${level}>`;
 				stack.push(`</h${level}>`);
 				reduce_stack(lineEnd+1);
 			} else if (firstToken === '!') {
@@ -367,8 +374,7 @@ function parseMarkdown(tokens) {
 				// '!', '[', ..., ']', '(', ..., ')'
 				if (stack.length - lineEnd < 5) continue;  // Not a valid image
 
-				let img = parseResource(stack.slice(lineEnd + 2));
-				console.log(img);
+				let img = parseResource(stack.slice(firstTokenIndex + 1));
 
 				if (img.src === null || img.alt === null) {
 					// Not a valid image
@@ -376,15 +382,16 @@ function parseMarkdown(tokens) {
 				}
 
 				let imgHtml = `<img src="${img.src}" alt="${img.alt}" title="${img.title ?? img.alt}" />`;
-				stack.splice(lineEnd+1, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
+				stack.splice(firstTokenIndex, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
 			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length) {
 				// Single newline inside a paragraph; ignore
+				stack.push(' ');
 				continue;
 			} else {
 				/* Paragraphs */
-				stack.splice(lineEnd+1, 0, "<p>");
+				stack.splice(firstTokenIndex, 0, "<p>");
 				stack.push("</p>");
-				reduce_stack(lineEnd+1);
+				reduce_stack(firstTokenIndex);
 			}
 
 			stack.push('\n');
@@ -405,12 +412,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		let markdown;
 
-		if (src in target.dataset) {
+		if ("src" in target.dataset) {
 			// Source specified; load remote file
 			markdown = await fetch(target.dataset.src).then(response => response.text());
 		} else {
 			// No source; use innerHTML
 			markdown = target.innerHTML;
 		}
+
+		let tokens = tokenizeMarkdown(markdown);
+		target.innerHTML = parseMarkdown(tokens);
 	}
 });
