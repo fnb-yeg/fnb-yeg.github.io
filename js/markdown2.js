@@ -43,7 +43,14 @@ function tokenizeMarkdown(markdown) {
 
 	for (const ch of markdown) {
 		let last = currentToken[currentToken.length-1] ?? "";
-		if (currentToken === "") {
+
+		if (last === '\\' || ch === '&') {
+			// Escape ampersands and chars after backslashes
+			tokens.push(currentToken);
+			currentToken = "";
+
+			tokens.push(`&#${ch.charCodeAt(0)};`);
+		} else if (currentToken === "") {
 			// No current token
 			currentToken = ch;
 		} else if (specialChars.includes(ch)) {
@@ -159,13 +166,8 @@ function parseMarkdown(tokens) {
 	let tagStack = [];
 	let blockStack = [];
 
-	function MarkdownBlock(tag, index) {
-		this.tag = tag;
-		this.index = index;
-	}
-
 	let rfind_token = (token) => {
-		for (let j=stack.length-1; j > 0; --j) {
+		for (let j=stack.length-1; j >= 0; --j) {
 			if (stack[j] === token) {
 				return j;
 			}
@@ -174,7 +176,7 @@ function parseMarkdown(tokens) {
 	};
 
 	let rfind_lf = () => {
-		for (let j=stack.length-1; j > 0; --j) {
+		for (let j=stack.length-1; j >= 0; --j) {
 			if (stack[j].includes('\n')) {
 				return j;
 			}
