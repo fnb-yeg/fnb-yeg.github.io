@@ -208,6 +208,8 @@ function parseMarkdown(tokens) {
 	for (let i=0; i < tokens.length; ++i) {
 		let token = tokens[i];
 
+		console.log(stack, token);
+
 		if (token.startsWith("*")) {
 			if (token.length > 2) {
 				// Lexer made the token too long
@@ -219,6 +221,7 @@ function parseMarkdown(tokens) {
 			// Search backwards through parse stack for matching token
 			// TODO: this will cause overlapping tags (ex ***test***)
 			let match = rfind_token(token);
+			console.log(match);
 
 			if (match !== -1) {
 				// A match was found!
