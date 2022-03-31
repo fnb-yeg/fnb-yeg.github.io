@@ -40,16 +40,22 @@ function tokenizeMarkdown(markdown) {
 
 	let tokens = [];
 	let currentToken = "";
+	let escapeNext = false;
 
 	for (const ch of markdown) {
-		let last = currentToken[currentToken.length-1] ?? "";
+		const last = currentToken[currentToken.length-1] ?? "";
 
-		if (last === '\\' || ch === '&') {
-			// Escape ampersands and chars after backslashes
-			tokens.push(currentToken);
-			currentToken = "";
+		if (escapeNext) {
+			// Escape chars after backslashes
+			if (currentToken !== "") {
+				tokens.push(currentToken);
+				currentToken = "";
+			}
 
 			tokens.push(`&#${ch.charCodeAt(0)};`);
+			escapeNext = false;
+		} else if (ch === '\\') {
+			escapeNext = true;
 		} else if (currentToken === "") {
 			// No current token
 			currentToken = ch;
@@ -156,50 +162,34 @@ function parseResource(stack) {
 }
 
 /*
- * Parses markdown, returning HTML
+ * Find last index of token in string
  *
- * tokens	The tokens to parse
- * Returns an HTML string
+ * array	The array to search
+ * token	The token to search for
+ * Returns the index of the token, or -1 if no token found
  */
-function parseMarkdown(tokens) {
-	let stack = [];
-	let tagStack = [];
-	let blockStack = [];
-
-	let rfind_token = (token) => {
-		for (let j=stack.length-1; j >= 0; --j) {
-			if (stack[j] === token) {
-				return j;
-			}
+function rfind(array, token) {
+	for (let j=array.length-1; j >= 0; --j) {
+		if (array[j] === token) {
+			return j;
 		}
-		return -1;
-	};
-
-	let rfind_lf = () => {
-		for (let j=stack.length-1; j >= 0; --j) {
-			if (stack[j].includes('\n')) {
-				return j;
-			}
-		}
-		return -1;
-	};
-
-	let rfind_lastopen = (tag) => {
-		let closed = false;
-		for (let j=stack.length-1; j > 0; --j) {
-			if (stack[j] === `</${tag}>`) {
-				closed = true;
-			} else if (stack[j] === `<${tag}>`) {
-				if (!closed) {
-					return j;
-				} else {
-					closed = false;
-				}
-			}
-		}
-		return -1;
 	}
+	return -1;
+}
 
+/*
+ * Parses inline markdown elements.
+ *
+ * tokens	An array of tokens to parse
+ * Returns an array of strings containing the HTML version of the given
+ * markdown.
+ */
+function parseInlineMarkdown(tokens) {
+	let stack = [];
+
+	/*
+	 * Reduce all elements in stack after and including index into one string
+	 */
 	let reduce_stack = (index) => {
 		let reduced = stack.slice(index).join('');
 		stack.splice(index, stack.length, reduced);
@@ -208,20 +198,31 @@ function parseMarkdown(tokens) {
 	for (let i=0; i < tokens.length; ++i) {
 		let token = tokens[i];
 
-		console.log(stack, token);
-
 		if (token.startsWith("*")) {
+			let match;
+
 			if (token.length > 2) {
 				// Lexer made the token too long
 				// Split up the token into valid subtokens and replace them
-				tokens.splice(i, 1, ...splitLength(token, 2));
-				token = tokens[i];  // get new shortened token
-			}
+				let splitTokens = splitLength(token, 2);
 
-			// Search backwards through parse stack for matching token
-			// TODO: this will cause overlapping tags (ex ***test***)
-			let match = rfind_token(token);
-			console.log(match);
+				let forwardMatch = rfind(stack, splitTokens[0]);
+				let backwardMatch = rfind(stack, splitTokens[splitTokens.length - 1]);
+
+				if (backwardMatch > forwardMatch) {
+					// This token works better if the split version is reversed
+					splitTokens.reverse();
+					match = backwardMatch;
+				} else {
+					match = forwardMatch;
+				}
+
+				tokens.splice(i, 1, ...splitTokens);
+				token = tokens[i];  // get new shortened token
+			} else {
+				// Search backwards through parse stack for matching token
+				match = rfind(stack, token);
+			}
 
 			if (match !== -1) {
 				// A match was found!
@@ -239,14 +240,30 @@ function parseMarkdown(tokens) {
 				stack.push(token);
 			}
 		} else if (token.startsWith("_")) {
-			if (token.length > 2) {
-				tokens.splice(i, 1, ...splitLength(token, 2));
-				token = tokens[i];  // get new shortened token
-			}
+			let match;
 
-			// Search backwards through parse stack for matching token
-			// TODO: overlapping tags
-			let match = rfind_token(token);
+			if (token.length > 2) {
+				// Lexer made the token too long
+				// Split up the token into valid subtokens and replace them
+				let splitTokens = splitLength(token, 2);
+
+				let forwardMatch = rfind(stack, splitTokens[0]);
+				let backwardMatch = rfind(stack, splitTokens[splitTokens.length - 1]);
+
+				if (backwardMatch > forwardMatch) {
+					// This token works better if the split version is reversed
+					splitTokens.reverse();
+					match = backwardMatch;
+				} else {
+					match = forwardMatch;
+				}
+
+				tokens.splice(i, 1, ...splitTokens);
+				token = tokens[i];  // get new shortened token
+			} else {
+				// Search backwards through parse stack for matching token
+				match = rfind(stack, token);
+			}
 
 			if (match !== -1) {
 				// A match was found!
@@ -271,7 +288,7 @@ function parseMarkdown(tokens) {
 			}
 
 			// Search backwards through parse stack for matching token
-			let match = rfind_token(token);
+			let match = rfind(stack, token);
 
 			if (match !== -1) {
 				// A match was found!
@@ -289,7 +306,7 @@ function parseMarkdown(tokens) {
 			}
 
 			// Search backwards through parse stack for matching token
-			let match = rfind_token(token);
+			let match = rfind(stack, token);
 
 			if (match !== -1) {
 				// A match was found!
@@ -307,7 +324,7 @@ function parseMarkdown(tokens) {
 			}
 
 			// Search backwards through parse stack for matching token
-			let match = rfind_token(token);
+			let match = rfind(stack, token);
 
 			if (match !== -1) {
 				// A match was found!
@@ -330,7 +347,7 @@ function parseMarkdown(tokens) {
 			}
 
 			// Search backwards through parse stack for beginning of link
-			let match = rfind_token('[');
+			let match = rfind(stack, '[');
 
 			if (match !== -1) {
 				if (match !== 0 && stack[match-1] === '!') {
@@ -349,7 +366,48 @@ function parseMarkdown(tokens) {
 				stack.splice(match, link.offset+1, linkHtml);
 
 			}
-		} else if (token.startsWith('\n')) {
+		} else {
+			stack.push(token);
+		}
+	}
+
+	return stack;
+}
+
+/*
+ * Parses markdown, returning HTML
+ *
+ * tokens	The tokens to parse
+ * Returns an HTML string
+ */
+function parseMarkdown(tokens) {
+	let stack = [];
+
+	/*
+	 * Find last index of token containing a newline. Returns -1 if no match
+	 * found.
+	 */
+	let rfind_lf = () => {
+		for (let j=stack.length-1; j >= 0; --j) {
+			if (stack[j].includes('\n')) {
+				return j;
+			}
+		}
+		return -1;
+	};
+
+	/*
+	 * Reduce all elements in stack after and including index into one string
+	 */
+	let reduce_stack = (index) => {
+		let reduced = stack.slice(index).join('');
+		stack.splice(index, stack.length, reduced);
+	};
+
+	for (let i=0; i < tokens.length; ++i) {
+		let token = tokens[i];
+
+		if (token.startsWith('\n')) {
 			// Handle block elements
 
 			if (stack.length === 0) continue;  // Ignore this token
@@ -373,6 +431,9 @@ function parseMarkdown(tokens) {
 				let level = (firstToken.length <= 6) ? firstToken.length : 6;
 				stack[firstTokenIndex] = `<h${level}>`;
 				stack.push(`</h${level}>`);
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+				stack.splice(firstTokenIndex, stack.length, ...inline);
 				reduce_stack(lineEnd+1);
 			} else if (firstToken === '!') {
 				/* Images */
@@ -388,6 +449,8 @@ function parseMarkdown(tokens) {
 
 				let imgHtml = `<img src="${img.src}" alt="${img.alt}" title="${img.title ?? img.alt}" />`;
 				stack.splice(firstTokenIndex, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
+			} else if (firstToken === '>') {
+
 			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length) {
 				// Single newline inside a paragraph; ignore
 				stack.push(' ');
@@ -396,6 +459,9 @@ function parseMarkdown(tokens) {
 				/* Paragraphs */
 				stack.splice(firstTokenIndex, 0, "<p>");
 				stack.push("</p>");
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+				stack.splice(firstTokenIndex, stack.length, ...inline);
 				reduce_stack(firstTokenIndex);
 			}
 
