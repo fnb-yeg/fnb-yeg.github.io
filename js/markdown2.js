@@ -36,7 +36,7 @@ function splitLength(str, len) {
  * Returns an array containing the separated tokens
  */
 function tokenizeMarkdown(markdown) {
-	const specialChars = "#*_~`^![]()\"|:>.)\n";
+	const specialChars = "#*_~`^-\u2014![]()\"|:>.)\n";
 
 	let tokens = [];
 	let currentToken = "";
@@ -382,6 +382,24 @@ function parseInlineMarkdown(tokens) {
  */
 function parseMarkdown(tokens) {
 	let stack = [];
+	let blockStack = [];
+
+	/*
+	 * Flush the blockstack into the stack before the given index
+	 *
+	 * index	The index to flush before
+	 * Returns the number of tokens added to the stack
+	 */
+	let blockStack_flushBefore = (index) => {
+		let tokensAdded = 0;
+
+		while (blockStack.length > 0) {
+			stack.splice(index, 0, `</${blockStack.pop()}>`);
+			++tokensAdded;
+		}
+
+		return tokensAdded;
+	}
 
 	/*
 	 * Find last index of token containing a newline. Returns -1 if no match
@@ -428,6 +446,8 @@ function parseMarkdown(tokens) {
 
 			if (firstToken.startsWith("#")) {
 				/* Headings */
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+
 				let level = (firstToken.length <= 6) ? firstToken.length : 6;
 				stack[firstTokenIndex] = `<h${level}>`;
 				stack.push(`</h${level}>`);
@@ -440,6 +460,8 @@ function parseMarkdown(tokens) {
 				// '!', '[', ..., ']', '(', ..., ')'
 				if (stack.length - lineEnd < 5) continue;  // Not a valid image
 
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+
 				let img = parseResource(stack.slice(firstTokenIndex + 1));
 
 				if (img.src === null || img.alt === null) {
@@ -450,8 +472,38 @@ function parseMarkdown(tokens) {
 				let imgHtml = `<img src="${img.src}" alt="${img.alt}" title="${img.title ?? img.alt}" />`;
 				stack.splice(firstTokenIndex, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
 			} else if (firstToken === '>') {
+				if (blockStack.length !== 0 && blockStack[blockStack.length-1] !== "blockquote") {
+					// Blockstack is not empty and there isnt already a blockquote there
+					firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+				}
 
+				if (blockStack.length === 0) {
+					// Blockstack is empty; start a new blockquote
+					// NOTE: class blockquote triggers a style from bootstrap
+					// NOTE: should we use that style??
+					stack[firstTokenIndex] = "<figure class=\"bq\"><blockquote>";
+					blockStack.push("figure");
+					blockStack.push("blockquote");
+				} else {
+					// Just keep adding to the current blockquote; itll get
+					// closed later
+					stack[firstTokenIndex] = '<br>'
+				}
+			} else if ((firstToken === '--' || firstToken === '\u2014')
+					&& (blockStack.length !== 0 && blockStack[blockStack.length-1] === "blockquote")) {
+				// Blockquote attribution
+				stack.splice(firstTokenIndex, 1, `</${blockStack.pop()}><figcaption>`);
+				stack.push("</figcaption>");
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+				stack.splice(firstTokenIndex, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+
+				blockStack_flushBefore(stack.length);
+			} else if (firstToken === '-' || firstToken === '*' || firstToken === '\u2014') {
+				// unordered list
 			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length) {
+				console.log(firstToken);
 				// Single newline inside a paragraph; ignore
 				stack.push(' ');
 				continue;
@@ -476,9 +528,9 @@ function parseMarkdown(tokens) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 	// Render markdown after DOM finished parsing
-	let targetDivs = document.getElementsByClassName("markdown");
+	let targetElems = document.querySelectorAll("pre.markdown");
 
-	for (const target of targetDivs) {
+	for (const target of targetElems) {
 		if (!target instanceof HTMLElement) continue;  // Not an HTML element; ignore it
 
 		let markdown;
@@ -487,11 +539,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 			// Source specified; load remote file
 			markdown = await fetch(target.dataset.src).then(response => response.text());
 		} else {
-			// No source; use innerHTML
-			markdown = target.innerHTML;
+			// No source; use textContent
+			markdown = target.textContent;
 		}
 
+		let newElem = document.createElement("div");
+		newElem.classList += "markdown";
+
 		let tokens = tokenizeMarkdown(markdown);
-		target.innerHTML = parseMarkdown(tokens);
+		newElem.innerHTML = parseMarkdown(tokens);
+
+		target.parentNode.replaceChild(newElem, target);
 	}
 });

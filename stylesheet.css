@@ -91,24 +91,25 @@ div.markdown ol.lower-roman-paren > li::marker {
 	content: counter(mdListCounter, lower-roman) ") ";
 }
 
-ul.list-dashed {
+div.markdown ul.list-dashed {
 	list-style-type: "– ";
 }
 
-blockquote div.quote-body {
+div.markdown figure.bq {
+	margin-left: 1em;
+}
+
+div.markdown figure.bq blockquote {
 	background-color: #ddd;
 	border-radius: 5px;
-	padding: 1px 10px;
+	padding: 1px 1em;
+	margin-bottom: 0px;
 }
 
-blockquote div.quote-body p {
-	margin: 10px;
+div.markdown figure.bq figcaption {
+	padding-top: 5px;
 }
 
-blockquote div.quote-attrib {
-	margin-left: 15px;
-}
-
-blockquote div.quote-attrib::before {
+div.markdown figure.bq figcaption::before {
 	content: "\2014";
 }
