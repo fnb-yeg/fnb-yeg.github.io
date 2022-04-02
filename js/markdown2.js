@@ -384,6 +384,8 @@ function parseMarkdown(tokens) {
 	let stack = [];
 	let blockStack = [];
 
+	let listIndent = -1;
+
 	/*
 	 * Flush the blockstack into the stack before the given index
 	 *
@@ -422,6 +424,44 @@ function parseMarkdown(tokens) {
 		stack.splice(index, stack.length, reduced);
 	};
 
+	/*
+	 * Returns a css class for an ordered list based off of a list marker, or
+	 * null if the list marker is not a valid marker.
+	 */
+	let getOlClass = (firstToken, secondToken) => {
+		let olClass;
+
+		if (firstToken.split('').every(c => "ivxlcdm".includes(c))) {
+			// lower roman numerals
+			olClass = "lower-roman";
+		} else if (firstToken.split('').every(c => "IVXLCDM".includes(c))) {
+			// upper roman numerals
+			olClass = "upper-roman";
+		} else if (firstToken.length === 1
+					&& (firstToken.charCodeAt(0) >= 0x41 && firstToken.charCodeAt(0) <= 0x5A)) {
+			// upper latin
+			olClass = "upper-latin";
+		} else if (firstToken.length === 1
+					&& (firstToken.charCodeAt(0) >= 0x61 && firstToken.charCodeAt(0) <= 0x7A)) {
+			// lower latin
+			olClass = "lower-latin";
+		} else if (firstToken.split('').every(c => c.charCodeAt(0) >= 0x30 && c.charCodeAt(0) <= 0x39)) {
+			// arabic
+			olClass = "arabic";
+		} else {
+			return null;
+		}
+
+		if (secondToken === ')') {
+			olClass += "-paren";
+		} else if (secondToken !== '.') {
+			console.log("secondToken");
+			return null;
+		}
+
+		return olClass;
+	};
+
 	for (let i=0; i < tokens.length; ++i) {
 		let token = tokens[i];
 
@@ -431,6 +471,7 @@ function parseMarkdown(tokens) {
 			if (stack.length === 0) continue;  // Ignore this token
 
 			let lineEnd = rfind_lf();  // Find index of last line ending
+			let indent = 0;
 			let firstTokenIndex = null;
 
 			// lineEnd can never be last element, so +1 is always valid
@@ -438,11 +479,18 @@ function parseMarkdown(tokens) {
 				if (!stack[j].split('').every(c => " \t".includes(c))) {
 					firstTokenIndex = j;
 					break;
+				} else {
+					indent += stack[j].length;
 				}
 			}
 
 			firstToken = stack[firstTokenIndex];
 			if (firstToken === null || firstToken === undefined) continue;  // Ignore this token
+
+			let scratch;  // scratch variable for assignments in if conditions
+						  // consider refactoring this out
+
+			console.log(`'${firstToken.trimStart()}'`, getOlClass(firstToken.trimStart(), stack[firstTokenIndex+1]));
 
 			if (firstToken.startsWith("#")) {
 				/* Headings */
@@ -472,6 +520,7 @@ function parseMarkdown(tokens) {
 				let imgHtml = `<img src="${img.src}" alt="${img.alt}" title="${img.title ?? img.alt}" />`;
 				stack.splice(firstTokenIndex, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
 			} else if (firstToken === '>') {
+				/* Blockquotes */
 				if (blockStack.length !== 0 && blockStack[blockStack.length-1] !== "blockquote") {
 					// Blockstack is not empty and there isnt already a blockquote there
 					firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
@@ -491,8 +540,8 @@ function parseMarkdown(tokens) {
 				}
 			} else if ((firstToken === '--' || firstToken === '\u2014')
 					&& (blockStack.length !== 0 && blockStack[blockStack.length-1] === "blockquote")) {
-				// Blockquote attribution
-				stack.splice(firstTokenIndex, 1, `</${blockStack.pop()}><figcaption>`);
+				/* Blockquote attribution */
+				stack[firstTokenIndex] = `</${blockStack.pop()}><figcaption>`;
 				stack.push("</figcaption>");
 
 				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
@@ -501,14 +550,95 @@ function parseMarkdown(tokens) {
 
 				blockStack_flushBefore(stack.length);
 			} else if (firstToken === '-' || firstToken === '*' || firstToken === '\u2014') {
-				// unordered list
-			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length) {
-				console.log(firstToken);
+				/* unordered list */
+				if (blockStack.length !== 0 && (blockStack[blockStack.length-1] !== "ol"
+												&& blockStack[blockStack.length-1] !== "ul")) {
+					// Blockstack is not empty and there isnt already a list there
+					let shift = blockStack_flushBefore(lineEnd);
+					firstTokenIndex += shift;
+					lineEnd += shift;
+				}
+
+				if (indent > listIndent || blockStack.length === 0) {
+					// Add a new list level
+					let classList = "";
+
+					if (firstToken !== '*') classList = `class="list-dashed"`;
+					stack.splice(firstTokenIndex, 0, `<ul ${classList}>`);
+					++firstTokenIndex;
+					blockStack.push("ul");
+
+					listIndent = indent;
+				} else if (indent < listIndent) {
+					// Go up a list level
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}>`);
+					++firstTokenIndex;
+
+					listIndent = indent;
+				} else if (blockStack[blockStack.length-1] === "ol") {
+					// ul directly after an ol
+					let classList = "";
+
+					if (firstToken !== '*') classList = `class="list-dashed"`;
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}><ul ${classList}">`);
+					++firstTokenIndex;
+					blockStack.push("ul");
+				}
+
+				stack[firstTokenIndex] = "<li>";
+				stack.push("</li>");
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex+1));
+				stack.splice(firstTokenIndex+1, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+			} else if (stack.length > firstTokenIndex && ".)".includes(stack[firstTokenIndex+1])
+						&& (scratch = getOlClass(firstToken.trimStart(), stack[firstTokenIndex+1])) !== null) {
+				/* ordered list */
+				if (blockStack.length !== 0 && (blockStack[blockStack.length-1] !== "ol"
+												&& blockStack[blockStack.length-1] !== "ul")) {
+					// Blockstack is not empty and there isnt already a list there
+					let shift = blockStack_flushBefore(lineEnd);
+					firstTokenIndex += shift;
+					lineEnd += shift;
+				}
+
+				indent += firstToken.length - firstToken.trimStart().length;
+
+				if (indent > listIndent || blockStack.length === 0) {
+					// Add a new list level
+					stack.splice(firstTokenIndex, 0, `<ol class="${scratch}">`)
+					++firstTokenIndex;
+					blockStack.push("ol");
+
+					listIndent = indent;
+				} else if (indent < listIndent) {
+					// Go up a list level
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}>`);
+					++firstTokenIndex;
+
+					listIndent = indent;
+				} else if (blockStack[blockStack.length-1] === "ul") {
+					// ol directly after a ul
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}><ol class="${scratch}">`);
+					++firstTokenIndex;
+					blockStack.push("ol");
+				}
+
+				stack[firstTokenIndex] = "<li>";
+				stack.push("</li>");
+				stack.splice(firstTokenIndex+1, 1);
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex+1));
+				stack.splice(firstTokenIndex+1, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length && blockStack.length === 0) {
 				// Single newline inside a paragraph; ignore
 				stack.push(' ');
 				continue;
 			} else {
 				/* Paragraphs */
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+				
 				stack.splice(firstTokenIndex, 0, "<p>");
 				stack.push("</p>");
 
