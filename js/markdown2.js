@@ -800,12 +800,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 			markdown = target.textContent;
 		}
 
+		let card = document.createElement("div");
+		card.classList += "card";
+
+		let cardBody = document.createElement("div");
+		cardBody.classList += "card-body";
+		card.appendChild(cardBody);
+
 		let newElem = document.createElement("div");
 		newElem.classList += "markdown";
+		cardBody.appendChild(newElem);
 
 		let tokens = tokenizeMarkdown(markdown);
 		newElem.innerHTML = parseMarkdown(tokens);
 
-		target.parentNode.replaceChild(newElem, target);
+		target.parentNode.replaceChild(card, target);
 	}
 });
