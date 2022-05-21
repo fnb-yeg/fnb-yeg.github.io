@@ -698,6 +698,7 @@ function parseMarkdown(tokens) {
 				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
 
 				if (stack[firstTokenIndex] === '|') {
+					// Maybe a table
 					let table = stack.slice(firstTokenIndex);
 					let rows = [];
 
@@ -720,34 +721,46 @@ function parseMarkdown(tokens) {
 							console.log(rows);
 
 							// Insert table formatting
-							stack.push("<table><thead><tr>");
+							stack.push(`<table><thead><tr><th class="${columnClasses[0]}">`);
 
 							// Insert table heading
-							for (let i=0, col=0; i < rows[0].length; ++i) {
-								if (rows[0][i] !== '|') {
-									stack.push(`<th class="${columnClasses[col]}">${rows[0][i]}</th>`);
+							for (let i=1, col=1; i < rows[0].length-1; ++i) {
+								if (rows[0][i] === '|') {
+									stack.push(`</th><th class="${columnClasses[col]}">`);
 									++col;
+								} else {
+									stack.push(rows[0][i]);
 								}
 							}
 
 							// Table body
-							stack.push("</tr></thead><tbody>");
+							stack.push("</th></tr></thead><tbody>");
 
 							for (let i=2; i < rows.length; ++i) {
-								stack.push("<tr>");
+								stack.push(`<tr><td class="${columnClasses[0]}">`);
 
-								for (let j=0, col=0; j < rows[i].length; ++j) {
-									if (rows[i][j] !== '|') {
-										stack.push(`<td class="${columnClasses[col]}">${rows[i][j]}</td>`);
+								for (let j=1, col=1; j < rows[i].length-1; ++j) {
+									if (rows[i][j] === '|') {
+										stack.push(`</td><td class="${columnClasses[col]}">`);
 										++col;
+									} else {
+										stack.push(rows[i][j]);
 									}
 								}
 
-								stack.push("</tr>");
+								stack.push("</td></tr>");
 							}
 
 							// End of table
 							stack.push("</tbody></table>");
+
+							// Apply inline styles
+							let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+							stack.splice(firstTokenIndex, stack.length, ...inline);
+							reduce_stack(firstTokenIndex);
+
+							stack.push('\n');
+							continue;
 						}
 					}
 
@@ -755,7 +768,6 @@ function parseMarkdown(tokens) {
 
 				stack.splice(firstTokenIndex, 0, "<p>");
 				stack.push("</p>");
-				
 
 				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
 				stack.splice(firstTokenIndex, stack.length, ...inline);
