@@ -162,6 +162,63 @@ function parseResource(stack) {
 }
 
 /*
+* Return array of classes for columns of table or null if it is invalid
+*/
+function parseTableAlignment(format) {
+	if (format[0] !== '|') return null;
+
+	let tableStyling = [];
+	let alignment = -1;  // 0 = center, 1 = right, 2 = left, 3 = justified
+
+	for (let i=1; i < format.length; ++i) {
+		if (format[i] === ':') {
+			if (alignment === -1) {
+				// colon is first thing in the table specifier; left align
+				alignment = 2;
+			} else {
+				// colon is not the first thing
+				// if there was a colon at the start of the specifier,
+				// alignment == 2 -> +1 == 3 == justified
+				// if there was not a colon at the start, then
+				// alignment == 0 -> +1 == 1 == right align
+				++alignment;
+			}
+		} else if (format[i][0] === '-') {
+			if (alignment === -1) {
+				// this is the first thing in the table specifier; center by default
+				alignment = 0;
+			}
+		} else if (format[i] === '|') {
+			if (alignment === -1) {
+				// This is not a valid table specifier
+				return null;
+			} else {
+				switch (alignment) {
+					case 0:
+						tableStyling.push("md-table-align-center");
+						break;
+					case 1:
+						tableStyling.push("md-table-align-right");
+						break;
+					case 2:
+						tableStyling.push("md-table-align-left");
+						break;
+					case 3:
+						tableStyling.push("md-table-align-justify");
+						break;
+				}
+
+				alignment = -1;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	return tableStyling;
+}
+
+/*
  * Find last index of token in string
  *
  * array	The array to search
@@ -461,61 +518,6 @@ function parseMarkdown(tokens) {
 		return olClass;
 	};
 
-	/*
-	 * Return array of classes for columns of table or null.
-	 */
-	let getTableClasses = (stack) => {
-		if (stack[0] !== '|') return null;
-
-		let tableStyling = [];
-		let alignment = -1;  // 0 = center, 1 = right, 2 = left, 3 = justified
-
-		for (let i=1; i < stack.length; ++i) {
-			if (stack[i] === ':') {
-				if (alignment === -1) {
-					// colon is first thing in the table specifier; left align
-					alignment = 2;
-				} else {
-					// colon is not the first thing
-					// if there was a colon at the start of the specifier,
-					// alignment == 2 -> +1 == 3 == justified
-					// if there was not a colon at the start, then
-					// alignment == 0 -> +1 == 1 == right align
-					++alignment;
-				}
-			} else if (stack[i][0] === '-') {
-				if (alignment === -1) {
-					// this is the first thing in the table specifier; center by default
-					alignment = 0;
-				}
-			} else if (stack[i] === '|') {
-				if (alignment === -1) {
-					// This is not a valid table specifier
-					return null;
-				} else {
-					switch (alignment) {
-						case 0:
-							tableStyling.push("md-table-align-center");
-							break;
-						case 1:
-							tableStyling.push("md-table-align-right");
-							break;
-						case 2:
-							tableStyling.push("md-table-align-left");
-							break;
-						case 3:
-							tableStyling.push("md-table-align-justify");
-							break;
-					}
-				}
-			} else {
-				return null;
-			}
-		}
-
-		return tableStyling;
-	};
-
 	let scratch;  // scratch variable for assignments in if conditions
 				  // consider refactoring this out
 
@@ -708,9 +710,45 @@ function parseMarkdown(tokens) {
 						rows.push(row.filter(token => !token.split('').every(c => " \t\u0003".includes(c))));
 					}
 
-					if (rows.length > 2 && rows[1].join('').split('').every(c => "|:-".includes(c))) {
+					if (rows.length > 3 && rows[1].join('').split('').every(c => "|:-".includes(c))) {
 						// This is a table
-						console.log(rows);
+						let columnClasses = parseTableAlignment(rows[1]);
+
+						if (columnClasses !== null) {
+							// Valid table
+							stack.splice(firstTokenIndex, stack.length);  // Remove existing table tokens from stack
+							console.log(rows);
+
+							// Insert table formatting
+							stack.push("<table><thead><tr>");
+
+							// Insert table heading
+							for (let i=0, col=0; i < rows[0].length; ++i) {
+								if (rows[0][i] !== '|') {
+									stack.push(`<th class="${columnClasses[col]}">${rows[0][i]}</th>`);
+									++col;
+								}
+							}
+
+							// Table body
+							stack.push("</tr></thead><tbody>");
+
+							for (let i=2; i < rows.length; ++i) {
+								stack.push("<tr>");
+
+								for (let j=0, col=0; j < rows[i].length; ++j) {
+									if (rows[i][j] !== '|') {
+										stack.push(`<td class="${columnClasses[col]}">${rows[i][j]}</td>`);
+										++col;
+									}
+								}
+
+								stack.push("</tr>");
+							}
+
+							// End of table
+							stack.push("</tbody></table>");
+						}
 					}
 
 				}

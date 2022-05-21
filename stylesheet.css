@@ -121,3 +121,29 @@ div.markdown figure.bq figcaption {
 div.markdown figure.bq figcaption::before {
 	content: "\2014";
 }
+
+div.markdown table {
+	border-collapse: collapse;
+}
+
+div.markdown th,
+div.markdown td {
+	border: 1px solid black;
+	padding: 5px;
+}
+
+div.markdown .md-table-align-center {
+	text-align: center;
+}
+
+div.markdown .md-table-align-left {
+	text-align: left;
+}
+
+div.markdown .md-table-align-right {
+	text-align: right;
+}
+
+div.markdown .md-table-align-justify {
+	text-align: justify;
+}
