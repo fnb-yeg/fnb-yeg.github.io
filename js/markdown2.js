@@ -455,12 +455,69 @@ function parseMarkdown(tokens) {
 		if (secondToken === ')') {
 			olClass += "-paren";
 		} else if (secondToken !== '.') {
-			console.log("secondToken");
 			return null;
 		}
 
 		return olClass;
 	};
+
+	/*
+	 * Return array of classes for columns of table or null.
+	 */
+	let getTableClasses = (stack) => {
+		if (stack[0] !== '|') return null;
+
+		let tableStyling = [];
+		let alignment = -1;  // 0 = center, 1 = right, 2 = left, 3 = justified
+
+		for (let i=1; i < stack.length; ++i) {
+			if (stack[i] === ':') {
+				if (alignment === -1) {
+					// colon is first thing in the table specifier; left align
+					alignment = 2;
+				} else {
+					// colon is not the first thing
+					// if there was a colon at the start of the specifier,
+					// alignment == 2 -> +1 == 3 == justified
+					// if there was not a colon at the start, then
+					// alignment == 0 -> +1 == 1 == right align
+					++alignment;
+				}
+			} else if (stack[i][0] === '-') {
+				if (alignment === -1) {
+					// this is the first thing in the table specifier; center by default
+					alignment = 0;
+				}
+			} else if (stack[i] === '|') {
+				if (alignment === -1) {
+					// This is not a valid table specifier
+					return null;
+				} else {
+					switch (alignment) {
+						case 0:
+							tableStyling.push("md-table-align-center");
+							break;
+						case 1:
+							tableStyling.push("md-table-align-right");
+							break;
+						case 2:
+							tableStyling.push("md-table-align-left");
+							break;
+						case 3:
+							tableStyling.push("md-table-align-justify");
+							break;
+					}
+				}
+			} else {
+				return null;
+			}
+		}
+
+		return tableStyling;
+	};
+
+	let scratch;  // scratch variable for assignments in if conditions
+				  // consider refactoring this out
 
 	for (let i=0; i < tokens.length; ++i) {
 		let token = tokens[i];
@@ -486,11 +543,6 @@ function parseMarkdown(tokens) {
 
 			firstToken = stack[firstTokenIndex];
 			if (firstToken === null || firstToken === undefined) continue;  // Ignore this token
-
-			let scratch;  // scratch variable for assignments in if conditions
-						  // consider refactoring this out
-
-			console.log(`'${firstToken.trimStart()}'`, getOlClass(firstToken.trimStart(), stack[firstTokenIndex+1]));
 
 			if (firstToken.startsWith("#")) {
 				/* Headings */
@@ -631,16 +683,41 @@ function parseMarkdown(tokens) {
 				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex+1));
 				stack.splice(firstTokenIndex+1, stack.length, ...inline);
 				reduce_stack(firstTokenIndex);
+			} else if (firstToken.startsWith('---') && stack.slice(firstTokenIndex).every(elem => elem.split('').every(ch => ch === '-'))) {
+				/* Horizontal line */
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+				stack.splice(firstTokenIndex, stack.length, "<hr />");
 			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length && blockStack.length === 0) {
 				// Single newline inside a paragraph; ignore
-				stack.push(' ');
+				stack.push('\u0003');
 				continue;
 			} else {
 				/* Paragraphs */
 				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
-				
+
+				if (stack[firstTokenIndex] === '|') {
+					let table = stack.slice(firstTokenIndex);
+					let rows = [];
+
+					while (table.length > 0) {
+						let row = [];
+						do {
+							row.push(table.shift());
+						} while (row[row.length-1] !== '\u0003' && table.length > 0);
+						// push row without indentation and line seps
+						rows.push(row.filter(token => !token.split('').every(c => " \t\u0003".includes(c))));
+					}
+
+					if (rows.length > 2 && rows[1].join('').split('').every(c => "|:-".includes(c))) {
+						// This is a table
+						console.log(rows);
+					}
+
+				}
+
 				stack.splice(firstTokenIndex, 0, "<p>");
 				stack.push("</p>");
+				
 
 				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
 				stack.splice(firstTokenIndex, stack.length, ...inline);
