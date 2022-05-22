@@ -143,7 +143,9 @@ sub main {
 	setsockopt($server, SOL_SOCKET, SO_REUSEADDR, pack("l", 1)) || die "setsockopt: $!";
 	bind($server, sockaddr_in($port, inet_aton("127.0.0.1"))) || die "bind: $!";
 	listen($server, SOMAXCONN) || die "listen: $!";
-	print "Server started on localhost:$port\n";
+
+	print "Server started at http://127.0.0.1:$port\n";
+
 
 	while (my $paddr = accept(my $client, $server)) {
 		if (fork() == 0) {

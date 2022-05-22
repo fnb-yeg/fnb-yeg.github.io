@@ -43,6 +43,14 @@ body {
 }
 
 /* Styles for markdown */
+pre.markdown {
+	/*
+	 * These styles apply when markdown is embedded into HTML but javascript is
+	 * disabled.
+	 */
+	tab-size: 4;
+}
+
 div.markdown ol {
 	counter-reset: mdListCounter;
 }
@@ -91,24 +99,51 @@ div.markdown ol.lower-roman-paren > li::marker {
 	content: counter(mdListCounter, lower-roman) ") ";
 }
 
-ul.list-dashed {
+div.markdown ul.list-dashed {
 	list-style-type: "– ";
 }
 
-blockquote div.quote-body {
+div.markdown figure.bq {
+	margin-left: 1em;
+}
+
+div.markdown figure.bq blockquote {
 	background-color: #ddd;
 	border-radius: 5px;
-	padding: 1px 10px;
+	padding: 1px 1em;
+	margin-bottom: 0px;
 }
 
-blockquote div.quote-body p {
-	margin: 10px;
+div.markdown figure.bq figcaption {
+	padding-top: 5px;
 }
 
-blockquote div.quote-attrib {
-	margin-left: 15px;
-}
-
-blockquote div.quote-attrib::before {
+div.markdown figure.bq figcaption::before {
 	content: "\2014";
+}
+
+div.markdown table {
+	border-collapse: collapse;
+}
+
+div.markdown th,
+div.markdown td {
+	border: 1px solid black;
+	padding: 5px;
+}
+
+div.markdown .md-table-align-center {
+	text-align: center;
+}
+
+div.markdown .md-table-align-left {
+	text-align: left;
+}
+
+div.markdown .md-table-align-right {
+	text-align: right;
+}
+
+div.markdown .md-table-align-justify {
+	text-align: justify;
 }
