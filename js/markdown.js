@@ -718,7 +718,6 @@ function parseMarkdown(tokens) {
 						if (columnClasses !== null) {
 							// Valid table
 							stack.splice(firstTokenIndex, stack.length);  // Remove existing table tokens from stack
-							console.log(rows);
 
 							// Insert table formatting
 							stack.push(`<table><thead><tr><th class="${columnClasses[0]}">`);
