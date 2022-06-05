@@ -1,933 +1,818 @@
-// generates a unique id
-let genUniqueID = () => Number(((Math.floor(Math.random() * 0x10000) << 16) | (Date.now() & 0xFFFF)) >>> 0).toString(16);
-
 /*
- * Base class for all entities
+ * Version 2.0 of markdown.js
  */
-class MarkupEntity {
-	/*
-	 * Creates a new MarkupEntity.
-	 *
-	 * tag - The HTML tag for this entity
-	 * attributes - Any attributes this tag might have. This is optional.
-	 */
-	constructor(tag, attributes={}) {
-		this.tag = tag;
-		this.attributes = attributes;
-	}
-
-	/*
-	 * Returns the HTML representation of this entity.
-	 */
-	generateEntity() {
-		return "";
-	}
-}
 
 /*
- * A plaintext entity.
- */
-class TextEntity extends MarkupEntity {
-	/*
-	 * Creates a new TextEntity
-	 *
-	 * content - The content for the entity.
-	 */
-	constructor(content) {
-		super(null);
-
-		this.content = content;
-	}
-
-	/*
-	 * Add more content to this entity
-	 */
-	addContent(content) {
-		this.content += content;
-	}
-
-	generateEntity() {
-		return this.content;
-	}
-}
-
-/*
- * An entity which terminates like img or meta (i.e. no children)
- */
-class TerminatingEntity extends MarkupEntity {
-	generateEntity() {
-		let attributeString = "";
-
-		for (let [key, value] of Object.entries(this.attributes)) {
-			if (value !== null) {
-				attributeString += ` ${key}="${value}"`;
-			} else {
-				attributeString += ` ${key}`;
-			}
-		}
-
-		return `<${this.tag}${attributeString} />`;
-	}
-}
-
-/*
- * An HTML entity with children
- */
-class NestableEntity extends MarkupEntity {
-	/*
-	 * Creates a new NestableEntity
-	 *
-	 * tag - The HTML tag for this entity
-	 * attributes - Any attributes this tag might have. This is optional.
-	 * childAttributes - Attributes which will be automatically applied to children of this entity
-	 */
-	constructor(tag, attributes={}, childAttributes={}) {
-		super(tag, attributes);
-
-		this.childAttributes = childAttributes;
-		this.children = [];
-		this.parent = null;
-	}
-
-	/*
-	 * Adds a child to this entity.
-	 *
-	 * child - A MarkupEntity
-	 */
-	addChild(child) {
-		if (Object.keys(this.childAttributes).includes(child.tag)) {
-			for (let attrib of Object.keys(this.childAttributes[child.tag])) {
-				// replace with nullish coalescing operator when all modern browsers support it
-				// child.attributes[attrib] = (child.attributes[attrib] ?? "") + this.childAttributes[child.tag];
-				child.attributes[attrib] = (child.attributes[attrib] ? child.attributes[attrib] : "") + this.childAttributes[child.tag][attrib];
-			}
-		}
-		child.parent = this;
-		this.children.push(child);
-
-		return this;  // allow .addChild calls to be chained together
-	}
-
-	/*
-	 * Returns the last child of this entity
-	 */
-	get lastChild() {
-		// return this.children.filter((e, i) => i === this.children.length-1)[0];
-		return this.children[this.children.length-1];
-	}
-
-	get root() {
-		return this.parent ? this.parent.root : this;
-	}
-
-	/*
-	 * Updates the last child of this entity
-	 */
-	set lastChild(child) {
-		this.children[this.children.length-1] = child;
-	}
-
-	generateEntity() {
-		let attributeString = "";
-
-		for (let [key, value] of Object.entries(this.attributes)) {
-			if (value !== null) {
-				attributeString += ` ${key}="${value}"`;
-			} else {
-				attributeString += ` ${key}`;
-			}
-		}
-
-		let generated = [];
-		for (let child of this.children) {
-			generated.push(child.generateEntity());
-		}
-		return `<${this.tag}${attributeString}>${generated.join('')}</${this.tag}>`;
-	}
-}
-
-/*
- * Context-based card generators. These methods pass extra arguments to the markdown
- * generator to produce cards with context-based styling
- */
-class Cards {
-	static recipe(markdown, root) {
-		let cardBody = new NestableEntity("div", {"class": "card-body"});
-
-		// es6 guarantees that string keys will remain in insertion order
-		parseMarkdown(markdown, cardBody, {
-			"1": () => new NestableEntity("div", {"class": "row justify-content-center"}),
-			"2:": () => new NestableEntity("div", {"class": "content"}),
-			"2:4": () => new NestableEntity("div", {"class": "row"}),
-			"2,3,4": () => new NestableEntity("div", {"class": "col-sm-12 col-md-4"}, {"p": {"class": "lead"}}),
-		});
-
-		root.addChild(cardBody);
-	}
-
-	static news_basic(markdown, root) {
-		parseMarkdown(markdown, root, {
-			"1": () => new NestableEntity("div", {"class": "card-header"}),
-			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}, "img": {class: "img-fluid"}})
-		});
-	}
-
-	static news_img(markdown, root) {
-		parseMarkdown(markdown, root, {
-			"1": () => new NestableEntity("div", {}, {"img": {"class": "card-img-top"}}),
-			"2:": () => new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}, "img": {"class": "img-fluid"}}),
-			"2:3": () => new NestableEntity("div", {"class": "d-flex w-100 justify-content-between"}, {"h5": {"class": "mb-1"}, "p": {"style": "font-size:0.8em"}})
-		});
-	}
-
-	static news_img_collapse(markdown, root) {
-		let collapseID = genUniqueID();
-
-		parseMarkdown(markdown, root, {
-			"1": () => new NestableEntity("div", {}, {"img": {"class": "card-img-top"}}),
-			"2:": () => new NestableEntity("div", {"class": "card-body"}),
-			",2:": () => new NestableEntity("div", {
-				"class": "collapse",
-				"id": collapseID
-			}, {"p": {"class": "mb-1"}, "img": {"class": "img-fluid"}})
-		});  // TODO: find nicer solution to have two schemas with identical targets
-
-		// Add collapse button
-		for (let i=0; i < root.children.length; ++i) {
-			if ("class" in root.children[i].attributes && root.children[i].attributes["class"].includes("card-body")) {
-				root.children[i].children.unshift(new NestableEntity("p").addChild(new NestableEntity("a", {
-					"data-toggle": "collapse",
-					"href": `#${collapseID}`,
-					"role": "button",
-					"aria-expanded": "false",
-					"aria-controls": collapseID
-				}).addChild(new TextEntity("[View Image Transcription]"))));
-			}
-		}
-	}
-}
-
-/*
- * Determines whether the schema applies to this line.
+ * Splits a string into an array of substrings with the given length. If the
+ * string does not divide evenly into the specified length, then the last
+ * element will contain the remaining characters.
  *
- * Returns 0 if the state should be unchanged, 1 if it should be added to the stack,
- * -1 if it should be removed from the stack, and -2 if it should be removed and re-added
+ * str		The string to split
+ * len		The length of the substrings to split
+ * Returns an array of the substrings.
  */
-function doesSchemaApplyToLine(lineno, schema) {
-	const RANGE = -1;  // from the previous item to the next, or the end if this is the last item
-	const AFTER = -2;  // insert after the specified line
-	const BEFORE = -3;  // insert before the specified line
-	let lines = [];
-	let currentNo = 0;
+function splitLength(str, len) {
+	let substrings = [];
+	let current = "";
 
-	for (let i=0; i < schema.length; ++i) {
-		let charCode = schema.charCodeAt(i);
-
-		if (charCode >= 0x30 && charCode <= 0x39) {
-			// number
-			currentNo *= 10;
-			currentNo += charCode - 0x30;
+	for (const ch of str) {
+		if (current.length !== 0 && current.length % len === 0) {
+			// current is correct length
+			substrings.push(current);
+			current = ch;
 		} else {
-			lines.push(currentNo);
-			currentNo = 0;
-
-			if (charCode === 0x3A) {
-				// colon
-				if (i === 0 || lines[lines.length-1] === RANGE) return 0;  // invalid schema
-
-				lines.push(RANGE);
-			} else if (charCode === 0x2C) {
-				// comma
-				continue;
-			} else if (charCode === 0x3E) {
-				// >
-				if (i === 0 || lines[lines.length-1] === AFTER) return 0;  // invalid schema
-
-				lines.push(AFTER);
-			} else if (charCode === 0x3C) {
-				// <
-				if (i === 0 || lines[lines.length-1] === BEFORE) return 0;  // invalid schema
-
-				lines.push(BEFORE);
-			} else {
-				// Invalid schema
-				return 0;
-			}
+			current += ch;
 		}
 	}
+	substrings.push(current);
 
-	if (currentNo !== 0) lines.push(currentNo);
-
-	let shouldAdd = false;
-	let shouldRemove = false;
-
-	for (let i=0; i < lines.length; ++i) {
-		if (lines[i] === RANGE) {
-			if (i === 0) return 0;  // invalid schema
-
-			// x:y or x:
-			if (lineno >= lines[i-1] && (i+1 === lines.length || lineno <= lines[i+1])) {
-				if (shouldAdd) return 1;
-				return 0;  // dont change state
-			}
-		} else if (lines[i] === BEFORE || lines[i] === AFTER) {
-			if (i === 0) return 0;  // invalid schema
-			if (lines[i-1] === AFTER || lines[i-1] === RANGE || lines[i-1] === BEFORE) return 0;  // invalid schema
-
-			let delta = (lines[i] === BEFORE) ? 1 : -1;
-
-			if (lineno + delta === lines[i-1]) {
-				// The next line is the one this should be inserted before
-				return 1;
-			} else if (lineno === lines[i-1]) {
-				// It was inserted before this line
-				return -1;
-			} else {
-				// maintain state (off)
-				return 0;
-			}
-		} else if (lines[i] === lineno) {
-			shouldAdd = true;
-		} else if (lines[i] === lineno-1 && lines[i+1] !== RANGE) {
-			shouldRemove = true;
-		}
-	}
-
-	if (shouldAdd && shouldRemove) {
-		return -2;
-	} else if (shouldAdd) {
-		return 1;
-	} else if (shouldRemove) {
-		return -1;
-	} else {
-		return 0;
-	}
+	return substrings;
 }
 
 /*
- * Translates markdown into a MarkupEntity
+ * Split markdown into its constituent tokens
  *
- * markdown - An array of lines of markdown
- * root - A MarkupEntity that the output will be put into.
- * schema - A Map which gives the parser additional content to add to lines
+ * markdown		The markdown to tokenize
+ * Returns an array containing the separated tokens
  */
-function parseMarkdown(markdown, root, schema={}) {
-	// Block element types
-	const NONE = 0;
-	const PARAGRAPH = 1;
-	const UL = 2;
-	const OL = 3;
-	const TABLE = 4;
-	const QUOTE = 5;
+function tokenizeMarkdown(markdown) {
+	const specialChars = "#*_~`^-\u2014![]()\"|:>.)\n";
 
-	// Block element regexs
-	const imageRegex = /^!\[([^\]]+)\]\(([^"]+?)\)$/;
-	const ulRegex = /^([ \t]*?)([-–—*•])[ \t]+(?<content>.*)$/;
-	const olRegex = /^([ \t]*?)(\d+|[a-zA-Z]+)([.)])[ \t]+(?<content>.*)$/;
-	const tableRegex = /\|(.+?)(?=\|)/g;  // technically don't need a capture group here except my code breaks when i remove it and its 470 lines long and i cannot handle the emotional strain of debugging it
-									  // this previous comment is now out of date, because i had to change the regex because edge is a fucking shite browser and nobody should use it they should burn the fucking soujrce code aaaaaa fujk
-	const tableFmtRegex = /\|([:-]{3,})(?=\|)/g;  // same goes here i literally could not be assed to save two characters and 243μs
-											  // continuing with the previous update, edge's piece of shit regex engine made me rewrite this one too
-	const blockquoteRegex = /^>[\s]*(.*)/;
-	const blockquoteAttributionRegex = /^\s*-{1,2}(.*)$/;
+	let tokens = [];
+	let currentToken = "";
+	let escapeNext = false;
 
-	// Table column alignments
-	const LEFT = 0;
-	const CENTER = 1;
-	const RIGHT = 2;
+	for (const ch of markdown) {
+		const last = currentToken[currentToken.length-1] ?? "";
 
-	let rootStack = [];
-	let parent = null;
-	let parentType = NONE;
-	let listIndent = 0;
-	let columnAlignment = [];
-	let olMatches = [];
-	let lineno = 1;  // this should increment on each non-blank line
+		if (escapeNext) {
+			// Escape chars after backslashes
+			if (currentToken !== "") {
+				tokens.push(currentToken);
+				currentToken = "";
+			}
 
-	let getLowestRoot = () => rootStack.length > 0 ? rootStack[rootStack.length-1]["entity"] : root;
+			tokens.push(`&#${ch.charCodeAt(0)};`);
+			escapeNext = false;
+		} else if (ch === '\\') {
+			escapeNext = true;
+		} else if (currentToken === "") {
+			// No current token
+			currentToken = ch;
+		} else if (specialChars.includes(ch)) {
+			// Current char is a special character
+			if (last === ch) {
+				// last char is the same as this
+				currentToken += ch;
+			} else {
+				// last char was not a special char
+				tokens.push(currentToken);
+				currentToken = ch;
+			}
+		} else {
+			// current char is not a special char
+			if (specialChars.includes(last)) {
+				// last char was a special char
+				tokens.push(currentToken);
+				currentToken = ch;
+			} else {
+				// last char also is not a special char
+				currentToken += ch;
+			}
+		}
+	}
+	tokens.push(currentToken);
 
-	let terminateOl = () => {
-		// neural network to determine what kind of list markers to apply to the list
-		let listClass = "";
-		if (olMatches.every(e => e[1].split("").every(c => c.charCodeAt(0) >= 0x30 && c.charCodeAt(0) <= 0x39))) {
-			listClass = "arabic";
-		} else if (olMatches.every(e => e[1].split("").every(c => "ivxlcdm".includes(c)))) {
-			listClass = "lower-roman";
-		} else if (olMatches.every(e => e[1].split("").every(c => "IVXLCDM".includes(c)))) {
-			listClass = "upper-roman";
-		} else if (olMatches.every(e => e[1].split("").every(c => c.charCodeAt(0) >= 0x61 && c.charCodeAt(0) <= 0x7A))) {
-			listClass = "lower-latin";
-		} else if (olMatches.every(e => e[1].split("").every(c => c.charCodeAt(0) >= 0x41 && c.charCodeAt(0) <= 0x5A))) {
-			listClass = "upper-latin";
+	return tokens;
+}
+
+/*
+ * Parses a resource like an image or a link into an object containing a
+ * source, alt text, and a title. Also returns the "offset"; how much of the
+ * stack was consumed.
+ */
+function parseResource(stack) {
+	if (stack.length < 3) return null;  // Not a valid image
+
+	let resource = {
+		src: null,
+		alt: null,
+		title: null,
+		offset: 0
+	};
+	let index = 0;
+
+	// look for alt text
+	if (stack[resource.offset] === '[') {
+		// Found beginning of alt text
+		let altText = "";
+		++resource.offset;
+
+		for (; resource.offset < stack.length; ++resource.offset) {
+			if (stack[resource.offset] === ']') {
+				// Found end of alt text
+				resource.alt = altText;
+				break;
+			} else {
+				altText += stack[resource.offset];
+			}
 		}
 
-		if (listClass !== "" && olMatches.every(e => e[2].charAt(0) === ')')) {
-			listClass += "-paren";
-		}
+		if (resource.alt === null) return null;  // Not a valid resource
+	}
 
-		if (parent.attributes["class"]) listClass += parent.attributes["class"];
-		parent.attributes["class"] = listClass;
-		olMatches = [];
+	++resource.offset;
+	if (resource.offset > stack.length) return resource;
+
+	// Look for src and title
+	if (stack[resource.offset] === '(') {
+		// Found beginning of src
+		let parseStep = 0;  // 0 = src, 1 = title, 2 = done
+		let str = "";
+		++resource.offset;
+
+		for (; parseStep !== 2 && resource.offset < stack.length; ++resource.offset) {
+			if (stack[resource.offset] === ')') {
+				if (parseStep === 0) {
+					// src
+					resource.src = str;
+				}
+
+				parseStep = 2;
+				break;
+			} else if (stack[resource.offset] === '"') {
+				if (parseStep === 0) {
+					// switch to title
+					resource.src = str;
+					str = "";
+					parseStep = 1;
+					continue;
+				} else if (parseStep === 1) {
+					// end title
+					resource.title = str;
+					parseStep = 2
+				}
+			}
+
+			str += stack[resource.offset];
+		}
+	}
+
+	return resource;
+}
+
+/*
+* Return array of classes for columns of table or null if it is invalid
+*/
+function parseTableAlignment(format) {
+	if (format[0] !== '|') return null;
+
+	let tableStyling = [];
+	let alignment = -1;  // 0 = center, 1 = right, 2 = left, 3 = justified
+
+	for (let i=1; i < format.length; ++i) {
+		if (format[i] === ':') {
+			if (alignment === -1) {
+				// colon is first thing in the table specifier; left align
+				alignment = 2;
+			} else {
+				// colon is not the first thing
+				// if there was a colon at the start of the specifier,
+				// alignment == 2 -> +1 == 3 == justified
+				// if there was not a colon at the start, then
+				// alignment == 0 -> +1 == 1 == right align
+				++alignment;
+			}
+		} else if (format[i][0] === '-') {
+			if (alignment === -1) {
+				// this is the first thing in the table specifier; center by default
+				alignment = 0;
+			}
+		} else if (format[i] === '|') {
+			if (alignment === -1) {
+				// This is not a valid table specifier
+				return null;
+			} else {
+				switch (alignment) {
+					case 0:
+						tableStyling.push("md-table-align-center");
+						break;
+					case 1:
+						tableStyling.push("md-table-align-right");
+						break;
+					case 2:
+						tableStyling.push("md-table-align-left");
+						break;
+					case 3:
+						tableStyling.push("md-table-align-justify");
+						break;
+				}
+
+				alignment = -1;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	return tableStyling;
+}
+
+/*
+ * Find last index of token in string
+ *
+ * array	The array to search
+ * token	The token to search for
+ * Returns the index of the token, or -1 if no token found
+ */
+function rfind(array, token) {
+	for (let j=array.length-1; j >= 0; --j) {
+		if (array[j] === token) {
+			return j;
+		}
+	}
+	return -1;
+}
+
+/*
+ * Parses inline markdown elements.
+ *
+ * tokens	An array of tokens to parse
+ * Returns an array of strings containing the HTML version of the given
+ * markdown.
+ */
+function parseInlineMarkdown(tokens) {
+	let stack = [];
+
+	/*
+	 * Reduce all elements in stack after and including index into one string
+	 */
+	let reduce_stack = (index) => {
+		let reduced = stack.slice(index).join('');
+		stack.splice(index, stack.length, reduced);
 	};
 
-	// Iterate through the source line by line
-	for (let i=0; i < markdown.length; ++i, ++lineno) {
-		let line = markdown[i];
-		let match;
+	for (let i=0; i < tokens.length; ++i) {
+		let token = tokens[i];
 
-		// skip blank lines
-		if (line === '') {
-			if (parentType === OL) terminateOl();
+		if (token.startsWith("*")) {
+			let match;
 
-			parentType = NONE;  // reset any formatting
-			--lineno;  // lineno shouldn't be increased
-			continue;
-		}
+			if (token.length > 2) {
+				// Lexer made the token too long
+				// Split up the token into valid subtokens and replace them
+				let splitTokens = splitLength(token, 2);
 
-		// update rootStack
-		while (rootStack.length > 0) {
-			// pop anything which no longer applies
-			let applies = doesSchemaApplyToLine(lineno, rootStack[rootStack.length-1]["target"]);
-			if (applies === -1 || applies === -2) {
-				let lastItem = rootStack.pop();
-				getLowestRoot().addChild(lastItem["entity"]);
-			} else {
-				break;
-			}
-		}
+				let forwardMatch = rfind(stack, splitTokens[0]);
+				let backwardMatch = rfind(stack, splitTokens[splitTokens.length - 1]);
 
-		// apply new schemas
-		for (let k of Object.keys(schema)) {
-			// push new entries
-			let applies = doesSchemaApplyToLine(lineno, k);
-			if (applies === 1 || applies === -2) {
-				rootStack.push({"target": k, "entity": schema[k]()});
-			}
-		}
-
-		// Handle special cases
-		if (line === '---') {
-			// Horizontal lines
-			getLowestRoot().addChild(new TerminatingEntity("hr"));
-			continue;
-		} else if (line[0] === '!') {  // Just so we don't always run the regex
-			// Images
-			if ((match = imageRegex.exec(line)) !== null) {
-				let element = new TerminatingEntity("img", {"alt": match[1], "src": match[2]});
-				getLowestRoot().addChild(element);
-				continue;
-			}
-		}
-
-		if (parentType === NONE || parentType === PARAGRAPH) {  // figure out what kind of parent should be on this line
-			if ((match = ulRegex.exec(line)) !== null) {
-				// ul
-				parent = new NestableEntity("ul", {
-					"class": !"*•".includes(match[2].codePointAt(0)) ? "list-dashed" : ""
-				});
-
-				let element = new NestableEntity("li");
-
-				listIndent = match[1].length;
-
-				applyInlineFormatting(element, match.groups.content);
-
-				parent.addChild(element);
-				getLowestRoot().addChild(parent);
-				parentType = UL;
-			} else if ((match = olRegex.exec(line)) !== null) {
-				// ol
-				parent = new NestableEntity("ol");
-
-				let element = new NestableEntity("li");
-
-				applyInlineFormatting(element, match.groups.content);
-
-				olMatches.push([match[1], match[2], match[3]]);
-
-				parent.addChild(element);
-				getLowestRoot().addChild(parent);
-				parentType = OL;
-			} else if (line.match(tableRegex) !== null) {
-				// table
-				if (markdown[i+1].match(tableFmtRegex) !== null) {
-					// definitely a table
-					// also why tf are tables so complicated like wtf the thead and tbody tags are totally unnecessary when you also have a special tag for table header cells
-					// i guarantee that if anyone put more than 8 seconds of thought into it they could come up with an infinitely better system for table formatting in html
-					// no i wont do it
-					parent = new NestableEntity("table", {"class": "table table-bordered"});
-
-					let head = new NestableEntity("thead");  // This is a useless fucking element
-					let row = new NestableEntity("tr");
-
-					// figure out alignment
-					while ((match = tableFmtRegex.exec(markdown[i+1])) !== null) {
-						let lastIndex = match[1].length - 1;
-						if (match[1][0] === ':' && match[1][lastIndex] === ':') {
-							columnAlignment.push(CENTER);
-						} else if (match[1][lastIndex] === ':') {
-							columnAlignment.push(RIGHT);
-						} else {
-							columnAlignment.push(LEFT);
-						}
-					}
-
-					let column = 0;
-					while ((match = tableRegex.exec(line)) !== null) {
-						let style;
-
-						switch (columnAlignment[column]) {
-							case LEFT:
-								style = "text-align: left;";
-								break;
-							case CENTER:
-								style = "text-align: center;";
-								break;
-							case RIGHT:
-								style = "text-align: right;";
-								break;
-						}
-
-						let cell = new NestableEntity("th", {"style": style});  // this is the element that makes the aforementioned fucking element useless
-
-						applyInlineFormatting(cell, match[1].trim());
-
-						row.addChild(cell);
-						++column;
-					}
-
-					head.addChild(row);
-					parent.addChild(head);
-					getLowestRoot().addChild(parent);
-					++i;  // Skip table alignment/formatting thingy bcuz i dont actually use it
-					parentType = TABLE;
-				}
-			} else if (line[0] === '>') {
-				// Blockquote
-				parent = new NestableEntity("blockquote");
-				let body = new NestableEntity("div", {"class": "quote-body"});
-
-				let paragraph = new NestableEntity("p");
-
-				let match = blockquoteRegex.exec(line);
-
-				applyInlineFormatting(paragraph, match[1]);
-
-				body.addChild(paragraph);
-				parent.addChild(body);
-				getLowestRoot().addChild(parent);
-				parentType = QUOTE;
-			} else {
-				let level = 0;
-				for (; line[level] === '#'; ++level);  // Count '#'s at start of line
-				line = line.slice(level);
-
-				if (parentType === PARAGRAPH) {
-					if (level === 0 && level <= 6) {
-						// Append to the previous paragraph
-						applyInlineFormatting(parent, ' ' + line);
-					} else {
-						// This is actually a heading
-						parentType = NONE;
-						--i;
-						continue;
-					}
+				if (backwardMatch > forwardMatch) {
+					// This token works better if the split version is reversed
+					splitTokens.reverse();
+					match = backwardMatch;
 				} else {
-					// Create new text element
-					if (level === 0 && level <= 6) {
-						parent = new NestableEntity("p");
-						parentType = PARAGRAPH;
-					} else {
-						parent = new NestableEntity(`h${level}`);
-					}
-
-					applyInlineFormatting(parent, line);
-
-					getLowestRoot().addChild(parent);
-					parent = (level === 0) ? parent : null;
+					match = forwardMatch;
 				}
-			}
-		} else if (parentType === UL) {
-			// this is either a list item or the end of a list
-			if ((match = ulRegex.exec(line)) !== null) {  // list item
-				let lineIndent = listItem("ul", parent, match, listIndent);
 
-				if (lineIndent > listIndent) {  // this line is more indented than the last list item
-					listIndent = lineIndent;
-					parent = parent.lastChild;
-				}
-			} else {  // end of a list
-				parentType = NONE;
-				listIndent = 0;
-				--i;
-				continue;
-			}
-		} else if (parentType === OL) {
-			if ((match = olRegex.exec(line)) !== null) {
-				let newIndent = listItem("ol", parent, match, listIndent);
-
-				olMatches.push([match[1], match[2], match[3]]);
-
-				if (newIndent > listIndent) {
-					listIndent = newIndent;
-					parent = parent.lastChild;
-				}
+				tokens.splice(i, 1, ...splitTokens);
+				token = tokens[i];  // get new shortened token
 			} else {
-				parentType = NONE;
-				listIndent = 0;
-
-				terminateOl();
-
-				--i;
-				continue;
+				// Search backwards through parse stack for matching token
+				match = rfind(stack, token);
 			}
-		} else if (parentType === TABLE) {
-			if (line.match(tableRegex) !== null) {
-				// add another row to the table
-				let body = new NestableEntity("tbody");
-				let row = new NestableEntity("tr");
-				let column = 0;
 
-				while ((match = tableRegex.exec(line)) !== null) {
-					let style;
+			if (match !== -1) {
+				// A match was found!
+				if (token.length === 2) {
+					/* Bold */
+					stack[match] = "<b>";
+					stack.push("</b>");
+				} else {
+					/* Italic */
+					stack[match] = "<i>";
+					stack.push("</i>");
+				}
+				reduce_stack(match);
+			} else {
+				stack.push(token);
+			}
+		} else if (token.startsWith("_")) {
+			let match;
 
-					switch (columnAlignment[column]) {
-						case LEFT:
-							style = "text-align: left;";
-							break;
-						case CENTER:
-							style = "text-align: center;";
-							break;
-						case RIGHT:
-							style = "text-align: right;";
-							break;
-					}
+			if (token.length > 2) {
+				// Lexer made the token too long
+				// Split up the token into valid subtokens and replace them
+				let splitTokens = splitLength(token, 2);
 
-					let cell = new NestableEntity("td", {"style": style});
+				let forwardMatch = rfind(stack, splitTokens[0]);
+				let backwardMatch = rfind(stack, splitTokens[splitTokens.length - 1]);
 
-					applyInlineFormatting(cell, match[1].trim());
-
-					row.addChild(cell);
-					++column;
+				if (backwardMatch > forwardMatch) {
+					// This token works better if the split version is reversed
+					splitTokens.reverse();
+					match = backwardMatch;
+				} else {
+					match = forwardMatch;
 				}
 
-				body.addChild(row);
-				parent.addChild(body);
+				tokens.splice(i, 1, ...splitTokens);
+				token = tokens[i];  // get new shortened token
 			} else {
-				parentType = NONE;
-				--i;
-				continue;
+				// Search backwards through parse stack for matching token
+				match = rfind(stack, token);
 			}
-		} else if (parentType === QUOTE) {
-			if ((match = blockquoteRegex.exec(line)) !== null) {
-				// Still a blockquote
-				let paragraph = new NestableEntity("p");
 
-				applyInlineFormatting(paragraph, match[1]);
-
-				parent.lastChild.addChild(paragraph);
-			} else if ((match = blockquoteAttributionRegex.exec(line)) !== null) {
-				// no longer a blockquote, but has an attribution
-				let attribution = new NestableEntity("div", {"class": "quote-attrib"});
-
-				applyInlineFormatting(attribution, match[1]);
-
-				parent.addChild(attribution);
-				parentType = NONE;
+			if (match !== -1) {
+				// A match was found!
+				if (token.length === 2) {
+					/* Underline */
+					stack[match] = "<u>";
+					stack.push("</u>");
+				} else {
+					/* Subscript */
+					stack[match] = "<sub>";
+					stack.push("</sub>");
+				}
+				reduce_stack(match);
 			} else {
-				// No longer a blockquote
-				parentType = NONE;
-				--i;
-				continue;
+				stack.push(token);
 			}
+		} else if (token.startsWith("~~")) {
+			/* Strikethrough */
+			if (token.length > 2) {
+				tokens.splice(i, 1, ...splitLength(token, 2));
+				token = tokens[i];  // get new shortened token
+			}
+
+			// Search backwards through parse stack for matching token
+			let match = rfind(stack, token);
+
+			if (match !== -1) {
+				// A match was found!
+				stack[match] = "<s>";
+				stack.push("</s>");
+				reduce_stack(match);
+			} else {
+				stack.push(token);
+			}
+		} else if (token.startsWith("`")) {
+			/* Code */
+			if (token.length > 1) {
+				tokens.splice(i, 1, ...splitLength(token, 1));
+				token = tokens[i];  // get new shortened token
+			}
+
+			// Search backwards through parse stack for matching token
+			let match = rfind(stack, token);
+
+			if (match !== -1) {
+				// A match was found!
+				stack[match] = "<code>";
+				stack.push("</code>");
+				reduce_stack(match);
+			} else {
+				stack.push(token);
+			}
+		} else if (token.startsWith("^")) {
+			/* Superscript */
+			if (token.length > 1) {
+				tokens.splice(i, 1, ...splitLength(token, 1));
+				token = tokens[i];  // get new shortened token
+			}
+
+			// Search backwards through parse stack for matching token
+			let match = rfind(stack, token);
+
+			if (match !== -1) {
+				// A match was found!
+				stack[match] = "<sup>";
+				stack.push("</sup>");
+				reduce_stack(match);
+			} else {
+				stack.push(token);
+			}
+		} else if (token === ']' || token === ")") {
+			/* Links */
+			stack.push(token);
+
+			if (token === ']') {
+				// Check if this is a longer link
+				if (i+1 < tokens.length && tokens[i+1] === '(') {
+					// This is a longer link, so itll get parsed later
+					continue;
+				}
+			}
+
+			// Search backwards through parse stack for beginning of link
+			let match = rfind(stack, '[');
+
+			if (match !== -1) {
+				if (match !== 0 && stack[match-1] === '!') {
+					// This is an image
+					continue;
+				}
+
+				let link = parseResource(stack.slice(match));
+
+				if (link === null || (link.src === null) && link.alt === null) {
+					// Not a valid link
+					continue;
+				}
+
+				let linkHtml = `<a href="${link.src ? link.src : link.alt}" title="${link.title ?? (link.src ?? link.alt)}">${link.alt}</a>`;
+				stack.splice(match, link.offset+1, linkHtml);
+
+			}
+		} else {
+			stack.push(token);
 		}
 	}
 
-	// unravel rootStack
-	for (let i=rootStack.length; i > 0; --i) {
-		let lastItem = rootStack.pop();
-		getLowestRoot().addChild(lastItem["entity"]);
-	}
-
-	return root;
+	return stack;
 }
 
 /*
- * Applies inline formatting to a string, and appends it to the parent.
+ * Parses markdown, returning HTML
  *
- * This function does formatting for bold, italics, underlines, preformatted text (code),
- * superscript, subscript, hyperlinks, and email addresses.
- *
- * parent - The parent to append the resulting entities to
- * line - The line to format
+ * tokens	The tokens to parse
+ * Returns an HTML string
  */
-function applyInlineFormatting(parent, line) {
-	// also had to rewrite these regexs to remove lookbehinds. did i mention fuck edge? actually fuck browser compatibility. why cant everyone just use the same browser and browser settings i do?
-	const boldRegex = /(.*?)\*\*(.*?)\*\*(?!\*)(.*)/;  // Bold and italics need to be done as regex because 
-	const italicRegex = /(.*?)\*(.*?)\*(.*)/;
-	const underlineRegex = /(.*?)__(.*?)__(.*)/;
-	const preformattedRegex = /(.*?)`(.*?)`(.*)/;
-	const superscriptRegex = /(.*?)\^\((.*?)\)(.*)/;
-	const subscriptRegex = /(.*?)\_\((.*?)\)(.*)/;
-	const strikethroughRegex = /(.*?)~~(.*?)~~(.*)/;
-	const linkForm1 = /(.*?(?:^|[^!^]))\[([^\]]+)\]\(([^"]+?)\)(.*)/;  // [text](url)
-	const linkForm2 = /(.*?(?:^|[^!^]))\[([^\]]+)\]\(([^")]+?) "(.+?)"\)(.*)/;  // [text](url "title")
-	const linkForm3 = /(.*?)<([a-zA-Z0-9]+:\/\/[\w-.]+?.[\w-]+)>(.*)/;  // <url>
-	const emailLink = /(.*?)<([a-zA-Z0-9!#$%&'*+-\/=?^_`{|}~.]+@[\w-.]+?.[\w-]+)>(.*)/g; // <email>
+function parseMarkdown(tokens) {
+	let stack = [];
+	let blockStack = [];
 
-	let match;
+	let listIndent = -1;
 
-	if ((match = boldRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to make bold
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);  // format the start of the line
+	/*
+	 * Flush the blockstack into the stack before the given index
+	 *
+	 * index	The index to flush before
+	 * Returns the number of tokens added to the stack
+	 */
+	let blockStack_flushBefore = (index) => {
+		let tokensAdded = 0;
 
-		let element = new NestableEntity("b");
-		applyInlineFormatting(element, match[2]);  // format anything inside the bold tag
+		while (blockStack.length > 0) {
+			stack.splice(index, 0, `</${blockStack.pop()}>`);
+			++tokensAdded;
+		}
 
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);  // format the end of the line
-
-		return;  // nothing left to do; the entire line has been formatted
+		return tokensAdded;
 	}
 
-	if ((match = italicRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to italicize
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
+	/*
+	 * Find last index of token containing a newline. Returns -1 if no match
+	 * found.
+	 */
+	let rfind_lf = () => {
+		for (let j=stack.length-1; j >= 0; --j) {
+			if (stack[j].includes('\n')) {
+				return j;
+			}
+		}
+		return -1;
+	};
 
-		let element = new NestableEntity("i");
-		applyInlineFormatting(element, match[2]);
+	/*
+	 * Reduce all elements in stack after and including index into one string
+	 */
+	let reduce_stack = (index) => {
+		let reduced = stack.slice(index).join('');
+		stack.splice(index, stack.length, reduced);
+	};
 
-		parent.addChild(element);
+	/*
+	 * Returns a css class for an ordered list based off of a list marker, or
+	 * null if the list marker is not a valid marker.
+	 */
+	let getOlClass = (firstToken, secondToken) => {
+		let olClass;
 
-		applyInlineFormatting(parent, match[3]);
+		if (firstToken.split('').every(c => "ivxlcdm".includes(c))) {
+			// lower roman numerals
+			olClass = "lower-roman";
+		} else if (firstToken.split('').every(c => "IVXLCDM".includes(c))) {
+			// upper roman numerals
+			olClass = "upper-roman";
+		} else if (firstToken.length === 1
+					&& (firstToken.charCodeAt(0) >= 0x41 && firstToken.charCodeAt(0) <= 0x5A)) {
+			// upper latin
+			olClass = "upper-latin";
+		} else if (firstToken.length === 1
+					&& (firstToken.charCodeAt(0) >= 0x61 && firstToken.charCodeAt(0) <= 0x7A)) {
+			// lower latin
+			olClass = "lower-latin";
+		} else if (firstToken.split('').every(c => c.charCodeAt(0) >= 0x30 && c.charCodeAt(0) <= 0x39)) {
+			// arabic
+			olClass = "arabic";
+		} else {
+			return null;
+		}
 
-		return;
+		if (secondToken === ')') {
+			olClass += "-paren";
+		} else if (secondToken !== '.') {
+			return null;
+		}
+
+		return olClass;
+	};
+
+	let scratch;  // scratch variable for assignments in if conditions
+				  // consider refactoring this out
+
+	for (let i=0; i < tokens.length; ++i) {
+		let token = tokens[i];
+
+		if (token.startsWith('\n')) {
+			// Handle block elements
+
+			if (stack.length === 0) continue;  // Ignore this token
+
+			let lineEnd = rfind_lf();  // Find index of last line ending
+			let indent = 0;
+			let firstTokenIndex = null;
+
+			// lineEnd can never be last element, so +1 is always valid
+			for (let j=lineEnd+1; j < stack.length; ++j) {
+				if (!stack[j].split('').every(c => " \t".includes(c))) {
+					firstTokenIndex = j;
+					break;
+				} else {
+					indent += stack[j].length;
+				}
+			}
+
+			firstToken = stack[firstTokenIndex];
+			if (firstToken === null || firstToken === undefined) continue;  // Ignore this token
+
+			if (firstToken.startsWith("#")) {
+				/* Headings */
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+
+				let level = (firstToken.length <= 6) ? firstToken.length : 6;
+				stack[firstTokenIndex] = `<h${level}>`;
+				stack.push(`</h${level}>`);
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+				stack.splice(firstTokenIndex, stack.length, ...inline);
+				reduce_stack(lineEnd+1);
+			} else if (firstToken === '!') {
+				/* Images */
+				// '!', '[', ..., ']', '(', ..., ')'
+				if (stack.length - lineEnd < 5) continue;  // Not a valid image
+
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+
+				let img = parseResource(stack.slice(firstTokenIndex + 1));
+
+				if (img.src === null || img.alt === null) {
+					// Not a valid image
+					continue;
+				}
+
+				let imgHtml = `<img src="${img.src}" alt="${img.alt}" title="${img.title ?? img.alt}" />`;
+				stack.splice(firstTokenIndex, img.offset+2, imgHtml);  // offset+2 since we've processed the \n and ! out here
+			} else if (firstToken === '>') {
+				/* Blockquotes */
+				if (blockStack.length !== 0 && blockStack[blockStack.length-1] !== "blockquote") {
+					// Blockstack is not empty and there isnt already a blockquote there
+					firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+				}
+
+				if (blockStack.length === 0) {
+					// Blockstack is empty; start a new blockquote
+					// NOTE: class blockquote triggers a style from bootstrap
+					// NOTE: should we use that style??
+					stack[firstTokenIndex] = "<figure class=\"bq\"><blockquote>";
+					blockStack.push("figure");
+					blockStack.push("blockquote");
+				} else {
+					// Just keep adding to the current blockquote; itll get
+					// closed later
+					stack[firstTokenIndex] = '<br>'
+				}
+			} else if ((firstToken === '--' || firstToken === '\u2014')
+					&& (blockStack.length !== 0 && blockStack[blockStack.length-1] === "blockquote")) {
+				/* Blockquote attribution */
+				stack[firstTokenIndex] = `</${blockStack.pop()}><figcaption>`;
+				stack.push("</figcaption>");
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+				stack.splice(firstTokenIndex, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+
+				blockStack_flushBefore(stack.length);
+			} else if (firstToken === '-' || firstToken === '*' || firstToken === '\u2014') {
+				/* unordered list */
+				if (blockStack.length !== 0 && (blockStack[blockStack.length-1] !== "ol"
+												&& blockStack[blockStack.length-1] !== "ul")) {
+					// Blockstack is not empty and there isnt already a list there
+					let shift = blockStack_flushBefore(lineEnd);
+					firstTokenIndex += shift;
+					lineEnd += shift;
+				}
+
+				if (indent > listIndent || blockStack.length === 0) {
+					// Add a new list level
+					let classList = "";
+
+					if (firstToken !== '*') classList = `class="list-dashed"`;
+					stack.splice(firstTokenIndex, 0, `<ul ${classList}>`);
+					++firstTokenIndex;
+					blockStack.push("ul");
+
+					listIndent = indent;
+				} else if (indent < listIndent) {
+					// Go up a list level
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}>`);
+					++firstTokenIndex;
+
+					listIndent = indent;
+				} else if (blockStack[blockStack.length-1] === "ol") {
+					// ul directly after an ol
+					let classList = "";
+
+					if (firstToken !== '*') classList = `class="list-dashed"`;
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}><ul ${classList}">`);
+					++firstTokenIndex;
+					blockStack.push("ul");
+				}
+
+				stack[firstTokenIndex] = "<li>";
+				stack.push("</li>");
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex+1));
+				stack.splice(firstTokenIndex+1, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+			} else if (stack.length > firstTokenIndex && ".)".includes(stack[firstTokenIndex+1])
+						&& (scratch = getOlClass(firstToken.trimStart(), stack[firstTokenIndex+1])) !== null) {
+				/* ordered list */
+				if (blockStack.length !== 0 && (blockStack[blockStack.length-1] !== "ol"
+												&& blockStack[blockStack.length-1] !== "ul")) {
+					// Blockstack is not empty and there isnt already a list there
+					let shift = blockStack_flushBefore(lineEnd);
+					firstTokenIndex += shift;
+					lineEnd += shift;
+				}
+
+				indent += firstToken.length - firstToken.trimStart().length;
+
+				if (indent > listIndent || blockStack.length === 0) {
+					// Add a new list level
+					stack.splice(firstTokenIndex, 0, `<ol class="${scratch}">`)
+					++firstTokenIndex;
+					blockStack.push("ol");
+
+					listIndent = indent;
+				} else if (indent < listIndent) {
+					// Go up a list level
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}>`);
+					++firstTokenIndex;
+
+					listIndent = indent;
+				} else if (blockStack[blockStack.length-1] === "ul") {
+					// ol directly after a ul
+					stack.splice(firstTokenIndex, 0, `</${blockStack.pop()}><ol class="${scratch}">`);
+					++firstTokenIndex;
+					blockStack.push("ol");
+				}
+
+				stack[firstTokenIndex] = "<li>";
+				stack.push("</li>");
+				stack.splice(firstTokenIndex+1, 1);
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex+1));
+				stack.splice(firstTokenIndex+1, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+			} else if (firstToken.startsWith('---') && stack.slice(firstTokenIndex).every(elem => elem.split('').every(ch => ch === '-'))) {
+				/* Horizontal line */
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+				stack.splice(firstTokenIndex, stack.length, "<hr />");
+			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length && blockStack.length === 0) {
+				// Single newline inside a paragraph; ignore
+				stack.push('\u0003');
+				continue;
+			} else {
+				/* Paragraphs */
+				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
+
+				if (stack[firstTokenIndex] === '|') {
+					// Maybe a table
+					let table = stack.slice(firstTokenIndex);
+					let rows = [];
+
+					while (table.length > 0) {
+						let row = [];
+						do {
+							row.push(table.shift());
+						} while (row[row.length-1] !== '\u0003' && table.length > 0);
+						// push row without indentation and line seps
+						rows.push(row.filter(token => !token.split('').every(c => " \t\u0003".includes(c))));
+					}
+
+					if (rows.length > 3 && rows[1].join('').split('').every(c => "|:-".includes(c))) {
+						// This is a table
+						let columnClasses = parseTableAlignment(rows[1]);
+
+						if (columnClasses !== null) {
+							// Valid table
+							stack.splice(firstTokenIndex, stack.length);  // Remove existing table tokens from stack
+
+							// Insert table formatting
+							stack.push(`<table><thead><tr><th class="${columnClasses[0]}">`);
+
+							// Insert table heading
+							for (let i=1, col=1; i < rows[0].length-1; ++i) {
+								if (rows[0][i] === '|') {
+									stack.push(`</th><th class="${columnClasses[col]}">`);
+									++col;
+								} else {
+									stack.push(rows[0][i]);
+								}
+							}
+
+							// Table body
+							stack.push("</th></tr></thead><tbody>");
+
+							for (let i=2; i < rows.length; ++i) {
+								stack.push(`<tr><td class="${columnClasses[0]}">`);
+
+								for (let j=1, col=1; j < rows[i].length-1; ++j) {
+									if (rows[i][j] === '|') {
+										stack.push(`</td><td class="${columnClasses[col]}">`);
+										++col;
+									} else {
+										stack.push(rows[i][j]);
+									}
+								}
+
+								stack.push("</td></tr>");
+							}
+
+							// End of table
+							stack.push("</tbody></table>");
+
+							// Apply inline styles
+							let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+							stack.splice(firstTokenIndex, stack.length, ...inline);
+							reduce_stack(firstTokenIndex);
+
+							stack.push('\n');
+							continue;
+						}
+					}
+
+				}
+
+				stack.splice(firstTokenIndex, 0, "<p>");
+				stack.push("</p>");
+
+				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
+				stack.splice(firstTokenIndex, stack.length, ...inline);
+				reduce_stack(firstTokenIndex);
+			}
+
+			stack.push('\n');
+		} else {
+			stack.push(token);
+		}
 	}
 
-	if ((match = underlineRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to underline
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("u");
-		applyInlineFormatting(element, match[2]);
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	if ((match = preformattedRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to format
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("code");
-		element.addChild(new TextEntity(match[2]));  // dont format code
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	if ((match = superscriptRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to make superscript
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("sup");
-		applyInlineFormatting(element, match[2]);
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	if ((match = subscriptRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to make subscript
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("sub");
-		applyInlineFormatting(element, match[2]);
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	if ((match = strikethroughRegex.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = content to strikethrough
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("s");
-		applyInlineFormatting(element, match[2]);
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	if ((match = linkForm1.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = link text
-		// match[3] = link url
-		// match[4] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("a", {"href": match[3]});
-		applyInlineFormatting(element, match[2]);
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[4]);
-
-		return;
-	}
-
-	if ((match = linkForm2.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = link text
-		// match[3] = link url
-		// match[4] = link title
-		// match[5] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("a", {"href": match[3], "title": match[4]});
-		applyInlineFormatting(element, match[2]);
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[5]);
-
-		return;
-	}
-
-	if ((match = linkForm3.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = link url
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("a", {"href": match[2]});
-		element.addChild(new TextEntity(match[2]));  // Add url literally
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	if ((match = emailLink.exec(line)) !== null) {
-		// match[1] = start of line
-		// match[2] = email address
-		// match[3] = end of line
-		applyInlineFormatting(parent, match[1]);
-
-		let element = new NestableEntity("a", {"href": `mailto:${match[2]}`});
-		element.addChild(new TextEntity(match[2]));
-
-		parent.addChild(element);
-
-		applyInlineFormatting(parent, match[3]);
-
-		return;
-	}
-
-	// No changes were made, add line exactly as it was passed
-	parent.addChild(new TextEntity(line));
+	return stack.join('');
 }
 
-/*
- * Generates an <li> entity for a list item regex match.
- *
- * tag - The string tag of the parent of this list
- * parent - The parent NestableEntity
- * match - The regex match object
- * indent - How far indented the previous li was. If this one is more indented,
- *          then it will create a nested list.
- * Returns the indentation level of this li.
- */
-function listItem(tag, parent, match, indent) {
-	if (match[1].length > indent) {
-		indent = match[1].length;
-		let sublist = new NestableEntity(tag);
+document.addEventListener("DOMContentLoaded", async () => {
+	// Render markdown after DOM finished parsing
+	let targetElems = document.querySelectorAll("pre.markdown");
 
-		let element = new NestableEntity("li");
+	for (const target of targetElems) {
+		if (!target instanceof HTMLElement) continue;  // Not an HTML element; ignore it
 
-		applyInlineFormatting(element, match.groups.content);
-
-		sublist.addChild(element);
-		parent.addChild(sublist);
-	} else {
-		let element = new NestableEntity("li");
-
-		applyInlineFormatting(element, match.groups.content);
-		parent.addChild(element);
-	}
-
-	return indent;
-}
-
-document.addEventListener("DOMContentLoaded", async function() {
-	let targetDivs = document.getElementsByClassName("markdown");
-	
-	for (const target of targetDivs) {
-		if (!target instanceof HTMLElement) continue;  // This is an XML element; not what we want
-		
 		let markdown;
-		
+
 		if ("src" in target.dataset) {
-			// Load remote file
-			markdown = await fetch(target.dataset.src, {
-				"mode": "same-origin"
-			}).then(response => response.text().then(text => text.replace('\r', '').split('\n')));
+			// Source specified; load remote file
+			markdown = await fetch(target.dataset.src).then(response => response.text());
 		} else {
-			// Render embedded markdown
-			markdown = target.textContent.replace('\r', '').split('\n').map(line => line.trim());
+			// No source; use textContent
+			markdown = target.textContent;
 		}
 
-		let card = new NestableEntity("div", {"class": "card"});
+		let card = document.createElement("div");
+		card.classList += "card";
 
-		if (!target.dataset.type || target.dataset.type === "default") {  // use default type
-			let cardBody = new NestableEntity("div", {"class": "card-body"}, {"p": {"class": "mb-1"}, "img": {class: "img-fluid"}});
-			parseMarkdown(markdown, cardBody);
-			card.addChild(cardBody);
-		} else if (target.dataset.type === "recipe") {
-			Cards.recipe(markdown, card);
-		} else if (target.dataset.type === "news-basic") {
-			Cards.news_basic(markdown, card);
-		} else if (target.dataset.type === "news-img") {
-			Cards.news_img(markdown, card);
-		} else if (target.dataset.type === "news-img-collapse") {
-			Cards.news_img_collapse(markdown, card);
-		} else {
-			console.log(target.dataset.type);
-			continue;  // unknown type; skip
-		}
+		let cardBody = document.createElement("div");
+		cardBody.classList += "card-body";
+		card.appendChild(cardBody);
 
-		target.innerHTML = card.generateEntity();
+		let newElem = document.createElement("div");
+		newElem.classList += "markdown";
+		cardBody.appendChild(newElem);
+
+		let tokens = tokenizeMarkdown(markdown);
+		newElem.innerHTML = parseMarkdown(tokens);
+
+		target.parentNode.replaceChild(card, target);
 	}
 });
