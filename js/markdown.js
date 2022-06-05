@@ -1,5 +1,8 @@
 /*
  * Version 2.0 of markdown.js
+ *
+ * Minified using uglify.js
+ * uglifyjs --compress --mangle toplevel -- js/markdown.js > js/markdown.min.js
  */
 
 /*
@@ -543,7 +546,7 @@ function parseMarkdown(tokens) {
 				}
 			}
 
-			firstToken = stack[firstTokenIndex];
+			let firstToken = stack[firstTokenIndex];
 			if (firstToken === null || firstToken === undefined) continue;  // Ignore this token
 
 			if (firstToken.startsWith("#")) {
