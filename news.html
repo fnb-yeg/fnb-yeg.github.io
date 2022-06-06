@@ -4,13 +4,19 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
 	<link href="stylesheet.css" rel="stylesheet" type="text/css"/>
 
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	
+
+	
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
 	<script src="/js/markdown.min.js"></script>
 
@@ -42,7 +48,7 @@
 							<a class="nav-link" href="/how_to_join">How to Join</a>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-toggle="dropdown" aria-expanded="false">
 							Request Food
 							</a>
 							<ul class="dropdown-menu" aria-labelledby="navCalendar">
@@ -51,7 +57,7 @@
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-toggle="dropdown" aria-expanded="false">
 							Calendar
 							</a>
 							<ul class="dropdown-menu" aria-labelledby="navCalendar">
@@ -80,6 +86,32 @@
 		</nav>
 		<div class="container">
 			<div class="row justify-content-center">
+				<div class="col-12" style="display: none">
+					<!-- Card with collapsible transcription -->
+					<div class="card">
+						<img class="card-img-top" src="images/newsletter_may26.png" alt="Food Not Bombs Newsletter for June 2022.">
+						<div class="card-body">
+							<p>
+								<a data-toggle="collapse" href="#templateCollapseTextID" role="button" aria-expanded="false" aria-controls="templateCollapseTextID">[View Image Transcription]</a>
+							</p>
+							<div class="collapse" id="templateCollapseTextID">
+								<p>Type the transcription here.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-md-12 col-lg-4">
+					<div class="card">
+						<img class="card-img-top" src="images/soy_june5_2022.jpg" alt="Image of members standing in front of food and other supplies.">
+						<div class="card-body">
+							<div class="d-flex w-100 justify-content-between">
+								<h5 class="mb-1">SOY Meal</h5>
+								<small>June 5, 2022</small>
+							</div>
+							<p class="mb-1">FNB YEG served a meal to the community at Herb Jamieson facility today through the Street Outreach YEG program. We served about 25 people meals of rajma (bean curry), cauliflower and onions, and bread.  We also handed out clothes, face masks, condoms, and menstrual products.</p>
+						</div>
+					</div>
+				</div>
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
 						<div id="wkusCarousel" class="carousel slide" data-interval="false">
@@ -102,9 +134,31 @@
 								<div class="carousel-item">
 									<img src="images/wkus4.jpg" class="d-block w-100" alt="Members standing and smiling.">
 								</div>
-							</div>
-						</div>
-					</div>
+							</div> <!-- end carousel inner -->
+
+							<!-- Finally, we have the carousel controls (next and previous). --> 
+							<a class="carousel-control-prev" href="#wkusCarousel" role="button" data-slide="prev">
+								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+								<span class="sr-only">Prev</span>
+							</a>
+							<a class="carousel-control-next" href="#wkusCarousel" role="button" data-slide="next">
+								<span class="carousel-control-next-icon" aria-hidden="true"></span>
+								<span class="sr-only">Next</span>
+							</a>
+						</div> <!-- end carousel -->
+						<!-- This describes the text that will be shown below your images. -->
+						<div class="main-text hidden-xs">
+				            <div class="col-md-12 text-center">
+				                <div class="d-flex w-100 justify-content-between">
+									<h5 class="mb-1">We Keep Us Safe Block Party</h5>
+									<small>March 2022</small>
+								</div>
+								<p class="mb-1">Food Not Bombs Edmonton partnered with some other groups around the city to host a block party in downtown Edmonton. We had a blast!</p>
+				            </div>
+				        </div>
+					</div> <!-- end card --> 
+				</div>
+				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
 						<div id="feb13Carousel" class="carousel slide" data-interval="false">
 							<ol class="carousel-indicators">
