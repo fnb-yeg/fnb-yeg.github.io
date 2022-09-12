@@ -1,7 +1,8 @@
 #!/usr/bin/perl
-# serve.pl PATH <port>
-#  PATH is the path of the server root. This is required.
-#  port is the port to serve on. The default value is 80.
+# serve.pl [PATH [[HOST] PORT]]
+#  PATH is the path of the server root. This is the current directory by default.
+#  HOST is the host name of the server. The default value is 127.0.0.1
+#  PORT is the port to serve on. The default value is 80. 
 
 use strict;
 use Socket;
@@ -132,19 +133,22 @@ sub resolvePath {
 }
 
 sub main {
-	# Get port from command line, otherwise default to 80
-	my ($workingDir, $port) = @ARGV;
+	# Parse command line
+	my $ARGC = @ARGV;
+	my $workingDir = shift @ARGV // ".";
+	my $host = ($ARGC == 3) ? shift @ARGV : "127.0.0.1";
+	my $port = shift @ARGV // 80;
 
-	$port = 80 if (not defined $port);
+	die "No such directory $workingDir" if (!-d $workingDir);
 
 	# Create tcp socket on localhost and listen
 	my $proto = getprotobyname("tcp");
 	socket(my $server, PF_INET, SOCK_STREAM, $proto) || die "socket: $!";
 	setsockopt($server, SOL_SOCKET, SO_REUSEADDR, pack("l", 1)) || die "setsockopt: $!";
-	bind($server, sockaddr_in($port, inet_aton("127.0.0.1"))) || die "bind: $!";
+	bind($server, sockaddr_in($port, inet_aton($host))) || die "bind: $!";
 	listen($server, SOMAXCONN) || die "listen: $!";
 
-	print "Server started at http://127.0.0.1:$port\n";
+	print "Serving directory $workingDir at http://$host:$port\n";
 
 
 	while (my $paddr = accept(my $client, $server)) {
