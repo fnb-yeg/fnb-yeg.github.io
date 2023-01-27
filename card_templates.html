@@ -41,7 +41,7 @@ to add some content. -->
 	if it is a poster, transcribe it.">
 	<div class="card-body">
 		<p>
-			<a data-toggle="collapse" href="#templateCollapseTextID" role="button" aria-expanded="false" aria-controls="templateCollapseTextID">[View Image Transcription]</a>
+			<a data-bs-toggle="collapse" href="#templateCollapseTextID" role="button" aria-expanded="false" aria-controls="templateCollapseTextID">[View Image Transcription]</a>
 		</p>
 		<div class="collapse" id="templateCollapseTextID">
 			<p> Type up the image transcription here.
@@ -55,16 +55,16 @@ to add some content. -->
 <!-- These can be finicky to set up. If you think you did everything right and it's still not working, make sure the page head is correct (matches the head exactly of a page with a working carousel, such as recipes or news.) -->
 <div class="card">
 	<!-- give your carousel a unique ID and replace every instance of "exampleCarouselID" with your new ID -->
-	<!-- data-interval="false" indicates that we do not want the carousel to automatically begin sliding through
+	<!-- data-bs-interval="false" indicates that we do not want the carousel to automatically begin sliding through
 		the images. Read the bootstrap carousel docs if you'd like to change this setting. -->
-	<div id="exampleCarouselID" class="carousel slide" data-interval="false">
+	<div id="exampleCarouselID" class="carousel slide" data-bs-interval="false">
 			<!-- First we have the carousel indicators. For each image you'd like to display, 
 				list an indicator. This example would show three images, so there are three
 				list items in the carousel-indicators list. -->
 			<ol class="carousel-indicators">
-				<li data-target="#exampleCarouselID" data-slide-to="0" class="active"></li>
-				<li data-target="#exampleCarouselID" data-slide-to="1"></li>
-				<li data-target="#exampleCarouselID" data-slide-to="2"></li>
+				<li data-bs-target="#exampleCarouselID" data-bs-slide-to="0" class="active"></li>
+				<li data-bs-target="#exampleCarouselID" data-bs-slide-to="1"></li>
+				<li data-bs-target="#exampleCarouselID" data-bs-slide-to="2"></li>
 			</ol>
 
 			<!-- Now we display the images which the user can cycle through. -->
@@ -84,13 +84,13 @@ to add some content. -->
 
 			<!-- Finally, we have the carousel controls (next and previous). The only thing you need to change here 
 				is the carousel ID so that it matches what you named it above.-->
-			<a class="carousel-control-prev" href="#exampleCarouselID" role="button" data-slide="prev">
+			<a class="carousel-control-prev" href="#exampleCarouselID" role="button" data-bs-slide="prev">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Prev</span>
+				<span class="visually-hidden">Prev</span>
 			</a>
-			<a class="carousel-control-next" href="#exampleCarouselID" role="button" data-slide="next">
+			<a class="carousel-control-next" href="#exampleCarouselID" role="button" data-bs-slide="next">
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
+				<span class="visually-hidden">Next</span>
 			</a>
 		</div> <!-- end carousel -->
 
@@ -117,9 +117,9 @@ to add some content. -->
 	<h3 class="card-header">Card header here</h3>
 	<div class="card-body">
 		<div class="content">
-			<!-- Important to add "data-toggle" and "data-target" attributes to your image. -->
-			<!-- Make sure your data-target correctly points to the modal you want it to. -->
-			<img class="card-img" data-toggle="modal" data-target="#exampleModalID" src="path/to/image" alt="Describe your image here and transcribe any text that appears on the image."/>
+			<!-- Important to add "data-bs-toggle" and "data-bs-target" attributes to your image. -->
+			<!-- Make sure your data-bs-target correctly points to the modal you want it to. -->
+			<img class="card-img" data-bs-toggle="modal" data-bs-target="#exampleModalID" src="path/to/image" alt="Describe your image here and transcribe any text that appears on the image."/>
 			<p> Type your card text here.
 		</div>
 	</div>
@@ -133,7 +133,7 @@ to add some content. -->
 					<!-- this is the modal title -->
 					<h5 class="modal-title" id="exampleModalIDLabel">Image Name Here</h5>
 					<!-- and the close button is here -->
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>

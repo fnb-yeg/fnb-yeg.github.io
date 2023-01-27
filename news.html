@@ -4,21 +4,15 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+	<!-- Bootstrap -->
 	<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
-	
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 
-	<link href="stylesheet.css" rel="stylesheet" type="text/css"/>
-
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	
-
-	
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
 	<script src="/js/markdown.min.js"></script>
+
 
 	<title>News — Food Not Bombs Edmonton</title>
 </head>
@@ -28,7 +22,7 @@
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="/">
-					<img src="images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
+					<img src="/images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
 				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -48,7 +42,7 @@
 							<a class="nav-link" href="/how_to_join">How to Join</a>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							Request Food
 							</a>
 							<ul class="dropdown-menu" aria-labelledby="navCalendar">
@@ -57,7 +51,7 @@
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							Calendar
 							</a>
 							<ul class="dropdown-menu" aria-labelledby="navCalendar">
@@ -88,7 +82,7 @@
 			<div class="row justify-content-center">
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/soy_june5_2022.jpg" alt="Image of members standing in front of food and other supplies.">
+						<img class="card-img-top" src="/images/soy_june5_2022.jpg" alt="Image of members standing in front of food and other supplies.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">SOY Meal</h5>
@@ -100,36 +94,36 @@
 				</div>
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="wkusCarousel" class="carousel slide" data-interval="false">
+						<div id="wkusCarousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="wkusCarousel" data-slide-to="0" class="active"></li>
-								<li data-target="wkusCarousel" data-slide-to="1"></li>
-								<li data-target="wkusCarousel" data-slide-to="2"></li>
-								<li data-target="wkusCarousel" data-slide-to="3"></li>
+								<li data-bs-target="wkusCarousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="wkusCarousel" data-bs-slide-to="1"></li>
+								<li data-bs-target="wkusCarousel" data-bs-slide-to="2"></li>
+								<li data-bs-target="wkusCarousel" data-bs-slide-to="3"></li>
 							</ol>
 							<div class="carousel-inner">
 								<div class="carousel-item active">
-									<img src="images/wkus2.jpg" class="d-block w-100" alt="Table with food">
+									<img src="/images/wkus2.jpg" class="d-block w-100" alt="Table with food">
 								</div>
 								<div class="carousel-item">
-									<img src="images/wkus1.jpg" class="d-blcok w-100" alt="Sign reading: 'Invest in Community, not Cops'">
+									<img src="/images/wkus1.jpg" class="d-blcok w-100" alt="Sign reading: 'Invest in Community, not Cops'">
 								</div>
 								<div class="carousel-item">
-									<img src="images/wkus3.jpg" class="d-block w-100" alt="Table with drinks.">
+									<img src="/images/wkus3.jpg" class="d-block w-100" alt="Table with drinks.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/wkus4.jpg" class="d-block w-100" alt="Members standing and smiling.">
+									<img src="/images/wkus4.jpg" class="d-block w-100" alt="Members standing and smiling.">
 								</div>
 							</div> <!-- end carousel inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). --> 
-							<a class="carousel-control-prev" href="#wkusCarousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#wkusCarousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#wkusCarousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#wkusCarousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 						<!-- This describes the text that will be shown below your images. -->
@@ -146,40 +140,40 @@
 				</div>
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="feb13Carousel" class="carousel slide" data-interval="false">
+						<div id="feb13Carousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="feb13Carousel" data-slide-to="0" class="active"></li>
-								<li data-target="feb13Carousel" data-slide-to="1"></li>
-								<li data-target="feb13Carousel" data-slide-to="2"></li>
-								<li data-target="feb13Carousel" data-slide-to="3"></li>
-								<li data-target="feb13Carousel" data-slide-to="4"></li>
+								<li data-bs-target="feb13Carousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="feb13Carousel" data-bs-slide-to="1"></li>
+								<li data-bs-target="feb13Carousel" data-bs-slide-to="2"></li>
+								<li data-bs-target="feb13Carousel" data-bs-slide-to="3"></li>
+								<li data-bs-target="feb13Carousel" data-bs-slide-to="4"></li>
 							</ol>
 							<div class="carousel-inner">
 								<div class="carousel-item active">
-									<img src="images/feb13-1.jpg" class="d-block w-100" alt="Members standing after the meal.">
+									<img src="/images/feb13-1.jpg" class="d-block w-100" alt="Members standing after the meal.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/feb13-2.jpg" class="d-block w-100" alt="Mentrual products and naloxene.">
+									<img src="/images/feb13-2.jpg" class="d-block w-100" alt="Mentrual products and naloxene.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/feb13-3.jpg" class="d-block w-100" alt="Orange berry muffins.">
+									<img src="/images/feb13-3.jpg" class="d-block w-100" alt="Orange berry muffins.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/feb13-4.jpg" class="d-block w-100" alt="Mini calzones.">
+									<img src="/images/feb13-4.jpg" class="d-block w-100" alt="Mini calzones.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/feb13-5.jpg" class="d-block w-100" alt="Mac n' cheese with brocolli.">
+									<img src="/images/feb13-5.jpg" class="d-block w-100" alt="Mac n' cheese with brocolli.">
 								</div>
 							</div><!-- end carousel-inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). -->
-							<a class="carousel-control-prev" href="#feb13Carousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#feb13Carousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#feb13Carousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#feb13Carousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 						<!-- This describes the text that will be shown below your images. -->
@@ -199,66 +193,66 @@
 				</div>
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="cjeDemoCarousel" class="carousel slide" data-interval="false">
+						<div id="cjeDemoCarousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#cjeDemoCarousel" data-slide-to="0" class="active"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="1"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="2"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="3"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="4"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="5"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="6"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="7"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="8"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="9"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="10"></li>
-								<li data-target="#cjeDemoCarousel" data-slide-to="11"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="1"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="2"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="3"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="4"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="5"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="6"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="7"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="8"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="9"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="10"></li>
+								<li data-bs-target="#cjeDemoCarousel" data-bs-slide-to="11"></li>
 							</ol>
 
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/cje1.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/cje1.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje2.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/cje2.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje3.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/cje3.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje4.jpg" class="d-block w-100" alt="Crowd at demo.">
+									<img src="/images/cje4.jpg" class="d-block w-100" alt="Crowd at demo.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje5.jpg" class="d-block w-100" alt="Crowd at demo.">
+									<img src="/images/cje5.jpg" class="d-block w-100" alt="Crowd at demo.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje6.jpg" class="d-block w-100" alt="Crowd at demo.">
+									<img src="/images/cje6.jpg" class="d-block w-100" alt="Crowd at demo.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje7.jpg" class="d-block w-100" alt="Crowd at demo.">
+									<img src="/images/cje7.jpg" class="d-block w-100" alt="Crowd at demo.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje8.jpg" class="d-block w-100" alt="Crowd at demo.">
+									<img src="/images/cje8.jpg" class="d-block w-100" alt="Crowd at demo.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje9.jpg" class="d-block w-100" alt="Protest sign in snow.">
+									<img src="/images/cje9.jpg" class="d-block w-100" alt="Protest sign in snow.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje10.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/cje10.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/cje11.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/cje11.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 							</div> <!-- end carousel-inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). -->
-							<a class="carousel-control-prev" href="#cjeDemoCarousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#cjeDemoCarousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#cjeDemoCarousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#cjeDemoCarousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 
@@ -277,29 +271,29 @@
 				
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="soyNov13Carousel" class="carousel slide" data-interval="false">
+						<div id="soyNov13Carousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#soyNov13Carousel" data-slide-to="0" class="active"></li>
-								<li data-target="#soyNov13Carousel" data-slide-to="1"></li>
+								<li data-bs-target="#soyNov13Carousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#soyNov13Carousel" data-bs-slide-to="1"></li>
 							</ol>
 
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/nov_13_2.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/nov_13_2.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/nov_13_1.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/nov_13_1.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 							</div> <!-- end carousel-inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). -->
-							<a class="carousel-control-prev" href="#soyNov13Carousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#soyNov13Carousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#soyNov13Carousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#soyNov13Carousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 
@@ -318,29 +312,29 @@
 				
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="soyOct29Carousel" class="carousel slide" data-interval="false">
+						<div id="soyOct29Carousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#soyOct29Carousel" data-slide-to="0" class="active"></li>
-								<li data-target="#soyOct29Carousel" data-slide-to="1"></li>
+								<li data-bs-target="#soyOct29Carousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#soyOct29Carousel" data-bs-slide-to="1"></li>
 							</ol>
 
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/oct_29_1.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/oct_29_1.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_29_2.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_29_2.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 							</div> <!-- end carousel-inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). -->
-							<a class="carousel-control-prev" href="#soyOct29Carousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#soyOct29Carousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#soyOct29Carousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#soyOct29Carousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 
@@ -359,49 +353,49 @@
 
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="soyOct17Carousel" class="carousel slide" data-interval="false">
+						<div id="soyOct17Carousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#soyOct17Carousel" data-slide-to="0" class="active"></li>
-								<li data-target="#soyOct17Carousel" data-slide-to="1"></li>
-								<li data-target="#soyOct17Carousel" data-slide-to="2"></li>
-								<li data-target="#soyOct17Carousel" data-slide-to="3"></li>
-								<li data-target="#soyOct17Carousel" data-slide-to="4"></li>
-								<li data-target="#soyOct17Carousel" data-slide-to="5"></li>
-								<li data-target="#soyOct17Carousel" data-slide-to="6"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="1"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="2"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="3"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="4"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="5"></li>
+								<li data-bs-target="#soyOct17Carousel" data-bs-slide-to="6"></li>
 							</ol>
 
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/oct_17_7.jpg" class="d-block w-100" alt="Members standing with food.">
+									<img src="/images/oct_17_7.jpg" class="d-block w-100" alt="Members standing with food.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_17_2.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_17_2.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_17_3.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_17_3.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_17_4.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_17_4.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_17_5.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_17_5.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_17_6.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_17_6.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/oct_17_1.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
+									<img src="/images/oct_17_1.jpg" class="d-block w-100" alt="Pictured: food served at the meal.">
 								</div>
 							</div> <!-- end carousel-inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). -->
-							<a class="carousel-control-prev" href="#soyOct17Carousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#soyOct17Carousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#soyOct17Carousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#soyOct17Carousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 
@@ -421,10 +415,10 @@
 
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/happy_holidays_winter_2021_campaign.png" alt="FNB Poster with the following text: Tis the season to be jolly. Happy Holidays. Let's make the holidays a nice time for the unhoused community, too! Help the Food Not Bombs Winter Campaign by: Volunteering at meals; Donating Clothes; Donating funds that could go towards coffee or hot food; Donating hand warmers or anything else that would keep people warm. As we said last year, put your Community on your gift list! Warm Greetings from Food Not Bombs YEG. P.S. May you have a full heart and tummy!.">
+						<img class="card-img-top" src="/images/happy_holidays_winter_2021_campaign.png" alt="FNB Poster with the following text: Tis the season to be jolly. Happy Holidays. Let's make the holidays a nice time for the unhoused community, too! Help the Food Not Bombs Winter Campaign by: Volunteering at meals; Donating Clothes; Donating funds that could go towards coffee or hot food; Donating hand warmers or anything else that would keep people warm. As we said last year, put your Community on your gift list! Warm Greetings from Food Not Bombs YEG. P.S. May you have a full heart and tummy!.">
 						<div class="card-body">
 							<p>
-								<a data-toggle="collapse" href="#holidaysCollapseTextID" role="button" aria-expanded="false" aria-controls="holidaysCollapseTextID">[View Image Transcription]</a>
+								<a data-bs-toggle="collapse" href="#holidaysCollapseTextID" role="button" aria-expanded="false" aria-controls="holidaysCollapseTextID">[View Image Transcription]</a>
 							</p>
 							<div class="collapse" id="holidaysCollapseTextID">
 								<p> Tis the season to be jolly
@@ -449,42 +443,42 @@
 				
 				<div class="col-xs-12 col-md-12 col-lg-4">
 					<div class="card">
-						<div id="garneauHarvestCarousel" class="carousel slide" data-interval="false">
+						<div id="garneauHarvestCarousel" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#garneauHarvestCarousel" data-slide-to="0" class="active"></li>
-								<li data-target="#garneauHarvestCarousel" data-slide-to="1"></li>
-								<li data-target="#garneauHarvestCarousel" data-slide-to="2"></li>
-								<li data-target="#garneauHarvestCarousel" data-slide-to="3"></li>
-								<li data-target="#garneauHarvestCarousel" data-slide-to="4"></li>
-								<li data-target="#garneauHarvestCarousel" data-slide-to="5"></li>
+								<li data-bs-target="#garneauHarvestCarousel" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#garneauHarvestCarousel" data-bs-slide-to="1"></li>
+								<li data-bs-target="#garneauHarvestCarousel" data-bs-slide-to="2"></li>
+								<li data-bs-target="#garneauHarvestCarousel" data-bs-slide-to="3"></li>
+								<li data-bs-target="#garneauHarvestCarousel" data-bs-slide-to="4"></li>
+								<li data-bs-target="#garneauHarvestCarousel" data-bs-slide-to="5"></li>
 							</ol>
 
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/garneau_final_1.jpg" class="d-block w-100" alt="Image of squat garden in garneau neighbourhood">
+									<img src="/images/garneau_final_1.jpg" class="d-block w-100" alt="Image of squat garden in garneau neighbourhood">
 								</div>
 								<div class="carousel-item">
-									<img src="images/garneau_final_2.jpg" class="d-block w-100" alt="Bags of produce harvested from the garden.">
+									<img src="/images/garneau_final_2.jpg" class="d-block w-100" alt="Bags of produce harvested from the garden.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/garneau_final_3.jpg" class="d-block w-100" alt="Bags of beans harvested from the garden.">
+									<img src="/images/garneau_final_3.jpg" class="d-block w-100" alt="Bags of beans harvested from the garden.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/garneau_final_4.jpg" class="d-block w-100" alt="Image of garden from another angle.">
+									<img src="/images/garneau_final_4.jpg" class="d-block w-100" alt="Image of garden from another angle.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/garneau_final_5.jpg" class="d-block w-100" alt="Bags of potatoes harvested from the garden.">
+									<img src="/images/garneau_final_5.jpg" class="d-block w-100" alt="Bags of potatoes harvested from the garden.">
 								</div>
 							</div> <!-- end carousel-inner -->
 
 							<!-- Finally, we have the carousel controls (next and previous). -->
-							<a class="carousel-control-prev" href="#garneauHarvestCarousel" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#garneauHarvestCarousel" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#garneauHarvestCarousel" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#garneauHarvestCarousel" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 
@@ -504,33 +498,33 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<div id="carouselSoy3" class="carousel slide" data-interval="false">
+						<div id="carouselSoy3" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#carouselSoy3" data-slide-to="0" class="active"></li>
-								<li data-target="#carouselSoy3" data-slide-to="1"></li>
-								<li data-target="#carouselSoy3" data-slide-to="2"></li>
-								<li data-target="#carouselSoy3" data-slide-to="3"></li>
-								<li data-target="#carouselSoy3" data-slide-to="4"></li>
-								<li data-target="#carouselSoy3" data-slide-to="5"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="1"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="2"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="3"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="4"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="5"></li>
 							</ol>
 							<div class="carousel-inner">
 								<div class="carousel-item active">
-									<img class="d-block w-100 card-img-top" src="images/soy_3_1.jpg" alt="An image of the food to be served - canvas bags, one filled with bananas and another filled with foil-wrapped food in the foreground. Large foil dishes wrapped with food a bit further away from the camera. Paper plates and serving utensils. All piled on top of a picnic table.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_3_1.jpg" alt="An image of the food to be served - canvas bags, one filled with bananas and another filled with foil-wrapped food in the foreground. Large foil dishes wrapped with food a bit further away from the camera. Paper plates and serving utensils. All piled on top of a picnic table.">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/soy_3_2.jpg" alt="A plate with a serving of mashed potatoes, gravy and stuffing on it, alongside a large dish filled with stuffing and other food to be served.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_3_2.jpg" alt="A plate with a serving of mashed potatoes, gravy and stuffing on it, alongside a large dish filled with stuffing and other food to be served.">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/soy_3_3.jpg" alt="More food to be served, what looks like chili and cornbread?">
+									<img class="d-block w-100 card-img-top" src="/images/soy_3_3.jpg" alt="More food to be served, what looks like chili and cornbread?">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/soy_3_4.jpg" alt="A large serving bowl of pumpkin soup.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_3_4.jpg" alt="A large serving bowl of pumpkin soup.">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/soy_3_5.jpg" alt="Grocery bag filled with hand knitted mittens and toques.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_3_5.jpg" alt="Grocery bag filled with hand knitted mittens and toques.">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" data-toggle="modal" data-target="#SOYPosterModal" src="images/street_outreach_yeg.jpg" alt="SOY Poster with following text:
+									<img class="d-block w-100 card-img-top" data-bs-toggle="modal" data-bs-target="#SOYPosterModal" src="/images/street_outreach_yeg.jpg" alt="SOY Poster with following text:
 									Street Outreach YEG
 									Street Outreach YEG is a program designed to provide more holistic meals and support to the unhoused community in Edmonton. It is a coalition of Food Not Bombs YEG, Edmonton Mutual Aid, and the Worker's Liberation Coalition. Here are soe of the things we provide to the community. 
 
@@ -549,13 +543,13 @@
 									If you are interested in helping out with Street Outreach YEG, please message Food Not Bombs YEG on Facebook or at foodnotbombsedmonton@gmail.com">
 								</div>
 							</div>
-							<a class="carousel-control-prev" href="#carouselSoy3" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#carouselSoy3" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#carouselSoy3" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#carouselSoy3" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div>
 						<div class="main-text hidden-xs">
@@ -576,12 +570,12 @@
 								<div class="modal-content">
 									<div class="modal-header">
 										<h5 class="modal-title" id="exampleModalIDLabel">Street Outreach YEG</h5>
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 											<span aria-hidden="true">&times;</span>
 										</button>
 									</div>
 									<div class="modal-body">
-										<img class="card-img" src="images/street_outreach_yeg.jpg" alt="SOY Poster with following text:
+										<img class="card-img" src="/images/street_outreach_yeg.jpg" alt="SOY Poster with following text:
 										Street Outreach YEG
 										Street Outreach YEG is a program designed to provide more holistic meals and support to the unhoused community in Edmonton. It is a coalition of Food Not Bombs YEG, Edmonton Mutual Aid, and the Worker's Liberation Coalition. Here are soe of the things we provide to the community. 
 
@@ -607,7 +601,7 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/pigs.jpg" alt="Cop sitting in his cop car, downtown, in an empty parking lot.">
+						<img class="card-img-top" src="/images/pigs.jpg" alt="Cop sitting in his cop car, downtown, in an empty parking lot.">
 						<div class="card-header">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Impromptu Donuts</h5>
@@ -617,7 +611,7 @@
 						<div class="card-body">
 							<p class="mb-1">Today, we got word that the cops were evicting homeless people downtown, so, a few comrades went down to investigate, see how we could help, and hold the cops accountable.
 							<p>
-								<a data-toggle="collapse" href="#donutsCollapseText" role="button" aria-expanded="false" aria-controls="templateCollapseTextID">[Full Text]</a>
+								<a data-bs-toggle="collapse" href="#donutsCollapseText" role="button" aria-expanded="false" aria-controls="templateCollapseTextID">[Full Text]</a>
 							</p>
 							<div class="collapse" id="donutsCollapseText">
 								<p> When we arrived a few folks were packing up their stuff. We asked what was happening and were told that the tents were in an emergency/service route and the garbage trucks could not get through, so folks would have to move their tents down a block. We stayed down there to keep an eye on the cops. A few of us went to get coffee and donuts, and we handed them out to the people there while keeping an eye on the cops to make sure they didn't start misbehaving. After about an hour, the cops drove away.</p>
@@ -630,30 +624,30 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<div id="carouselSoy2" class="carousel slide" data-interval="false">
+						<div id="carouselSoy2" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#carouselSoy2" data-slide-to="0" class="active"></li>
-								<li data-target="#carouselSoy2" data-slide-to="1"></li>
-								<li data-target="#carouselSoy2" data-slide-to="2"></li>
+								<li data-bs-target="#carouselSoy2" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#carouselSoy2" data-bs-slide-to="1"></li>
+								<li data-bs-target="#carouselSoy2" data-bs-slide-to="2"></li>
 							</ol>
 							<div class="carousel-inner">
 								<div class="carousel-item active">
-									<img class="d-block w-100 card-img-top" src="images/soy_2_1.jpg" alt="2 FNB members with food and water bottles.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_2_1.jpg" alt="2 FNB members with food and water bottles.">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/soy_2_2.jpg" alt="2 FNB members with food and water bottles. Photo is taken from a different angle from the first.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_2_2.jpg" alt="2 FNB members with food and water bottles. Photo is taken from a different angle from the first.">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/soy_2_3.jpg" alt="FNB member standing with grocery bags of food and drink which are resting on the hood of a car.">
+									<img class="d-block w-100 card-img-top" src="/images/soy_2_3.jpg" alt="FNB member standing with grocery bags of food and drink which are resting on the hood of a car.">
 								</div>
 							</div> 
-							<a class="carousel-control-prev" href="#carouselSoy2" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#carouselSoy2" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#carouselSoy2" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#carouselSoy2" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> 
 						<div class="main-text hidden-xs">
@@ -673,7 +667,7 @@
 			<div class="row justify-content-center">
 				<div class="col-sm-8">
 					<div class="card">
-						<img class="card-img-top" src="images/psp1.jpeg" alt="banner with text 'survivors still live here' hanging from 'living bridge' over 97 street and 105 ave.">
+						<img class="card-img-top" src="/images/psp1.jpeg" alt="banner with text 'survivors still live here' hanging from 'living bridge' over 97 street and 105 ave.">
 						<div class="card-header">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Prairie Sage Protectors</h5>
@@ -691,7 +685,7 @@
 			<div class="row justify-content-center">
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-							<img class="card-img-top" src="images/fnb_orientation.PNG" alt="Graphic with words 'Food Not Bombs YEG Orientation by Rozalia Janiszewska' with a logo. Logo is of a peace sign with flowers and vines on the outline and a missile or rocket on top of the middle line of the peace sign.">
+							<img class="card-img-top" src="/images/fnb_orientation.PNG" alt="Graphic with words 'Food Not Bombs YEG Orientation by Rozalia Janiszewska' with a logo. Logo is of a peace sign with flowers and vines on the outline and a missile or rocket on top of the middle line of the peace sign.">
 							<div class="card-header">
 								<div class="d-flex w-100 justify-content-between">
 									<h5 class="mb-1">Welcome New Members</h5>
@@ -705,7 +699,7 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/winter_2021_campaign.jpg" alt="Food Not Bombs YEG Winter Campaign
+						<img class="card-img-top" src="/images/winter_2021_campaign.jpg" alt="Food Not Bombs YEG Winter Campaign
 						FNB YEG is working on building a campaign to help houseless people survive the winter!
 						We will be working on collecting donations of warm clothing, such as coats and socks, as well as tents and sleeping bags. 
 						Feeding people hot meals and hot drinks.
@@ -716,7 +710,7 @@
 						Contact us at Food Not Bombs Edmonton on Facebook or Instagram to donate.">
 						<div class="card-body">
 							<p>
-  								<a data-toggle="collapse" href="#collapseWinterCampaign2021AltText" role="button" aria-expanded="false" aria-controls="collapseWinterCampaign2021AltText">[View Image Transcription]</a>
+  								<a data-bs-toggle="collapse" href="#collapseWinterCampaign2021AltText" role="button" aria-expanded="false" aria-controls="collapseWinterCampaign2021AltText">[View Image Transcription]</a>
 							</p>
 							<div class="collapse" id="collapseWinterCampaign2021AltText">
 								<h5>Food Not Bombs YEG Winter Campaign</h5>
@@ -734,14 +728,14 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<div id="carouselCommunityFridge" class="carousel slide" data-interval="false">
+						<div id="carouselCommunityFridge" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#carouselCommunityFridge" data-slide-to="0" class="active"></li>
-								<li data-target="#carouselCommunityFridge" data-slide-to="1"></li>
+								<li data-bs-target="#carouselCommunityFridge" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#carouselCommunityFridge" data-bs-slide-to="1"></li>
 							</ol>
 							<div class="carousel-inner">
 								<div class="carousel-item active">
-									<img class="d-block w-100 card-img-top" src="images/community_fridge_poster.jpg" alt="Poster with following text:
+									<img class="d-block w-100 card-img-top" src="/images/community_fridge_poster.jpg" alt="Poster with following text:
 									Food Not Bombs YEG
 									Community Fridge Launch!
 									Sept. 23, 2021
@@ -749,21 +743,21 @@
 									The fridge is at Earth's General Store on 82 Ae. If you need more info or want to volunteer to help with the fridge, please message us at Food Not Bombs Edmonton on Facebook or Instagram or at foodnotbombsedmonton@gmail.com">
 								</div>
 								<div class="carousel-item">
-									<img class="d-block w-100 card-img-top" src="images/community_fridge_full.jpg" alt="An image of a community fridge full with fresh produce.">
+									<img class="d-block w-100 card-img-top" src="/images/community_fridge_full.jpg" alt="An image of a community fridge full with fresh produce.">
 								</div>
 							</div> <!-- end carousel-inner -->
-							<a class="carousel-control-prev" href="#carouselCommunityFridge" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#carouselCommunityFridge" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#carouselCommunityFridge" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#carouselCommunityFridge" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 						<div class="card-body">
 							<p>
-  								<a data-toggle="collapse" href="#collapseCommunityFridgeAltText" role="button" aria-expanded="false" aria-controls="collapseCommunityFridgeAltText">[View Image Transcription]</a>
+  								<a data-bs-toggle="collapse" href="#collapseCommunityFridgeAltText" role="button" aria-expanded="false" aria-controls="collapseCommunityFridgeAltText">[View Image Transcription]</a>
 							</p>
 							<div class="collapse" id="collapseCommunityFridgeAltText">
 								<p>Food Not Bombs YEG
@@ -777,30 +771,30 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<div id="carouselFruitFest" class="carousel slide" data-interval="false">
+						<div id="carouselFruitFest" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#carouselFruitFest" data-slide-to="0" class="active"></li>
-								<li data-target="#carouselFruitFest" data-slide-to="1"></li>
-								<li data-target="#carouselFruitFest" data-slide-to="2"></li>
+								<li data-bs-target="#carouselFruitFest" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#carouselFruitFest" data-bs-slide-to="1"></li>
+								<li data-bs-target="#carouselFruitFest" data-bs-slide-to="2"></li>
 							</ol>
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/fruit_fest_3.jpg" class="d-block w-100" alt="group photo of 9 individuals standing behind serving table with food on it. It is night time and they are standing in downtown edmonton, across the street from Boyle Street community services and in front of some sky scrapers.">
+									<img src="/images/fruit_fest_3.jpg" class="d-block w-100" alt="group photo of 9 individuals standing behind serving table with food on it. It is night time and they are standing in downtown edmonton, across the street from Boyle Street community services and in front of some sky scrapers.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/fruit_fest_2.jpg" class="d-block w-100" alt="">
+									<img src="/images/fruit_fest_2.jpg" class="d-block w-100" alt="">
 								</div>
 								<div class="carousel-item">
-									<img src="images/fruit_fest_1.jpg" class="d-block w-100" alt="">
+									<img src="/images/fruit_fest_1.jpg" class="d-block w-100" alt="">
 								</div>
 							</div> <!-- end carousel-inner -->
-							<a class="carousel-control-prev" href="#carouselFruitFest" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#carouselFruitFest" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#carouselFruitFest" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#carouselFruitFest" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 						<div class="main-text hidden-xs">
@@ -817,7 +811,7 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" data-toggle="modal" data-target="#hthModal" src="images/hth_poster.jpg" alt="
+						<img class="card-img-top" data-bs-toggle="modal" data-bs-target="#hthModal" src="/images/hth_poster.jpg" alt="
 						Food Not Bombs YEG Helping the Humans Update
 						#1. FNB YEG is running a program to provide free vegan homemade meals within 4 days of intake.
 						#2. You will be supplied with an intake form requesting name, phone number, address, number in household, and dietary restrictions.
@@ -827,7 +821,7 @@
 						">
 						<div class="card-body">
 							<p>
-  								<a data-toggle="collapse" href="#collapseHTHAltText" role="button" aria-expanded="false" aria-controls="collapseHTHAltText">[View Image Transcription]</a>
+  								<a data-bs-toggle="collapse" href="#collapseHTHAltText" role="button" aria-expanded="false" aria-controls="collapseHTHAltText">[View Image Transcription]</a>
 							</p>
 							<div class="collapse" id="collapseHTHAltText">
 								<p>Food Not Bombs YEG Helping the Humans Update
@@ -847,14 +841,14 @@
 											<!-- this is the modal title -->
 											<h5 class="modal-title" id="hthModalLabel">Helping the Humans</h5>
 											<!-- and the close button is here -->
-											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 												<span aria-hidden="true">&times;</span>
 											</button>
 										</div>
 										<!-- This is the modal body. This is where we put the image so that it will appear bigger than it did 
 										when embedded in the card.  -->
 										<div class="modal-body">
-											<img class="card-img" src="images/hth_poster.jpg" alt="
+											<img class="card-img" src="/images/hth_poster.jpg" alt="
 											Food Not Bombs YEG Helping the Humans Update
 											#1. FNB YEG is running a program to provide free vegan homemade meals within 4 days of intake.
 											#2. You will be supplied with an intake form requesting name, phone number, address, number in household, and dietary restrictions.
@@ -872,7 +866,7 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/fundraise_poster.jpg" alt="
+						<img class="card-img-top" src="/images/fundraise_poster.jpg" alt="
 						Food Not Bombs Edmonton
 						Fundraising campaign
 						We invite you to support us in our fundraising goals!
@@ -885,7 +879,7 @@
 						For more info, visit our website or facebook.">
 						<div class="card-body">
 							<p>
-  								<a data-toggle="collapse" href="#collapseFundraiseAltText" role="button" aria-expanded="false" aria-controls="collapseFundraiseAltText">[View Image Transcription]</a>
+  								<a data-bs-toggle="collapse" href="#collapseFundraiseAltText" role="button" aria-expanded="false" aria-controls="collapseFundraiseAltText">[View Image Transcription]</a>
 							</p>
 							<div class="collapse" id="collapseFundraiseAltText">
 								<p>Food Not Bombs Edmonton
@@ -909,42 +903,42 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<div id="carouselSoy1" class="carousel slide" data-interval="false">
+						<div id="carouselSoy1" class="carousel slide" data-bs-interval="false">
 							<ol class="carousel-indicators">
-								<li data-target="#carouselSoy1" data-slide-to="0" class="active"></li>
-								<li data-target="#carouselSoy2" data-slide-to="1"></li>
-								<li data-target="#carouselSoy3" data-slide-to="2"></li>
-								<li data-target="#carouselSoy4" data-slide-to="3"></li>
-								<li data-target="#carouselSoy5" data-slide-to="4"></li>
-								<li data-target="#carouselSoy6" data-slide-to="5"></li>
+								<li data-bs-target="#carouselSoy1" data-bs-slide-to="0" class="active"></li>
+								<li data-bs-target="#carouselSoy2" data-bs-slide-to="1"></li>
+								<li data-bs-target="#carouselSoy3" data-bs-slide-to="2"></li>
+								<li data-bs-target="#carouselSoy4" data-bs-slide-to="3"></li>
+								<li data-bs-target="#carouselSoy5" data-bs-slide-to="4"></li>
+								<li data-bs-target="#carouselSoy6" data-bs-slide-to="5"></li>
 							</ol>
 							<div class="carousel-inner" >
 								<div class="carousel-item active">
-									<img src="images/soy_1_1.jpeg" class="d-block w-100" alt="group photo of 9 individuals standing behind serving table with food on it. It is night time and they are standing in downtown edmonton, across the street from Boyle Street community services and in front of some sky scrapers.">
+									<img src="/images/soy_1_1.jpeg" class="d-block w-100" alt="group photo of 9 individuals standing behind serving table with food on it. It is night time and they are standing in downtown edmonton, across the street from Boyle Street community services and in front of some sky scrapers.">
 								</div>
 								<div class="carousel-item">
-									<img src="images/soy_1_2.jpeg" class="d-block w-100" alt="">
+									<img src="/images/soy_1_2.jpeg" class="d-block w-100" alt="">
 								</div>
 								<div class="carousel-item">
-									<img src="images/soy_1_3.jpeg" class="d-block w-100" alt="">
+									<img src="/images/soy_1_3.jpeg" class="d-block w-100" alt="">
 								</div>
 								<div class="carousel-item">
-									<img src="images/soy_1_4.jpeg" class="d-block w-100" alt="">
+									<img src="/images/soy_1_4.jpeg" class="d-block w-100" alt="">
 								</div>
 								<div class="carousel-item">
-									<img src="images/soy_1_5.jpeg" class="d-block w-100" alt="">
+									<img src="/images/soy_1_5.jpeg" class="d-block w-100" alt="">
 								</div>
 								<div class="carousel-item">
-									<img src="images/soy_1_6.jpg" class="d-block w-100" alt="">
+									<img src="/images/soy_1_6.jpg" class="d-block w-100" alt="">
 								</div>
 							</div> <!-- end carousel-inner -->
-							<a class="carousel-control-prev" href="#carouselSoy1" role="button" data-slide="prev">
+							<a class="carousel-control-prev" href="#carouselSoy1" role="button" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								<span class="sr-only">Prev</span>
+								<span class="visually-hidden">Prev</span>
 							</a>
-							<a class="carousel-control-next" href="#carouselSoy1" role="button" data-slide="next">
+							<a class="carousel-control-next" href="#carouselSoy1" role="button" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
-								<span class="sr-only">Next</span>
+								<span class="visually-hidden">Next</span>
 							</a>
 						</div> <!-- end carousel -->
 						<div class="main-text hidden-xs">
@@ -961,7 +955,7 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/recruit_poster.jpg" alt="									<p>We're recruiting!
+						<img class="card-img-top" src="/images/recruit_poster.jpg" alt="									<p>We're recruiting!
 						Want to help the community?
 						Join FNB YEG!
 						Food Not Bombs YEG is a volunteer network in Edmonton that feeds Vegan food to the homeless and low-income populations. We are working on starting a community fridge, too!
@@ -970,7 +964,7 @@
 						Community Gardens: Weekly on a rotating schedule">
 						<div class="card-body">
 							<p>
-  								<a data-toggle="collapse" href="#collapseRecruitAltText" role="button" aria-expanded="false" aria-controls="collapseRecruitAltText">[View Image Transcription]</a>
+  								<a data-bs-toggle="collapse" href="#collapseRecruitAltText" role="button" aria-expanded="false" aria-controls="collapseRecruitAltText">[View Image Transcription]</a>
 							</p>
 							<div class="collapse" id="collapseRecruitAltText">
 								<p>We're recruiting!
@@ -988,7 +982,7 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/rock_soup.jpg" alt="Rock Soup logo / sign">
+						<img class="card-img-top" src="/images/rock_soup.jpg" alt="Rock Soup logo / sign">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Rock Soup</h5>
@@ -1001,26 +995,26 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<div id="carouselPestoPasta" class="carousel slide" data-interval="false">
+						<div id="carouselPestoPasta" class="carousel slide" data-bs-interval="false">
 								<ol class="carousel-indicators">
-									<li data-target="#carouselPestoPasta" data-slide-to="0" class="active"></li>
-									<li data-target="#carouselPestoPasta" data-slide-to="1"></li>
+									<li data-bs-target="#carouselPestoPasta" data-bs-slide-to="0" class="active"></li>
+									<li data-bs-target="#carouselPestoPasta" data-bs-slide-to="1"></li>
 								</ol>
 								<div class="carousel-inner" >
 									<div class="carousel-item active">
-										<img src="images/pesto_pasta.png" class="d-block w-100" alt="Plate of food with pesto pasta, vegan meatballs, zucchini and wax beans, and mango coffee cake">
+										<img src="/images/pesto_pasta.png" class="d-block w-100" alt="Plate of food with pesto pasta, vegan meatballs, zucchini and wax beans, and mango coffee cake">
 									</div>
 									<div class="carousel-item">
-										<img src="images/sept_1_2021_pesto_pasta.jpg" class="d-block w-100" alt="Image of members serving a pesto pasta meal outside of Boyle street.">
+										<img src="/images/sept_1_2021_pesto_pasta.jpg" class="d-block w-100" alt="Image of members serving a pesto pasta meal outside of Boyle street.">
 									</div>
 								</div> <!-- end carousel-inner -->
-								<a class="carousel-control-prev" href="#carouselPestoPasta" role="button" data-slide="prev">
+								<a class="carousel-control-prev" href="#carouselPestoPasta" role="button" data-bs-slide="prev">
 									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-									<span class="sr-only">Prev</span>
+									<span class="visually-hidden">Prev</span>
 								</a>
-								<a class="carousel-control-next" href="#carouselPestoPasta" role="button" data-slide="next">
+								<a class="carousel-control-next" href="#carouselPestoPasta" role="button" data-bs-slide="next">
 									<span class="carousel-control-next-icon" aria-hidden="true"></span>
-									<span class="sr-only">Next</span>
+									<span class="visually-hidden">Next</span>
 								</a>
 							</div> <!-- end carousel -->
 							<div class="main-text hidden-xs">
@@ -1037,7 +1031,7 @@
 
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/soy_meal_1.jpg" alt="Food and water bottles in the trunk of a vehicle.">
+						<img class="card-img-top" src="/images/soy_meal_1.jpg" alt="Food and water bottles in the trunk of a vehicle.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">SOY Meal</h5>
@@ -1049,7 +1043,7 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/boyle_street.jpg" alt="View from the street of Boyle Street Community Services.">
+						<img class="card-img-top" src="/images/boyle_street.jpg" alt="View from the street of Boyle Street Community Services.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">FNB Meal at Boyle Street</h5>
@@ -1061,7 +1055,7 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/nurse_picket.jfif" alt="Image of a plate with food as described below."><div class="card-body">
+						<img class="card-img-top" src="/images/nurse_picket.jfif" alt="Image of a plate with food as described below."><div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Nurses' Info Picket</h5>
 								<small>August 11, 2021</small>
@@ -1083,8 +1077,8 @@
 					</div>
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
-					<div class="card" data-toggle="modal" data-target="#FNBMealModal"> <!--TODO - add modal/carousel with other images from this day. -->
-						<img class="card-img-top" src="images/zucc3.jpg" alt="Image of a member pulling zucchini cake out of the oven.">
+					<div class="card" data-bs-toggle="modal" data-bs-target="#FNBMealModal"> <!--TODO - add modal/carousel with other images from this day. -->
+						<img class="card-img-top" src="/images/zucc3.jpg" alt="Image of a member pulling zucchini cake out of the oven.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">FNB Meal</h5>
@@ -1096,7 +1090,7 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/pb&j.jpg" alt="Image of pb&j sandwhiches">
+						<img class="card-img-top" src="/images/pb&j.jpg" alt="Image of pb&j sandwhiches">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Serving PB&J Sandwhiches</h5>
@@ -1108,7 +1102,7 @@
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/Community_supports.png" alt="Poster with the following text: We're excited to bring you a list of the most helpful resources for low-income and the homeless folks in the city of Edmonton - Please don't ever think you're alone! For emergencies, remember 911 is your friend! If you are not in an emergency but need guidance on services, contact foodnotbombsedmonton@gmail.com or the 211 hotline.">
+						<img class="card-img-top" src="/images/Community_supports.png" alt="Poster with the following text: We're excited to bring you a list of the most helpful resources for low-income and the homeless folks in the city of Edmonton - Please don't ever think you're alone! For emergencies, remember 911 is your friend! If you are not in an emergency but need guidance on services, contact foodnotbombsedmonton@gmail.com or the 211 hotline.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Community Supports</h5>
@@ -1120,7 +1114,7 @@
 				</div>
 		    	<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/New_projects_Uniting_the_community.png" alt="Poster with the following text:
+						<img class="card-img-top" src="/images/New_projects_Uniting_the_community.png" alt="Poster with the following text:
 New projects: Uniting the community.
 
 Food Not Bombs YEG, Worker's Liberation Coalition, and Edmonton Mutual Aid are uniting to work on two projects to tie the community together in supporting the houseless population; the Street Outreach Team and Houseless Community Advocacy Council!
@@ -1140,7 +1134,7 @@ Workers' Liberation Coalition">
 				</div>
 		    	<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/EPS_know_your_rights.jpeg" alt="EPS poster advertizing an 'individuals guide to interaction with the police' created by the police.">
+						<img class="card-img-top" src="/images/EPS_know_your_rights.jpeg" alt="EPS poster advertizing an 'individuals guide to interaction with the police' created by the police.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Know Your Rights</h5>
@@ -1152,7 +1146,7 @@ Workers' Liberation Coalition">
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/red_dress_day.jpg" alt="Table set up to serve hot chocolate">
+						<img class="card-img-top" src="/images/red_dress_day.jpg" alt="Table set up to serve hot chocolate">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Red Dress Day</h5>
@@ -1164,7 +1158,7 @@ Workers' Liberation Coalition">
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card justify-content-center">
-						<img class="card-img-top" src="images/our_initiative_meal.jpg" alt="image of food containers">
+						<img class="card-img-top" src="/images/our_initiative_meal.jpg" alt="image of food containers">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Meal and Outreach with Our Initiative</h5>
@@ -1176,7 +1170,7 @@ Workers' Liberation Coalition">
 				</div>
 				<div class="col-xs-12 col-md-6 col-lg-4">
 					<div class="card">
-						<img class="card-img-top" src="images/monthly_meal.jpg" alt="Group photo showing five people.">
+						<img class="card-img-top" src="/images/monthly_meal.jpg" alt="Group photo showing five people.">
 						<div class="card-body">
 							<div class="d-flex w-100 justify-content-between">
 								<h5 class="mb-1">Monthly Meal</h5>
@@ -1189,7 +1183,7 @@ Workers' Liberation Coalition">
 			</div>
 			<div class="row">
 				<div class="col-sm">
-					<div class="card"><img src="images/ways_to_help.jpg" alt="Poster with the following text:
+					<div class="card"><img src="/images/ways_to_help.jpg" alt="Poster with the following text:
 Food Not Bombs YEG
 Some ways you can help!
 
