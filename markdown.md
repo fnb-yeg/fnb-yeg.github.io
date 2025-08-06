@@ -13,7 +13,7 @@ Since Markdown cannot be used to create webpages on its own, you need to combine
 This will enable Markdown on this HTML page. Next you need to define the div in which the Markdown will go. To do this, just find the place in the HTML file where you want your Markdown to appear, and add a div with the class `markdown`.
 
 ```html
-<div class="markdown"></div>
+<pre class="markdown"></pre>
 ```
 
 Now, we can add the Markdown to the page. This can be done either by loading it from a file, or by embedding the Markdown directly into the div.
@@ -21,15 +21,15 @@ Now, we can add the Markdown to the page. This can be done either by loading it 
 To load the Markdown from a file, use the `data-src` attribute with the path to the file as its value.
 
 ```html
-<div class="markdown" data-src="/path/to/file.md"></div>
+<pre class="markdown" data-src="/path/to/file.md"></pre>
 ```
 
 To embed the Markdown directly, simply start writing it inside the div! Keep in mind that any HTML tags you write in this div will be ignored, however HTML comments will work inside Markdown. Angle brackets (`<` and `>`) must be encoded as HTML entities as well, but only when you embed Markdown into HTML. Indentation of your Markdown doesn't matter; it will be ignored.
 
 ```html
-<div class="markdown">
+<pre class="markdown">
 # Put your Markdown here!
-</div>
+</pre>
 ```
 
 ### Card Types
@@ -49,7 +49,7 @@ The `data-type` attribute specifies what kind of Bootstrap card to render. When 
 A sample `recipe` card looks like this
 
 ```html
-<div class="markdown" data-type="recipe">
+<pre class="markdown" data-type="recipe">
 ## Name of Dish
 
 **Makes**: # servings
@@ -68,7 +68,7 @@ Equipment:
  * **Size** equipment
 
 Type up the recipe instructions here. Sauté.
-</div>
+</pre>
 ```
 
 #### `news-basic`
@@ -78,11 +78,11 @@ Type up the recipe instructions here. Sauté.
 A sample `news-basic` card looks like this
 
 ```html
-<div class="markdown" data-type="news-basic">
+<pre class="markdown" data-type="news-basic">
 ### Card Header
 
 Brief description of event or project.
-</div>
+</pre>
 ```
 
 #### `news-img`
@@ -93,14 +93,14 @@ Brief description of event or project.
 A sample `news-img` card looks like this
 
 ```html
-<div class="markdown" data-type="news-img">
+<pre class="markdown" data-type="news-img">
 ![Briefly describe your image here. If it is a poster, transcribe it.](/path/to/img)
 
 ##### Title of News Item
 Date event took place
 
 Description of event.
-</div>
+</pre>
 ```
 
 #### `news-img-collapse`
@@ -113,13 +113,13 @@ Description of event.
 A sample `news-img-collapse` card looks like this
 
 ```html
-<div class="markdown" data-type="news-img-collapse">
+<pre class="markdown" data-type="news-img-collapse">
 ![Briefly describe your image here. If it is a poster, transcribe it.](/path/to/img)
 
 Type up the image transcription here.
 Remember that this will be rendered markdown, so you can use markdown formatting to format the
 transcription, unlike the alt text.
-</div>
+</pre>
 ```
 
 ## Markdown syntax
