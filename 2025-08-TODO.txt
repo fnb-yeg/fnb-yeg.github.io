@@ -1,7 +1,7 @@
 Global
   [ ] Remove global homepage link
-  [ ] Remove twitter link
-  [ ] Add bluesky link
+  [-] Remove twitter link
+  [-] Add bluesky link
   [ ] Clean up images folder
 /
   [x] Replace newsletter
