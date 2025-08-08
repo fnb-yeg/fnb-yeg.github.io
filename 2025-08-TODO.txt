@@ -1,0 +1,23 @@
+Global
+  [-] Remove global homepage link
+  [-] Remove twitter link
+  [-] Add bluesky link
+  [ ] Clean up images folder
+/
+  [x] Replace newsletter
+/news
+  [x] Community meal news post
+  [x] Fruit collection post
+/projects
+  [x] /projects: Remove community fridge
+  [x] /projects: Edit community meals post
+  [x] /projects: add garden committe
+/history
+  [x] /history: Add content
+/local_orgs
+  [x] Remove defunct orgs
+  [x] Add TGC
+  [x] Add 4B
+  [x] Add Water warriors
+  [x] Add NGM
+
