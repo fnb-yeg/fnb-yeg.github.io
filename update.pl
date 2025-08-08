@@ -38,7 +38,7 @@ sub main {
             my @indent = m/^\s*/mg;  # Grab line indentation
 
             print @indent[0];
-            print '<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="">Bluesky</a></li>';
+            print '<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="https://bsky.app/profile/foodnotbombsyeg.bsky.social">Bluesky</a></li>';
             print "\n";
             next;
         }
