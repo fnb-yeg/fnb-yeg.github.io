@@ -3,9 +3,8 @@
 # Usage: batchreplace.sh FIND -r [REPLACE] FILES...
 # Requires gawk
 
-# Lines matching this regular expression will be replaced in processed files
-#FIND="/61ecb696cf7d4566a985a68c\">Join Our Birthday Club<\/a>/"
-#REPLACE=""
+# To replace all files of a given type, use the following command
+# find . -type f -name "*.html" -print0 | xargs -0 util/batchreplace.sh FIND -r [REPLACE]
 
 # Not enough args to parse; show usage info
 if [ $# -lt 2 ]; then
