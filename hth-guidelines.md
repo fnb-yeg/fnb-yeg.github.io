@@ -1,5 +1,5 @@
 # Helping the Humans Guidelines
-## FNB Edmonton 2025
+## FNB Edmonton 2026
 
 Helping the Humans provides homemade meals. We are unable to provide other forms of assistance at this time. 
 
