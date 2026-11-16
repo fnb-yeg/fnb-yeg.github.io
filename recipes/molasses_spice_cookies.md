@@ -27,5 +27,5 @@ more fancy.
 
 ---
 
-![Cookies](/images/molasses_spice_cookies.jpg)
+![Cookies](/images/recipes/molasses_spice_cookies.jpg)
 

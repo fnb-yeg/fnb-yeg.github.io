@@ -3,20 +3,38 @@
     "latest_announcements_limit": 2,
     "announcements": [
         {
-            "images": [ "/images/2025-fruit-collection.webp" ],
+            "images": [ "/images/2025/2025-fruit-collection.webp" ],
+            "date": "2025-08-08",
             "title": "Fruit Collection 2025",
             "description": "It's Fruit Collection season! Let us know if you have more fruit than you know what do with. We can come collect it from your trees and turn it into yummy food for food insecure people."
         },
         {
-            "images": [ { "src": "/images/newsletter_spring2025.webp", "alt": "Food Not Bombs Newsletter for Spring 2025." } ],
-            "date": "2025-03",
+            "images": [ { "src": "/images/2025/newsletter_spring2025.webp", "alt": "Food Not Bombs Newsletter for Spring 2025." } ],
+            "date": "2025-08-07",
             "transcription": "<pre class='markdown' data-src='/announcements/newsletter_spring2025.md'></pre>"
         },
         {
             "id": "newsletter_winter2026",
-            "images": [ { "src": "/images/newsletter_winter2026.webp", "alt": "Food Not Bombs Newsletter for Winter 2026." } ],
+            "images": [ { "src": "/images/2026/newsletter_winter2026.webp", "alt": "Food Not Bombs Newsletter for Winter 2026." } ],
             "date": "2026-11-08",
             "transcription": "<pre class='markdown' data-src='/announcements/newsletter_winter2026.md'></pre>"
+        },
+        {
+            "images": [ { "src": "/images/2023/newsletter_winter2023i.png", "alt": "Food Not Bombs Newsletter for Winter 2023" } ],
+            "date": "2023-11-28"
+        },
+        {
+            "images": [ { "src": "/images/2022/newsletter_may26.png", "alt": "Food Not Bombs Newsletter for Spring 2022" } ],
+            "date": "2022-05-26"
+        },
+        {
+            "images": [ "/images/2021/Community_supports.png" ],
+            "title": "Community Supports",
+            "date": "2021-06-11",
+            "description": "<a href='https://docs.google.com/document/d/14lojtpUWc5na8aTLIpZgQF_VQmmvmJEjqWs3AUoXQLg/edit?usp=sharing' target='_blank'>Click here for a community supports resource guide</a>"
+        },
+        {
+            "images": [ "/images/2021/New_projects_Uniting_the_community.png" ]
         }
     ]
 }

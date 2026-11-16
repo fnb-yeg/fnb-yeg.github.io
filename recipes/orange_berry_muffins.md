@@ -19,3 +19,5 @@ Wet Ingredients:
 3. Spoon into muffin tins, or a 9 inch greased cake pan
 4. Bake at 350&deg;F for 35 minutes (muffins) or an hour (cake pan), or until a butter knife can be cleanly inserted into the middle of the muffin/cake.
 
+![Plated muffins](/images/recipes/orange_berry_muffins.jpg)
+

@@ -77,6 +77,15 @@
             "group": "fnbyeg",
             "makes": "1&frac12; lbs / 4 cups / 680g",
             "file": "/recipes/homemade_tofu.md"
+        },
+
+        "Oatmeal": {
+            "group": "hungryforpeace",
+            "subgroup": "breakfast",
+            "makes": "6 / 100 servings",
+            "prep_time": "1 min",
+            "cook_time": "10&ndash;12 min",
+            "file": "/recipes/hungryforpeace/oatmeal.md"
         }
     }
 }

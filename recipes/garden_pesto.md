@@ -1,6 +1,6 @@
 ## Step 1: Gather Garden Greens
 
-![Image of gathered vegetable greens.](/images/garden_pesto_step1.jpg)
+![Image of gathered vegetable greens.](/images/recipes/garden_pesto_step1.jpg)
 
 - 3 cups of mixed greens
 
@@ -14,7 +14,7 @@ of leafy herb or green. This recipe yields about 2/3 cup of pesto
 
 ## Step 2: Prepare Ingredients
 
-![Image of gathered vegetable greens.](/images/garden_pesto_step2.jpg)
+![Image of gathered vegetable greens.](/images/recipes/garden_pesto_step2.jpg)
 
 Cut and chop your garden greens, and gather:
 
@@ -27,7 +27,7 @@ Cut and chop your garden greens, and gather:
 
 ## Step 3: Mix and Eat
 
-![Image of gathered vegetable greens.](/images/garden_pesto_step3.jpg)
+![Image of gathered vegetable greens.](/images/recipes/garden_pesto_step3.jpg)
 
 Mix all together in a food processor until fairly smooth. Add salt to taste.
 
@@ -35,7 +35,7 @@ Serve over pasta or on your next sandwich.
 
 ## Step 4: Freeze
 
-![Image of frozen pesto in a ziploc bag.](/images/garden_pesto_step4.jpg)
+![Image of frozen pesto in a ziploc bag.](/images/recipes/garden_pesto_step4.jpg)
 
 Tip: Freeze any extra pesto sauce flat so that you can break off chunks.
 

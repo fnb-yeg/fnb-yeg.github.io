@@ -1,4 +1,4 @@
-![Dal Tadka served over rice](/images/dal_tadka.jpg)
+![Dal Tadka served over rice](/images/recipes/dal_tadka.jpg)
 
 ## Oil Mixture
 - **5 cloves** finely chopped garlic

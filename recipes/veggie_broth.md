@@ -12,6 +12,6 @@ them!
 
 If you have a slow-cooker, you can also make broth on high for 8ish hours.
 
-![Vegetables in a pot](/images/veggie_broth_1.PNG)
-![Final broth in jars](/images/veggie_broth_2.PNG)
+![Vegetables in a pot](/images/recipes/veggie_broth_1.PNG)
+![Final broth in jars](/images/recipes/veggie_broth_2.PNG)
 
