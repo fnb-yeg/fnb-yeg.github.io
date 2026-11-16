@@ -8,18 +8,6 @@
             "description": "It's Fruit Collection season! Let us know if you have more fruit than you know what do with. We can come collect it from your trees and turn it into yummy food for food insecure people."
         },
         {
-            "images": [ "/data/image.png", "/data/image2.png" ],
-            "title": "news 2",
-            "date": "1970-01-01",
-            "description": "Electric newsaloo"
-        },
-        {
-            "images": [],
-            "title": "news 3",
-            "date": "1970-01-02",
-            "description": "Even newsier!"
-        },
-        {
             "images": [ { "src": "/images/newsletter_spring2025.webp", "alt": "Food Not Bombs Newsletter for Spring 2025." } ],
             "date": "2025-03",
             "transcription": "<pre class='markdown' data-src='/announcements/newsletter_spring2025.md'></pre>"
