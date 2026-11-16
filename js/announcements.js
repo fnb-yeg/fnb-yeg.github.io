@@ -1,13 +1,8 @@
 /*
- * Populate a container with an announcements list
- *
- * container    The container HTML node to populate.
- * old          If true, load announcements after the N newest announcements.
+ * Sort announcements sitedata by descending date.
  */
-function populateAnnouncementsList(container, old=false) {
-    // Get list of news items, ordered by date
-    let announcements = SiteData.query("announcements");
-    announcements.sort((a,b) => {
+function orderAnnouncements() {
+    SiteData.query("announcements").sort((a,b) => {
         if (!("date" in a)) return 1;  // No date; move to back
 
         if (a.date > b.date) {
@@ -18,15 +13,14 @@ function populateAnnouncementsList(container, old=false) {
             return 0;
         }
     });
+}
 
-    // Create card for each announcement
-    const limit = SiteData.query("latest_announcements_limit");
-    // Loop through [:limit] if !old; else [limit:]
-    for (let i=(old ? limit : 0); i < announcements.length && (old || i < limit); ++i) {
-        const announcement = announcements[i];
-
+/*
+ * Creates a card for the announcement
+ */
+function createAnnouncementCard(container, announcement) {
         // Create card
-        const carouselID = `annoucementCarousel${i}`;
+        const carouselID = randomID("announcementImages");
         let cardHTML = SiteData.query("@newsCard")
             .replaceAll("carouselID", carouselID);
 
@@ -108,6 +102,35 @@ function populateAnnouncementsList(container, old=false) {
             card.querySelector(".announcement-date")
                 .innerText = date.toDateString();
         }
+}
+
+/*
+ * Populate a container with an announcements list. Mutates announcements
+ * sitedata to be ordered by date.
+ *
+ * container    The container HTML node to populate.
+ * old          If true, load announcements after the N newest announcements.
+ */
+function populateAnnouncementsList(container, old=false) {
+    // Get list of news items, ordered by date
+    let announcements = SiteData.query("announcements");
+    announcements.sort((a,b) => {
+        if (!("date" in a)) return 1;  // No date; move to back
+
+        if (a.date > b.date) {
+            return -1;  // a is more recent
+        } else if (a.date < b.date) {
+            return 1;  // b is more recent
+        } else {
+            return 0;
+        }
+    });
+
+    // Create card for each announcement
+    const limit = SiteData.query("latest_announcements_limit");
+    // Loop through [:limit] if !old; else [limit:]
+    for (let i=(old ? limit : 0); i < announcements.length && (old || i < limit); ++i) {
+        createAnnouncementCard(container, announcements[i]);
     }
 
     SiteData.populateDocument(container);

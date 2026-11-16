@@ -1,4 +1,5 @@
 {
+    "homepage_announcement": "newsletter_winter2026",
     "latest_announcements_limit": 2,
     "announcements": [
         {
@@ -22,6 +23,12 @@
             "images": [ { "src": "/images/newsletter_spring2025.webp", "alt": "Food Not Bombs Newsletter for Spring 2025." } ],
             "date": "2025-03",
             "transcription": "<pre class='markdown' data-src='/announcements/newsletter_spring2025.md'></pre>"
+        },
+        {
+            "id": "newsletter_winter2026",
+            "images": [ { "src": "/images/newsletter_winter2026.webp", "alt": "Food Not Bombs Newsletter for Winter 2026." } ],
+            "date": "2026-11-08",
+            "transcription": "<pre class='markdown' data-src='/announcements/newsletter_winter2026.md'></pre>"
         }
     ]
 }

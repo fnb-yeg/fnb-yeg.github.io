@@ -782,7 +782,7 @@ function parseMarkdown(tokens) {
 }
 
 async function renderMarkdown(node=document) {
-	let targetElems = document.querySelectorAll("pre.markdown");
+	let targetElems = node.querySelectorAll("pre.markdown");
 
 	for (const target of targetElems) {
 		if (!target instanceof HTMLElement) continue;  // Not an HTML element; ignore it

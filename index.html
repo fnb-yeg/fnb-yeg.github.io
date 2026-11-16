@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
 	<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -11,9 +11,11 @@
 
 	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
-    <script src="/js/sitedata.js"></script>
+    <script src="/js/sitedata.min.js"></script>
 	<script src="/js/markdown.min.js"></script>
+
     <script src="/js/utils.js"></script>
+    <script src="/js/announcements.js"></script>
 
     <!-- Data sources -->
     <link data-include="content" rel="preload" as="fetch"
@@ -21,22 +23,31 @@
     <link data-include="content" rel="preload" as="fetch"
         title="footer" type="text/html" href="/fragments/footer.html" />
 
+    <link data-include="data" rel="preload" as="fetch"
+        href="/announcements/announcements.json" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="newsCard" type="text/html" href="/fragments/homeAnnouncement.html" />
+
     <title>Food Not Bombs Edmonton</title>
 
-	<!-- Style for newsletter desc -->
-	<style>
-	#newsletterCollapseText {
-		background-color: #fff;
-	}
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            // Find the homepage announcement
+            const announcementID = SiteData.query("homepage_announcement");
+            announcement = SiteData.query("announcements").find(elem => {
+                if (!("id" in elem)) return false;
+                return (elem.id === announcementID);
+            });
 
-    #newsletterCollapseText header {
-        border-radius: 3px;
-		padding: 10px;
+            // Generate the announcement card
+            let container = document.getElementById("announcement");
+            createAnnouncementCard(container, announcement);
 
-        color: #fff;
-        background-image: linear-gradient(90deg, #01be65, #01be65 65%, #fff);
-    }
-	</style>
+            // Populate data & render markdown
+            SiteData.populateDocument(container);
+            renderMarkdown(container);
+        });
+    </script>
 </head>
 
 <body>
@@ -44,96 +55,7 @@
         <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
             <!-- Newletter -->
-			<div class="row justify-content-center">
-				<div class="col-10">
-					<!-- Card with collapsible transcription -->
-					<div class="card">
-						<img class="card-img-top"
-                        src="/images/newsletter_winter2026.webp" alt="Food Not
-                        Bombs Newsletter for Winter 2026.">
-						<div class="card-body">
-							<p>
-								<a data-bs-toggle="collapse" href="#newsletterCollapseText" role="button" aria-expanded="false" aria-controls="newsletterCollapseText">[View Image Transcription]</a>
-							</p>
-							<div class="collapse" id="newsletterCollapseText">
-                                <header>
-                                    <h1>Food Not Bombs</h1>
-                                    <h2>Winter 2026 Newsletter</h2>
-                                </header>
-                                <section>
-                                    <h3>Future Organization Stability</h3>
-                                    <p>
-                                    Food Not Bombs has had some tumultuous
-                                    times in its history, including recent
-                                    history, but things are stable for now. We
-                                    truly are coming into our own and meeting
-                                    with a lot of success. We are in our third
-                                    year of taking on practicum students from
-                                    the U of A, our budget remains well
-                                    balanced, and our reputation continues to
-                                    improve.
-                                    </p>
-                                </section>
-
-                                <section>
-                                    <h3>Reaching Our Community and Changing Lives</h3>
-                                    <p>
-                                    Food Not Bombs recently took a closer look
-                                    at the numbers behind our programs to
-                                    better understand the impact we are making
-                                    within our community. What we found
-                                    highlights just how many individuals and
-                                    families rely on these programs and the
-                                    growing demand for accessible food and
-                                    community support.
-                                    </p>
-                                    <p>
-                                    Through our Helping the Humans programming,
-                                    we serve approximately 1500 people every
-                                    year. Our Community Meals program also
-                                    provides ongoing support, serving roughly
-                                    40 people each month. Additionally, our
-                                    Birthday Club registration form fills up
-                                    every time it opens, demonstrating the
-                                    continued interest and need for the
-                                    opportunities we provide.
-                                    </p>
-                                </section>
-
-                                <section>
-                                    <h3>Our Programs</h3>
-                                    <p>
-                                    Food Not Bombs offers a variety of
-                                    community programming!
-                                    </p>
-                                    <p>
-                                    Our core programming includes:
-                                    <ul>
-                                        <li>
-                                            Community garden (wrapped up for
-                                            2026, will resume in 2027)
-                                        </li>
-                                        <li>Community pantry</li>
-                                        <li>
-                                            Community meals and encampment
-                                            outreach
-                                        </li>
-                                        <li>
-                                            Helping the Humans and Birthday
-                                            Club
-                                        </li>
-                                        <li>
-                                            Fruit Collection (wrapped up for
-                                            2026, will resume in 2027)
-                                        </li>
-                                        <li>Community Service Learning</li>
-                                    </ul>
-                                </section>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            <div class="row justify-content-center" id="announcement"></div>
 
             <!-- Buttons -->
             <br>
