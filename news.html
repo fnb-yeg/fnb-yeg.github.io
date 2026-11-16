@@ -17,6 +17,7 @@
     <script src="/js/sitedata.js"></script>
 	<script src="/js/markdown.min.js"></script>
     <script src="/js/utils.js"></script>
+    <script src="/js/announcements.js"></script>
 
     <!-- Data sources -->
     <link data-include="content" rel="preload" as="fetch"
@@ -25,140 +26,16 @@
         title="footer" type="text/html" href="/fragments/footer.html" />
 
     <link data-include="data" rel="preload" as="fetch"
-        href="/data/announcements.json" />
+        href="/announcements/announcements.json" />
     <link data-include="content" rel="preload" as="fetch"
         title="newsCard" type="text/html" href="/fragments/announcement.html" />
 
 	<title>News — Food Not Bombs Edmonton</title>
 
-	<!-- Style for newsletter desc -->
-    <style>
-        #newsletterCollapseText {
-            background-color: #fff;
-        }
-
-        #newsletterCollapseText header {
-            border-radius: 3px;
-            padding: 10px;
-
-            color: #fff;
-            text-shadow: 1px 1px 5px #444;
-            background-image: linear-gradient(90deg, #01be65, #01be65 80%, #fff);
-        }
-	</style>
-
-    <!-- Newsletter loading -->
+    <!-- Announcement loading -->
     <script>
         document.addEventListener("sitedata-finish", () => {
-            const sd = new SiteData();
-
-            // Get list of news items, ordered by date
-            let announcements = SiteData.query("announcements");
-            announcements.sort((a,b) => {
-                if (!("date" in a)) return 1;  // No date; move to back
-
-                if (a.date > b.date) {
-                    return -1;  // a is more recent
-                } else if (a.date < b.date) {
-                    return 1;  // b is more recent
-                } else {
-                    return 0;
-                }
-            });
-
-            // Create card for each announcement
-            const MAX_CARDS = 10;
-            const container = document.getElementById("announcements");
-            for (let i=0; i < announcements.length && i < MAX_CARDS; ++i) {
-                const announcement = announcements[i];
-
-                // Create card
-                const carouselID = `annoucementCarousel${i}`;
-                let cardHTML = SiteData.query("@newsCard")
-                    .replaceAll("carouselID", carouselID);
-
-                container.innerHTML += cardHTML;
-                const card = container.lastElementChild;
-
-                // Add images
-                const imgContainer = card.querySelector(".imgContainer");
-
-                // Returns [src, alt]
-                const getImageData = (img) => {
-                    switch (typeof img) {
-                        case "string":
-                            return [img, ""];
-                        case "object":
-                            return [img.src, img.alt];
-                        default:
-                            return ["", ""];
-                    }
-                };
-
-                if ("images" in announcement) {
-                    if (announcement.images.length === 1) {
-                        // Add one image
-                        const img = document.createElement("img");
-                        [img.src, img.alt] = getImageData(announcement.images[0]);
-                        img.classList.add("card-img-top");
-                        imgContainer.appendChild(img);
-                    } else if (announcement.images.length > 1) {
-                        // Add multiple images in a carousel
-                        let images = [];
-                        for (const image of announcement.images) {
-                            let elem = document.createElement("img");
-                            [elem.src, elem.alt] = getImageData(image);
-                            elem.classList.add("d-block", "w-100");
-                            images.push(elem);
-                        }
-                        makeBSCarousel(imgContainer, images);
-                    }
-                }
-
-                // Populate news data
-                if ("title" in announcement) {
-                    card.querySelector(".announcement-title")
-                        .innerHTML = announcement.title;
-                }
-                if ("description" in announcement) {
-                    card.querySelector(".announcement-desc")
-                        .innerHTML = announcement.description;
-                }
-
-                // Add transcription if present
-                if ("transcription" in announcement) {
-                    let transID = randomID("transcription");
-
-                    // Generate collapse toggle
-                    let p = document.createElement("p");
-                    let elem = document.createElement("a");
-                    elem.dataset.bsToggle = "collapse";
-                    elem.href = `#${transID}`;
-                    elem.role = "button";
-                    elem.ariaExpanded = false;
-                    elem.ariaControls = transID;
-                    elem.innerText = "[View Image Transcription]";
-                    p.appendChild(elem);
-                    card.querySelector(".card-body").appendChild(p);
-
-                    // Generate transcription element
-                    let trans = document.createElement("div");
-                    trans.classList.add("collapse");
-                    trans.id = transID;
-                    trans.innerHTML = announcement.transcription;
-                    card.querySelector(".card-body").appendChild(trans);
-                }
-
-                // Populate date if a valid date is provided
-                let date = new Date(announcement.date + "T00:00-06:00");
-                if (!isNaN(date.valueOf())) {
-                    card.querySelector(".announcement-date")
-                        .innerText = date.toDateString();
-                }
-            }
-
-            SiteData.populateDocument(container);
-            renderMarkdown(container);
+            populateAnnouncementsList(document.getElementById("announcements"));
         });
     </script>
 </head>
@@ -213,8 +90,6 @@
 
             <!-- Newsletters & Announcements -->
             <hr />
-
-            <!-- Data-driven -->
             <div class="row justify-content-center" id="announcements"></div>
 
 			<div class="row my-5">

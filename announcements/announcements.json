@@ -1,4 +1,5 @@
 {
+    "latest_announcements_limit": 2,
     "announcements": [
         {
             "images": [ "/images/2025-fruit-collection.webp" ],

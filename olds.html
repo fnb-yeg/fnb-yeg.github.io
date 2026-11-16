@@ -13,6 +13,8 @@
 
     <script src="/js/sitedata.js"></script>
 	<script src="/js/markdown.min.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/announcements.js"></script>
 
     <!-- Data sources -->
     <link data-include="content" rel="preload" as="fetch"
@@ -20,7 +22,18 @@
     <link data-include="content" rel="preload" as="fetch"
         title="footer" type="text/html" href="/fragments/footer.html" />
 
+    <link data-include="data" rel="preload" as="fetch"
+        href="/announcements/announcements.json" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="newsCard" type="text/html" href="/fragments/announcement.html" />
+
 	<title>Archived News — Food Not Bombs Edmonton</title>
+
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            populateAnnouncementsList(document.getElementById("announcements"), true);
+        });
+    </script>
 </head>
 
 <body>
@@ -32,6 +45,13 @@
 					<a class="btn btn-light" href="/news.html"><i class="ri-arrow-left-s-line"></i>Latest News</a>
 				</div>
 			</div>
+
+            <!-- New olds -->
+            <div class="row justify-content-center" id="announcements"></div>
+
+            <hr />
+
+            <!-- Old olds -->
 			<div class="row justify-content-center">
                 <div class="col-xs-12 col-md-12 col-lg-4">
                     <div class="card">
