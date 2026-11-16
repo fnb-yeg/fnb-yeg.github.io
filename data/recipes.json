@@ -8,7 +8,10 @@
             "subgroups": {
                 "breakfast": "Breakfast",
                 "lunch": "Lunch and Dinner",
-                "salads": "Salads"
+                "salads": "Salads",
+                "dressings": "Salad Dressings",
+                "soups": "Soups",
+                "desserts": "Desserts"
             }
         }
     },
@@ -20,6 +23,60 @@
             "cook_time": "35 minutes",
             "file": "/recipes/orange_berry_muffins.md"
         },
-        "test": {}
+        "Tofu 'Egg' Sandwiches": {
+            "group": "fnbyeg",
+            "file": "/recipes/tofu_egg_sandwich.md"
+        },
+        "Garden Clean Up Pesto": {
+            "group": "fnbyeg",
+            "makes": "&frac23; cups",
+            "file": "/recipes/garden_pesto.md"
+        },
+        "Dal Tadka": {
+            "group": "fnbyeg",
+            "file": "/recipes/dal_tadka.md"
+        },
+        "Veggie Broth": {
+            "group": "fnbyeg",
+            "file": "/recipes/veggie_broth.md"
+        },
+        "Molasses Spice Cookies": {
+            "group": "fnbyeg",
+            "makes": "24 Cookies",
+            "file": "/recipes/molasses_spice_cookies.md"
+        },
+        "Almond Lassi": {
+            "group": "fnbyeg",
+            "file": "/recipes/almond_lassi.md"
+        },
+        "Almond Milk": {
+            "group": "fnbyeg",
+            "file": "/recipes/almond_milk.md"
+        },
+        "Chapati": {
+            "group": "fnbyeg",
+            "file": "/recipes/chapati.md"
+        },
+        "Falafel": {
+            "group": "fnbyeg",
+            "file": "/recipes/falafel.md"
+        },
+        "Hot Almond Carob": {
+            "group": "fnbyeg",
+            "file": "/recipes/hot_almond_carob.md"
+        },
+        "No Cheese Spread": {
+            "group": "fnbyeg",
+            "file": "/recipes/no_cheese_spread.md"
+        },
+        "Samosas": {
+            "group": "fnbyeg",
+            "file": "/recipes/samosas.md"
+        },
+        "Homemade Tofu": {
+            "group": "fnbyeg",
+            "makes": "1&frac12; lbs / 4 cups / 680g",
+            "file": "/recipes/homemade_tofu.md"
+        }
     }
 }

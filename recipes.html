@@ -99,7 +99,7 @@
                     const itemLink = itemElem.querySelector(".recipe-link");
 
                     itemName.innerHTML = recipeName;
-                    itemLink.href = `/recipes_new?recipe=${recipeName}`;
+                    itemLink.href = `/recipes?recipe=${recipeName}`;
 
                     list.appendChild(itemElem);
                 }
@@ -108,7 +108,7 @@
                 const recipe = SiteData.query("recipes")[queried];
 
                 // Update title
-                recipeContent.querySelector("h2").innerText = queried;
+                recipeContent.querySelector("h1").innerText = queried;
 
                 // Apply recipe data
                 const container = document.createElement("div");
@@ -131,20 +131,20 @@
 
                     // Generate a label from the key name
                     label.innerText = `${titleCase(key.replace('_', ' '))}:`;
-                    value.innerText = recipe[key];
+                    value.innerHTML = recipe[key];
 
                     container.appendChild(recipeData);
                 }
 
                 recipeContent.appendChild(container);
 
-                // TODO: insert source file
+                // TODO: handle non-markdown file types (pdf?)
                 const recipeBody = document.createElement("pre");
                 recipeBody.classList.add("markdown");
                 recipeBody.dataset.src = recipe.file;
                 recipeContent.appendChild(recipeBody);
 
-                renderMarkdown(recipeBody);
+                renderMarkdown(recipeBody.parentNode);
             }
         });
     </script>
@@ -157,7 +157,7 @@
             <div class="card">
                 <div class="card-body">
                     <div id="recipe-content" class="content">
-                        <h2>Recipes</h2>
+                        <h1>Recipes</h1>
                     </div>
 
                     <template id="recipeListTemplate">
