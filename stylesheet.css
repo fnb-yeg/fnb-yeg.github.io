@@ -148,3 +148,7 @@ div.markdown .md-table-align-right {
 div.markdown .md-table-align-justify {
 	text-align: justify;
 }
+
+div.markdown img {
+    max-width: 100%;
+}
