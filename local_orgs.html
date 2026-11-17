@@ -21,9 +21,28 @@
     <link data-include="content" rel="preload" as="fetch"
         title="footer" type="text/html" href="/fragments/footer.html" />
 
-	<title>Local Organizations — Food Not Bombs Edmonton</title>
-</head>
+    <link data-include="data" rel="preload" as="fetch"
+        href="/data/local_orgs.json" />
 
+	<title>Local Organizations — Food Not Bombs Edmonton</title>
+
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            const localOrgs = SiteData.query("local_orgs");
+            const orgLinkTemplate = document.getElementById("orgLinkTemplate");
+
+            for (const org of localOrgs) {
+                const link = document.importNode(orgLinkTemplate.content, true);
+
+                link.querySelector(".org-title").innerHTML = org.name;
+                link.querySelector(".org-desc").innerHTML = org.description;
+                link.querySelector("a").href = org.url;
+
+                document.getElementById("org-list").appendChild(link);
+            }
+        });
+    </script>
+</head>
 <body>
 	<div class="content gradient">
         <nav data-driven="innerHTML=@navbar"></nav>
@@ -34,49 +53,14 @@
 						<h1>Links to Local Organizations</h1>
 					</div>
 					<div class="content">
-						<p class="lead">
-						Local groups whose work we love 💚</p>
-                        <!-- TODO: verify which groups are still active -->
-						<ul class="list-group">
-							<a data-driven="href=links.orgs.bear-claw" target="_blank" class="list-group-item list-group-item-action"><h5>Bear Claw Beaver Hills House</h5><small>Famous for serving the unhoused community with food, laughter and de-escalation tactics, BCP is a Canada-wide Indigenous-led movement.</small></a>
-
-                            <a data-driven="href=links.orgs.4bhr" target="_blank" class="list-group-item list-group-item-action">
-                                <h5>4B Harm Reduction</h5>
-                                <small>
-                                    An organisation made up of healtchare
-                                    professionals and recovering substance
-                                    users, who use their combined knowledge and
-                                    experience to support people experiencing
-                                    substance addiction in Edmonton. 4B hands
-                                    out harm reduction supplies and regularly
-                                    responds to overdoses
-                                </small>
-                            </a>
-
-                            <a data-driven="href=links.orgs.water-warriors" target="_blank" class="list-group-item list-group-item-action">
-                                <h5>Water Warriors</h5>
-                                <small>
-                                    An outreach organisation with many
-                                    Indigenous members that goes on mobile
-                                    outreach visits throughout the city,
-                                    providing food and beverages, as well as
-                                    harm reduction supplies, and doing checkups
-                                    on community members to make sure they are
-                                    safe
-                                </small>
-                            </a>
-
-                            <a data-driven="href=links.orgs.ngm" target="_blank" class="list-group-item list-group-item-action">
-                                <h5>New Grocery Movement</h5>
-                                <small>
-                                    One of our partners at one of our two
-                                    community gardens this year, New Grocery
-                                    Movement is active in food security work
-                                    and believes in the right of everyone to
-                                    have access to enough food, as well as in
-                                    food sovereignty
-                                </small>
-                            </a>
+						<p class="lead">Local groups whose work we love 💚</p>
+						<ul id="org-list" class="list-group">
+                            <template id="orgLinkTemplate">
+                                <a target="_blank" class="list-group-item list-group-item-action">
+                                    <h5 class="org-title"></h5>
+                                    <small class="org-desc"></small>
+                                </a>
+                            </template>
 						</ul>
 					</div>
 				</div>
