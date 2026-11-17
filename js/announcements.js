@@ -2,17 +2,6 @@
  * Sort announcements sitedata by descending date.
  */
 function orderAnnouncements() {
-    SiteData.query("announcements").sort((a,b) => {
-        if (!("date" in a)) return 1;  // No date; move to back
-
-        if (a.date > b.date) {
-            return -1;  // a is more recent
-        } else if (a.date < b.date) {
-            return 1;  // b is more recent
-        } else {
-            return 0;
-        }
-    });
 }
 
 /*
@@ -113,7 +102,7 @@ function createAnnouncementCard(container, announcement) {
  */
 function populateAnnouncementsList(container, old=false) {
     // Get list of news items, ordered by date
-    let announcements = SiteData.query("announcements");
+    const announcements = SiteData.query("announcements");
     announcements.sort((a,b) => {
         if (!("date" in a)) return 1;  // No date; move to back
 
@@ -126,8 +115,39 @@ function populateAnnouncementsList(container, old=false) {
         }
     });
 
+    // Determine archive threshold
+    const dateThreshold = SiteData.query("archive_date_threshold");
+    let limit = SiteData.query("archive_count_threshold");
+
+    // Archive old posts
+    if (dateThreshold !== null) {
+        // Determine date of oldest unarchived post
+        let cutoff = dateThreshold.slice(0, -1);
+        switch (dateThreshold.at(-1)) {
+            case 'y':
+            case 'Y':
+                cutoff *= 3.15576e+10;
+                break;
+            case 'm':
+            case 'M':
+                cutoff *= 2.6298e+9;
+                break;
+            case 'd':
+            case 'D':
+                cutoff *= 8.64e+7;
+                break;
+        }
+        cutoff = new Date(Date.now() - cutoff).toISOString().split('T')[0];
+
+        // Reduce limit to exclude old posts
+        for (let i=0; i < announcements.length && i < limit; ++i) {
+            if ("date" in announcements[i] && announcements[i].date < cutoff) {
+                limit = i;
+            }
+        }
+    }
+
     // Create card for each announcement
-    const limit = SiteData.query("latest_announcements_limit");
     // Loop through [:limit] if !old; else [limit:]
     for (let i=(old ? limit : 0); i < announcements.length && (old || i < limit); ++i) {
         createAnnouncementCard(container, announcements[i]);

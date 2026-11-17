@@ -22,7 +22,7 @@ Stuffing:
 - **1 tsp** cumin seeds, ground and roasted
 - **&frac14; tsp** cayenne pepper
 - **2 tbsp** lemon juice (or 1 tbsp lemon juice and 1 tbsp amchoor)
-- **1 tsp anardana (dried pomegranate seeds)
+- **1 tsp anardana** (dried pomegranate seeds)
 - Oil for deep frying
 - Extra flour for dusting
 

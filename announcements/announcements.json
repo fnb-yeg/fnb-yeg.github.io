@@ -1,6 +1,7 @@
 {
     "homepage_announcement": "newsletter_winter2026",
-    "latest_announcements_limit": 2,
+    "archive_count_threshold": 6,
+    "archive_date_threshold": "1y",
     "announcements": [
         {
             "images": [ "/images/2025/2025-fruit-collection.webp" ],
