@@ -54,6 +54,10 @@
             if (!(queried in recipes)) {
                 // No recipe or invalid name; list all recipes
 
+                const returnBtn = document.getElementById("returnBtn");
+                returnBtn.classList.add("d-none");
+                returnBtn.ariaHidden = true;
+
                 // Create nodes for each recipe group
                 for (const [groupID, group] of Object.entries(recipeGroups)) {
                     const container = document.createElement("div");
@@ -154,6 +158,11 @@
 	<div class="content gradient">
         <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
+			<div id="returnBtn" class="row mt-5">
+				<div class="text-start">
+					<a class="btn btn-light" href="/recipes.html"><i class="ri-arrow-left-s-line"></i>Return to recipe list</a>
+				</div>
+			</div>
             <div class="card">
                 <div class="card-body">
                     <div id="recipe-content" class="content">
