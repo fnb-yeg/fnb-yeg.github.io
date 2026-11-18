@@ -13,13 +13,13 @@
         {
             "images": [ { "src": "/images/2025/newsletter_spring2025.webp", "alt": "Food Not Bombs Newsletter for Spring 2025." } ],
             "date": "2025-08-07",
-            "transcription": "<pre class='markdown' data-src='/announcements/newsletter_spring2025.md'></pre>"
+            "transcription": "<pre class='markdown' data-src='/content/newsletter_spring2025.md'></pre>"
         },
         {
             "id": "newsletter_winter2026",
             "images": [ { "src": "/images/2026/newsletter_winter2026.webp", "alt": "Food Not Bombs Newsletter for Winter 2026." } ],
             "date": "2026-11-08",
-            "transcription": "<pre class='markdown' data-src='/announcements/newsletter_winter2026.md'></pre>"
+            "transcription": "<pre class='markdown' data-src='/content/newsletter_winter2026.md'></pre>"
         },
         {
             "id": "newsletter_winter2023",
