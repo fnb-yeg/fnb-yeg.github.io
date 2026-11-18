@@ -2,6 +2,7 @@
     "homepage_announcement": "newsletter_winter2026",
     "archive_count_threshold": 6,
     "archive_date_threshold": "1y",
+    "archive_page_limit": 4,
     "announcements": [
         {
             "images": [ "/images/2025/2025-fruit-collection.webp" ],
@@ -21,6 +22,7 @@
             "transcription": "<pre class='markdown' data-src='/announcements/newsletter_winter2026.md'></pre>"
         },
         {
+            "id": "newsletter_winter2023",
             "images": [ { "src": "/images/2023/newsletter_winter2023i.png", "alt": "Food Not Bombs Newsletter for Winter 2023" } ],
             "date": "2023-11-28"
         },

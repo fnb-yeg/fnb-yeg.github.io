@@ -33,7 +33,7 @@ function createAnnouncementCard(container, announcement) {
 
         if ("images" in announcement) {
             if (announcement.images.length === 1) {
-                // Add one image
+            // Add one image
                 const img = document.createElement("img");
                 [img.src, img.alt] = getImageData(announcement.images[0]);
                 img.classList.add("card-img-top");
@@ -99,6 +99,7 @@ function createAnnouncementCard(container, announcement) {
  *
  * container    The container HTML node to populate.
  * old          If true, load announcements after the N newest announcements.
+ * Returns the number of unarchived announcements
  */
 function populateAnnouncementsList(container, old=false) {
     // Get list of news items, ordered by date
@@ -117,7 +118,7 @@ function populateAnnouncementsList(container, old=false) {
 
     // Determine archive threshold
     const dateThreshold = SiteData.query("archive_date_threshold");
-    let limit = SiteData.query("archive_count_threshold");
+    let nUnarchived = SiteData.query("archive_count_threshold");
 
     // Archive old posts
     if (dateThreshold !== null) {
@@ -139,20 +140,37 @@ function populateAnnouncementsList(container, old=false) {
         }
         cutoff = new Date(Date.now() - cutoff).toISOString().split('T')[0];
 
-        // Reduce limit to exclude old posts
-        for (let i=0; i < announcements.length && i < limit; ++i) {
+        // Reduce unarchived count to exclude old posts
+        for (let i=0; i < announcements.length && i < nUnarchived; ++i) {
             if ("date" in announcements[i] && announcements[i].date < cutoff) {
-                limit = i;
+                nUnarchived = i;
             }
         }
     }
 
+    const perPage = SiteData.query("archive_page_limit");
+    let first = 0;
+    let last = announcements.length;
+
+    // Paginate old archived posts
+    if (old) {
+        // Get page number; 1 if unspecified
+        const page = new URLSearchParams(window.location.search).get("p") ?? 1;
+
+        last = nUnarchived + perPage * page;
+        first = last - perPage;
+
+        if (last > announcements.length) last = announcements.length;
+    }
+
     // Create card for each announcement
-    // Loop through [:limit] if !old; else [limit:]
-    for (let i=(old ? limit : 0); i < announcements.length && (old || i < limit); ++i) {
+    // Loop through [:nUnarchived] if !old; else [nUnarchived:]
+    for (let i=(old ? first : 0); i < last && (old || i < nUnarchived); ++i) {
         createAnnouncementCard(container, announcements[i]);
     }
 
     SiteData.populateDocument(container);
     renderMarkdown(container);
+
+    return nUnarchived;
 }

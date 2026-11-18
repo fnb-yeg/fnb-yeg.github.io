@@ -31,7 +31,28 @@
 
     <script>
         document.addEventListener("sitedata-finish", () => {
-            populateAnnouncementsList(document.getElementById("announcements"), true);
+            let unarchived = populateAnnouncementsList(document.getElementById("announcements"), true);
+
+            // Configure prev/next buttons
+            const page = parseInt(new URLSearchParams(window.location.search).get("p") ?? 1);
+            let next = `/olds.html?p=${page+1}`;
+
+            if (page === 1) {
+                // Disable prev button if this is the first page
+                document.getElementById("prev-btn").classList.add("disabled");
+            } else {
+                document.getElementById("prev-btn").href = `/olds.html?p=${page-1}`;
+            }
+
+            let archived = SiteData.query("announcements").length - unarchived;
+            let lastOnPage = page * SiteData.query("archive_page_limit");
+
+            if (lastOnPage < archived) {
+                document.getElementById("next-btn").href = next;
+            } else {
+                // Disable next button if this is the last page
+                document.getElementById("next-btn").classList.add("disabled");
+            }
         });
     </script>
 </head>
@@ -46,10 +67,16 @@
 				</div>
 			</div>
             <div class="row justify-content-center" id="announcements"></div>
-			<div class="row mt-5">
-				<div class="text-start">
+			<div class="d-flex mt-5 gap-1">
+				<div class="text-start me-auto">
 					<a class="btn btn-light" href="/news.html"><i class="ri-arrow-left-s-line"></i>Latest News</a>
 				</div>
+				<div class="text-start">
+					<a class="btn btn-light" id="prev-btn"><i class="ri-arrow-left-s-line"></i>Previous</a>
+				</div>
+                <div class="text-start">
+					<a class="btn btn-light" id="next-btn">Next<i class="ri-arrow-right-s-line"></i></a>
+                </div>
 			</div>
 		</div> 
 	</div>
