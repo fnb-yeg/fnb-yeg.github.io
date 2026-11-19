@@ -19,18 +19,6 @@ function createAnnouncementCard(container, announcement) {
         // Add images
         const imgContainer = card.querySelector(".imgContainer");
 
-        // Returns [src, alt]
-        const getImageData = (img) => {
-            switch (typeof img) {
-                case "string":
-                    return [img, ""];
-                case "object":
-                    return [img.src, img.alt];
-                default:
-                    return ["", ""];
-            }
-        };
-
         if ("images" in announcement) {
             if (announcement.images.length === 1) {
             // Add one image
@@ -63,26 +51,7 @@ function createAnnouncementCard(container, announcement) {
 
         // Add transcription if present
         if ("transcription" in announcement) {
-            let transID = randomID("transcription");
-
-            // Generate collapse toggle
-            let p = document.createElement("p");
-            let elem = document.createElement("a");
-            elem.dataset.bsToggle = "collapse";
-            elem.href = `#${transID}`;
-            elem.role = "button";
-            elem.ariaExpanded = false;
-            elem.ariaControls = transID;
-            elem.innerText = "[View Image Transcription]";
-            p.appendChild(elem);
-            card.querySelector(".card-body").appendChild(p);
-
-            // Generate transcription element
-            let trans = document.createElement("div");
-            trans.classList.add("collapse");
-            trans.id = transID;
-            trans.innerHTML = announcement.transcription;
-            card.querySelector(".card-body").appendChild(trans);
+            makeImageTranscription(card.querySelector(".card-body"), announcement.transcription);
         }
 
         // Populate date if a valid date is provided

@@ -77,6 +77,50 @@ function makeBSCarousel(container, items) {
     }
 }
 
+/*
+ * Appends a collapsible image transcription to the given element
+ */
+function makeImageTranscription(container, transcription) {
+    let transID = randomID("transcription");
+
+    // Generate collapse toggle
+    let p = document.createElement("p");
+    let elem = document.createElement("a");
+    elem.dataset.bsToggle = "collapse";
+    elem.href = `#${transID}`;
+    elem.role = "button";
+    elem.ariaExpanded = false;
+    elem.ariaControls = transID;
+    elem.innerText = "[View Image Transcription]";
+    p.appendChild(elem);
+    container.appendChild(p);
+
+    // Generate transcription element
+    let trans = document.createElement("div");
+    trans.classList.add("collapse");
+    trans.id = transID;
+    trans.innerHTML = transcription;
+    container.appendChild(trans);
+}
+
+/*
+ * Gets image data from JSON; either a string containing the image url or an
+ * object with src and alt keys.
+ *
+ * img      The value to get image data from
+ * Returns [src, alt]
+ */
+function getImageData(img) {
+    switch (typeof img) {
+        case "string":
+            return [img, ""];
+        case "object":
+            return [img.src, img.alt];
+        default:
+            return ["", ""];
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Wait until navbar has been populated
     document.querySelector("nav").addEventListener("sitedata-populate", () => {

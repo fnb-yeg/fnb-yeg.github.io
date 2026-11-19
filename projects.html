@@ -21,12 +21,104 @@
     <link data-include="content" rel="preload" as="fetch"
         title="footer" type="text/html" href="/fragments/footer.html" />
 
+    <link data-include="data" rel="preload" as="fetch"
+        href="/data/projects.json" />
+
 	<title>Projects — Food Not Bombs Edmonton</title>
+
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            const projects = SiteData.query("projects");
+            const projContainer = document.getElementById("projects");
+
+            const projectCardTemplate = document.getElementById("projectCardTemplate").content;
+            const actionButtonTemplate = document.getElementById("actionButtonTemplate").content;
+
+
+            for (const project of projects) {
+                const card = document.importNode(projectCardTemplate, true);
+                const cardBody = card.querySelector(".card-body");
+
+                // Card title
+                card.querySelector(".card-header").innerText = project.title;
+
+                // Card image
+                const img = card.querySelector(".card-img");
+                [img.src, img.alt] = getImageData(project.image);
+
+                // Card description
+                if ("description" in project) {
+                    const desc = card.querySelector(".description");
+                    // TODO: render markdown in description
+                    desc.innerHTML = project.description;
+                }
+
+                // TODO: support data-driven values in action buttons
+                // TODO: (particularly in action URL)
+
+                // Action buttons
+                if ("actions" in project) {
+                    for (const action of project.actions) {
+                        const btnContainer = document.importNode(actionButtonTemplate, true);
+                        const btn = btnContainer.querySelector(".btn");
+
+                        btn.innerText = action.label;
+                        btn.href = action["url"];
+
+                        if ("target" in action) btn.target = action.target;
+
+                        if (!("style" in action)) action.style = "btn-outline-success";
+
+                        if ("disabled" in action && action.disabled) {
+                            btn.classList.add("disabled");
+                            action.style = "btn-outline-secondary";
+                        }
+
+                        btn.classList.add(action.style);
+
+                        cardBody.appendChild(btnContainer);
+                    }
+                }
+
+                // Image transcription
+                if ("transcription" in project) {
+                    makeImageTranscription(cardBody, project.transcription);
+                }
+
+                projContainer.appendChild(card);
+            }
+        });
+    </script>
 </head>
 <body>
 	<div class="content gradient">
         <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
+            <div class="row" id="projects">
+            </div>
+
+            <template id="projectCardTemplate">
+                <div class="col-xs-12 col-sm-6 col-lg-4">
+                    <div class="card">
+                        <h3 class="card-header"></h3>
+                        <div class="card-body">
+                            <div class="content">
+                                <img class="card-img" />
+                                <div class="description"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template id="actionButtonTemplate">
+                <div class="pt-3 d-flex justify-content-center">
+                    <a role="button" class="btn"></a>
+                </div>
+            </template>
+
+            <hr />
+
 			<div class="row">
                 <!-- Community Meals Card -->
 				<div class="col-xs-12 col-sm-6 col-lg-4">
