@@ -24,7 +24,7 @@
                     "style": "btn-outline-primary"
                 }
             ],
-            "transcription": ""
+            "transcription": { "src": "/content/hth_poster_transcription.md" }
         },
         {
             "title": "Birthday Cake Club",
@@ -44,12 +44,14 @@
                     "url": "/how_to_join",
                     "style": "btn-outline-primary"
                 }
-            ]
+            ],
+            "transcription": { "src": "/content/birthday_cake_club_poster_transcription.md" }
         },
         {
             "title": "Garden Committee",
             "image": "images/garden-committee.webp",
-            "description": "Our Garden Commmittee has been re-established this year and it is full swing. We still need folks to help with watering and weeding throughout August and until the harvest later in September."
+            "description": "Our Garden Commmittee has been re-established this year and it is full swing. We still need folks to help with watering and weeding throughout August and until the harvest later in September.",
+            "transcription": { "src": "/content/garden-committee-poster-transcription.md" }
         }
     ]
 }

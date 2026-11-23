@@ -46,12 +46,13 @@ function createAnnouncementCard(container, announcement) {
         }
         if ("description" in announcement) {
             card.querySelector(".announcement-desc")
-                .innerHTML = announcement.description;
+                .innerHTML = getMDContent(announcement.description);
         }
 
         // Add transcription if present
         if ("transcription" in announcement) {
-            makeImageTranscription(card.querySelector(".card-body"), announcement.transcription);
+            makeImageTranscription(card.querySelector(".card-body"),
+                                   getMDContent(announcement.transcription));
         }
 
         // Populate date if a valid date is provided

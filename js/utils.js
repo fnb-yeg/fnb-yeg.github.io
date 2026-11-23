@@ -115,9 +115,24 @@ function getImageData(img) {
         case "string":
             return [img, ""];
         case "object":
-            return [img.src, img.alt];
+            return [img["src"], img["alt"]];
         default:
             return ["", ""];
+    }
+}
+
+/*
+ * Gets markdown content from JSON; either a string containing direct markdown
+ * content, or an object with an src key pointing to a content file.
+ */
+function getMDContent(val) {
+    switch (typeof val) {
+        case "string":
+            return `<pre class="markdown">${val}</pre>`;
+        case "object":
+            return `<pre class="markdown" data-src="${val["src"]}"></pre>`;
+        default:
+            return "";
     }
 }
 
