@@ -530,9 +530,9 @@ function parseMarkdown(tokens) {
 		if (token.startsWith('\n') && stack.length > 0) {
 			// Handle block elements
 
-			let lineEnd = rfind_lf();  // Find index of last line ending
+			let lineEnd = rfind_lf();  // Find index of last line ending in stack
 			let indent = 0;
-			let firstTokenIndex = null;
+			let firstTokenIndex = null;  // Index of first token on the line
 
 			// lineEnd can never be last element, so +1 is always valid
 			for (let j=lineEnd+1; j < stack.length; ++j) {
@@ -690,7 +690,7 @@ function parseMarkdown(tokens) {
 				/* Horizontal line */
 				firstTokenIndex += blockStack_flushBefore(firstTokenIndex);
 				stack.splice(firstTokenIndex, stack.length, "<hr />");
-			} else if (lineEnd !== -1 && token.length === 1 && i+1 !== tokens.length) {
+			} else if (token === '\n' && i+1 !== tokens.length) {
 				// Single newline inside a paragraph; ignore
 				stack.push(' ', '\u0003');
 				continue;
@@ -762,10 +762,14 @@ function parseMarkdown(tokens) {
 							continue;
 						}
 					}
-				}
-
-				stack.splice(firstTokenIndex, 0, "<p>");
-                blockStack.push("p");
+				} else if (token.length > 1 && token.split('').every(c => c === '\n')) {
+                    // Multiple newlines; begin new paragraph
+                    if (stack[firstTokenIndex][0] !== '<') {
+                        // Only do this following non-HTML
+                        stack.splice(firstTokenIndex, 0, "<p>");
+                        blockStack.push("p");
+                    }
+                }
 
 				let inline = parseInlineMarkdown(stack.slice(firstTokenIndex));
 				stack.splice(firstTokenIndex, stack.length, ...inline);
@@ -778,7 +782,16 @@ function parseMarkdown(tokens) {
 		}
 	}
 
+    blockStack_flushBefore(stack.length);
+
 	return stack.join('');
+}
+
+function renderMarkdownString(str) {
+    let tokens = tokenizeMarkdown(str);
+    tokens.push('\n');  // Parser needs a trailing newline
+    let md = parseMarkdown(tokens);
+    return md;
 }
 
 async function renderMarkdown(node=document) {
@@ -800,9 +813,7 @@ async function renderMarkdown(node=document) {
 		let newElem = document.createElement("div");
 		newElem.classList += "markdown";
 
-		let tokens = tokenizeMarkdown(markdown);
-        tokens.splice(0, 0, "\n");  // TEMP FIX FOR MULTILINE PARAGRAPH BUG
-		newElem.innerHTML = parseMarkdown(tokens);
+		newElem.innerHTML = renderMarkdownString(markdown);
 
 		target.parentNode.replaceChild(newElem, target);
 	}

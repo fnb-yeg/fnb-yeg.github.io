@@ -1,5 +1,4 @@
 ## About Us
-
 <p class="lead">With over a billion people going hungry each day how can we spend another dollar on war?</p>
 
 Food Not Bombs is an international organization dedicated to fighting hunger,
