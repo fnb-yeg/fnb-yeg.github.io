@@ -4,7 +4,7 @@
             "lead": "Yummy vegan recipes, taste-tested by local Food Not Bombs members."
         },
         "hungryforpeace": {
-            "lead": "Food Not Bombs recipes as found in Hungry For Peace by Keith McHenry. Serve a crowd or just your friends!",
+            "lead": "Food Not Bombs recipes as found in <a href='https://archive.org/details/Hungry_for_Peace' target='_blank'>Hungry For Peace</a> by Keith McHenry. Serve a crowd or just your friends!",
             "subgroups": {
                 "drink": "Drinks",
                 "breakfast": "Breakfast",
@@ -202,51 +202,92 @@
         },
         "Tossed Salad": {
             "group": "hungryforpeace",
-            "subgroup": "salad"
+            "subgroup": "salad",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "2-3 hours",
+            "file": "/content/recipes/hungryforpeace/tossed_salad.md"
         },
         "Carrot Raisin Salad": {
             "group": "hungryforpeace",
-            "subgroup": "salad"
+            "subgroup": "salad",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "15 min / 1-2 hours",
+            "file": "/content/recipes/hungryforpeace/carrot_raisin_salad.md"
         },
         "Coleslaw": {
             "group": "hungryforpeace",
-            "subgroup": "salad"
+            "subgroup": "salad",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "15-20min / 1hr",
+            "file": "/content/recipes/hungryforpeace/coleslaw.md"
         },
         "Traditional Oil-and-Vinegar Salad Dressing": {
             "group": "hungryforpeace",
-            "subgroup": "dressing"
+            "subgroup": "dressing",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "15 min / 1 hour",
+            "file": "/content/recipes/hungryforpeace/oil_and_vinegar_dressing.md"
         },
         "Tahini-Lemon Salad Dressing": {
             "group": "hungryforpeace",
-            "subgroup": "dressing"
+            "subgroup": "dressing",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "1 hour",
+            "file": "/content/recipes/hungryforpeace/tahini_lemon_dressing.md"
         },
         "Tofu Dill Dip": {
             "group": "hungryforpeace",
-            "subgroup": "dressing"
+            "subgroup": "dressing",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "15-20 mins / 1h 15min",
+            "file": "/content/recipes/hungryforpeace/tofu_dill_dip.md"
         },
         "Miso Soup": {
             "group": "hungryforpeace",
-            "subgroup": "soup"
+            "subgroup": "soup",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "20 mins / 40 mins",
+            "cook_time": "30 mins &ndash; 1hr / 1 hr",
+            "file": "/content/recipes/hungryforpeace/miso_soup.md"
         },
         "Yellow-Pea Soup": {
             "group": "hungryforpeace",
-            "subgroup": "soup"
+            "subgroup": "soup",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "20-30 mins / 1 hour",
+            "cook_time": "1+ hours",
+            "file": "/content/recipes/hungryforpeace/yellow_pea_soup.md"
         },
         "Vegetable Soup": {
             "group": "hungryforpeace",
-            "subgroup": "soup"
+            "subgroup": "soup",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "30min &ndash; 1h / 1h 30min",
+            "cook_time": "1h+",
+            "file": "/content/recipes/hungryforpeace/vegetable_soup.md"
         },
         "Potato Soup": {
             "group": "hungryforpeace",
-            "subgroup": "soup"
+            "subgroup": "soup",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "20&ndash;30 mins / 1 hour",
+            "cook_time": "1+ hour",
+            "file": "/content/recipes/hungryforpeace/potato_soup.md"
         },
         "Fruit Salad": {
             "group": "hungryforpeace",
-            "subgroup": "dessert"
+            "subgroup": "dessert",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "10&ndash;15mins / 1 hour",
+            "file": "/content/recipes/hungryforpeace/fruit_salad.md"
         },
         "Apple Pear Crisp": {
             "group": "hungryforpeace",
-            "subgroup": "dessert"
+            "subgroup": "dessert",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "1h 30min",
+            "cook_time": "1h",
+            "file": "/content/recipes/hungryforpeace/apple_pear_crisp.md"
         },
         "Solar Uprising Bread for The Change We Knead Now!": {
             "group": "hungryforpeace",
