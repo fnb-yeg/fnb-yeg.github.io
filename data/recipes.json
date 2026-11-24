@@ -22,75 +22,73 @@
             "makes": "12 Muffins",
             "prep_time": "10 minutes",
             "cook_time": "35 minutes",
-            "file": "/recipes/orange_berry_muffins.md"
+            "file": "/content/recipes/orange_berry_muffins.md"
         },
         "Tofu 'Egg' Sandwiches": {
             "group": "fnbyeg",
-            "file": "/recipes/tofu_egg_sandwich.md"
+            "file": "/content/recipes/tofu_egg_sandwich.md"
         },
         "Garden Clean Up Pesto": {
             "group": "fnbyeg",
             "makes": "&frac23; cups",
-            "file": "/recipes/garden_pesto.md"
+            "file": "/content/recipes/garden_pesto.md"
         },
         "Dal Tadka": {
             "group": "fnbyeg",
-            "file": "/recipes/dal_tadka.md"
+            "file": "/content/recipes/dal_tadka.md"
         },
         "Veggie Broth": {
             "group": "fnbyeg",
-            "file": "/recipes/veggie_broth.md"
+            "file": "/content/recipes/veggie_broth.md"
         },
         "Molasses Spice Cookies": {
             "group": "fnbyeg",
             "makes": "24 Cookies",
-            "file": "/recipes/molasses_spice_cookies.md"
+            "file": "/content/recipes/molasses_spice_cookies.md"
         },
         "Almond Lassi": {
             "group": "fnbyeg",
-            "file": "/recipes/almond_lassi.md"
+            "file": "/content/recipes/almond_lassi.md"
         },
         "Almond Milk": {
             "group": "fnbyeg",
-            "file": "/recipes/almond_milk.md"
+            "file": "/content/recipes/almond_milk.md"
         },
         "Chapati": {
             "group": "fnbyeg",
-            "file": "/recipes/chapati.md"
+            "file": "/content/recipes/chapati.md"
         },
         "Falafel": {
             "group": "fnbyeg",
-            "file": "/recipes/falafel.md"
+            "file": "/content/recipes/falafel.md"
         },
         "Hot Almond Carob": {
             "group": "fnbyeg",
-            "file": "/recipes/hot_almond_carob.md"
+            "file": "/content/recipes/hot_almond_carob.md"
         },
         "No Cheese Spread": {
             "group": "fnbyeg",
-            "file": "/recipes/no_cheese_spread.md"
+            "file": "/content/recipes/no_cheese_spread.md"
         },
         "Samosas": {
             "group": "fnbyeg",
-            "file": "/recipes/samosas.md"
+            "file": "/content/recipes/samosas.md"
         },
         "Homemade Tofu": {
             "group": "fnbyeg",
             "makes": "1&frac12; lbs / 4 cups / 680g",
-            "file": "/recipes/homemade_tofu.md"
+            "file": "/content/recipes/homemade_tofu.md"
         },
 
         "Sun Tea": {
             "group": "hungryforpeace",
-            "subgroup": "drink"
-        },
-        "Almond Milk": {
-            "group": "hungryforpeace",
-            "subgroup": "drink"
+            "subgroup": "drink",
+            "file": "/content/recipes/hungryforpeace/sun_tea.md"
         },
         "Tofu Smoothy": {
             "group": "hungryforpeace",
-            "subgroup": "drink"
+            "subgroup": "drink",
+            "file": "/content/recipes/hungryforpeace/tofu_smoothy.md"
         },
         "Oatmeal": {
             "group": "hungryforpeace",
@@ -98,7 +96,7 @@
             "makes": "6 / 100 servings",
             "prep_time": "1 min",
             "cook_time": "10&ndash;12 min",
-            "file": "/recipes/hungryforpeace/oatmeal.md"
+            "file": "/content/recipes/hungryforpeace/oatmeal.md"
         },
         "Granola": {
             "group": "hungryforpeace",
@@ -106,7 +104,7 @@
             "makes": "2kg (4lbs) / 9kg (20lbs)",
             "prep_time": "30 min",
             "cook_time": "30 min / 45–60 min",
-            "file": "/recipes/hungryforpeace/granola.md"
+            "file": "/content/recipes/hungryforpeace/granola.md"
         },
         "Scrambled Tofu": {
             "group": "hungryforpeace",
@@ -114,7 +112,7 @@
             "makes": "6 / 24 servings",
             "prep_time": "15 min",
             "cook_time": "30–40 min",
-            "file": "/recipes/hungryforpeace/scrambled_tofu.md"
+            "file": "/content/recipes/hungryforpeace/scrambled_tofu.md"
         },
         "Homefries": {
             "group": "hungryforpeace",
@@ -122,50 +120,85 @@
             "makes": "6 / 100 servings",
             "prep_time": "2h",
             "cook_time": "1h 15min",
-            "file": "/recipes/hungryforpeace/homefries.md"
+            "file": "/content/recipes/hungryforpeace/homefries.md"
         },
         "Tofu Sandwich Spread": {
             "group": "hungryforpeace",
             "subgroup": "lunch",
             "makes": "6 / 100 sandwiches",
             "prep_time": "2h",
-            "file": "/recipes/hungryforpeace/tofu_sandwich_spread.md"
+            "file": "/content/recipes/hungryforpeace/tofu_sandwich_spread.md"
         },
         "One-Pot Rice and Beans": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "30 min",
+            "cook_time": "50 min",
+            "file": "/content/recipes/hungryforpeace/one-pot_rice_and_beans.md"
         },
         "Tomato Sauce with Vegetables": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "1 hour",
+            "cook_time": "1+ hour",
+            "file": "/content/recipes/hungryforpeace/tomato_sauce_w_veg.md"
         },
         "Trident Subs": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 sandwiches / 100 sandwiches",
+            "prep_time": "30 min",
+            "cook_time": "1+ hour",
+            "file": "/content/recipes/hungryforpeace/trident_subs.md"
         },
         "Hummus": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "prep_time": "2 hrs",
+            "cook_time": "2 hrs",
+            "file": "/content/recipes/hungryforpeace/hummus.md"
         },
         "Macaroni and Cheeseless": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "90 servings / 6 servings",
+            "prep_time": "1h 30m",
+            "cook_time": "30m",
+            "file": "/content/recipes/hungryforpeace/mac_and_cheeseless.md"
         },
         "Cauliflower Curry": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "1h 15m",
+            "cook_time": "1h 20m",
+            "file": "/content/recipes/hungryforpeace/cauliflower_curry.md"
         },
         "Brown Rice": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "30 min",
+            "cook_time": "50 min",
+            "file": "/content/recipes/hungryforpeace/brown_rice.md"
         },
         "Potato-Pea Curry": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "3h 15m",
+            "cook_time": "1h 15m",
+            "file": "/content/recipes/hungryforpeace/potato_pea_curry.md"
         },
         "Tofu-Spinach Lasagna": {
             "group": "hungryforpeace",
-            "subgroup": "lunch"
+            "subgroup": "lunch",
+            "makes": "6 servings / 100 servings",
+            "prep_time": "3 hours",
+            "cook_time": "1+ hours",
+            "file": "/content/recipes/hungryforpeace/tofu_spinach_lasagna.md"
         },
         "Tossed Salad": {
             "group": "hungryforpeace",
@@ -216,7 +249,9 @@
             "subgroup": "dessert"
         },
         "Solar Uprising Bread for The Change We Knead Now!": {
-            "group": "hungryforpeace"
+            "group": "hungryforpeace",
+            "makes": "4 loaves",
+            "file": "/content/recipes/hungryforpeace/solar_uprising_bread.md"
         }
     }
 }
