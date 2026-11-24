@@ -11,278 +11,115 @@
 
 	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
+    <script src="/js/sitedata.min.js"></script>
 	<script src="/js/markdown.min.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <!-- Data sources -->
+    <link data-include="content" rel="preload" as="fetch"
+        title="navbar" type="text/html" href="/fragments/navbar.html" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="footer" type="text/html" href="/fragments/footer.html" />
+
+    <link data-include="data" rel="preload" as="fetch"
+        href="/data/projects.json" />
 
 	<title>Projects — Food Not Bombs Edmonton</title>
+
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            const projects = SiteData.query("projects");
+            const projContainer = document.getElementById("projects");
+
+            const projectCardTemplate = document.getElementById("projectCardTemplate").content;
+            const actionButtonTemplate = document.getElementById("actionButtonTemplate").content;
+
+
+            for (const project of projects) {
+                const card = document.importNode(projectCardTemplate, true);
+                const cardBody = card.querySelector(".card-body");
+
+                // Card title
+                card.querySelector(".card-header").innerText = project.title;
+
+                // Card image
+                const img = card.querySelector(".card-img");
+                [img.src, img.alt] = getImageData(project.image);
+
+                // Card description
+                if ("description" in project) {
+                    const desc = card.querySelector(".description");
+                    desc.innerHTML = getMDContent(project.description);
+                }
+
+                // TODO: support data-driven values in action buttons
+                // TODO: (particularly in action URL)
+
+                // Action buttons
+                if ("actions" in project) {
+                    for (const action of project.actions) {
+                        const btnContainer = document.importNode(actionButtonTemplate, true);
+                        const btn = btnContainer.querySelector(".btn");
+
+                        btn.innerText = action.label;
+                        btn.href = action["url"];
+
+                        if ("target" in action) btn.target = action.target;
+
+                        if (!("style" in action)) action.style = "btn-outline-success";
+
+                        if ("disabled" in action && action.disabled) {
+                            btn.classList.add("disabled");
+                            action.style = "btn-outline-secondary";
+                        }
+
+                        btn.classList.add(action.style);
+
+                        cardBody.appendChild(btnContainer);
+                    }
+                }
+
+                // Image transcription
+                if ("transcription" in project) {
+                    makeImageTranscription(cardBody,
+                        getMDContent(project.transcription));
+                }
+
+                projContainer.appendChild(card);
+            }
+
+            renderMarkdown(projContainer);
+        });
+    </script>
 </head>
 <body>
 	<div class="content gradient">
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="/">
-					<img src="/images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="fnbnavbar">
-					<ul class="navbar-nav me-auto mb-2 mb-md-0">
-						<li class="nav-item">
-							<a class="nav-link" href="/">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/news">News</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/projects">Projects</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/how_to_join">How to Join</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Request Food
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="/hth.html">Request a Meal</a></li>
-
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Calendar
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="https://calendar.google.com/calendar/embed?src=foodnotbombsyeg%40gmail.com&ctz=America%2FEdmonton">Open Calendar</a></li>
-								<li><a class="dropdown-item" href="/request_calendar_access">Request Access</a></li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/library">Library</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/recipes">Recipes</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/local_orgs">Local</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/history">History</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
+        <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
-			<div class="row">
-                <!-- Community Meals Card -->
-				<div class="col-xs-12 col-sm-6 col-lg-4">
-					<div class="card">
-						<h3 class="card-header">Community Meals</h3>
-						<div class="card-body">
-							<div class="content">
-                                <img class="card-img"
-                                            src="/images/kinistinaw-park.jpeg"
-                                            alt="Kinistinâw Park"
-                                            title="Kinistinâw Park" />
-                                <p>
-                                    We serve monthly free vegan meals at
-                                    Kinistin&acirc;w Park. The meals are open
-                                    to anyone who wants to eat.
-                                </p>
-								<p>Please contact us if you want to help sponsor a meal, donate, or get involved! </p>
-							</div>
-						</div>
-					</div>
-				</div>
-
-                <!-- HtH Card -->
-				<div class="col-xs-12 col-sm-6 col-lg-4">
-					<div class="card">
-						<h3 class="card-header">Helping the Humans</h3>
-						<div class="card-body">
-							<div class="content">
-								<img class="card-img" data-bs-toggle="modal" data-bs-target="#HTHModal" src="/images/hth_poster.jpg" alt="Food Not Bombs YEG Helping the Humans Update
-								#1. FNB YEG is running a program to provide free vegan homemade meals within 4 days of intake.
-								#2. You will be supplied with an intake form requesting name, phone number, address, number in household, and dietary restrictions.
-								#3. We will serve you up to 4 times.
-								#4. If you need permanent supports we can help with connection to resources in the city.
-								#5. Let us know if you need food of want to help out!"/>
-								<div class="pt-3 d-flex justify-content-center">
-									<a href="/hth.html" role="button" class="btn btn-outline-success">Request a Meal!</a>
-								</div>
-
-								<div class="pt-3 d-flex justify-content-center">
-									<a href="/how_to_join" role="button" class="btn btn-outline-success">Contribute a Meal</a>
-								</div>
-
-								<div class="pt-3 pb-3 d-flex justify-content-center">
-									<a href="/how_to_join" role="button" class="btn btn-outline-success">Deliver a Meal</a>
-								</div>
-
-								<p>
-									<a data-bs-toggle="collapse" href="#collapseHTHAltText" role="button" aria-expanded="false" aria-controls="collapseHTHAltText">[View Image Transcription]</a>
-								</p>
-								<div class="collapse" id="collapseHTHAltText">
-									<p>Food Not Bombs YEG Helping the Humans Update</p>
-									<ol>
-										<li>FNB YEG is running a program to provide free vegan homemade meals within 4 days of intake.</li>
-										<li>You will be supplied with an intake form requesting name, phone number, address, number in household, and dietary restrictions.</li>
-										<li>We will serve you up to 4 times</li>
-										<li>If you need permanent supports we can help with connection to resources in the city</li>
-										<li>Let us know if you need food of want to help out!</li>	
-									</ol>
-								</div>
-							</div>
-						</div>
-                        <!-- Popup modal for HtH -->
-						<div class="modal fade" id="HTHModal" tabindex="-1" role="dialog" aria-labelledby="HTHModalLabel" aria-hidden="true">
-							<div class="modal-dialog modal-lg" role="document">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="HTHModalLabel">Helping the Humans</h5>
-										<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-											<span aria-hidden="true">&times;</span>
-										</button>
-									</div>
-									<div class="modal-body">
-										<img class="card-img" src="/images/hth_poster.jpg" alt="Food Not Bombs YEG Helping the Humans Update
-										#1. FNB YEG is running a program to provide free vegan homemade meals within 4 days of intake.
-										#2. You will be supplied with an intake form requesting name, phone number, address, number in household, and dietary restrictions.
-										#3. We will serve you up to 4 times.
-										#4. If you need permanent supports we can help with connection to resources in the city.
-										#5. Let us know if you need food of want to help out!"/>
-										<p>
-											<a data-bs-toggle="collapse" href="#collapseHTHModalAltText" role="button" aria-expanded="false" aria-controls="collapseHTHModalAltText">[View Image Transcription]</a>
-										</p>
-										<div class="collapse" id="collapseHTHModalAltText">
-											<p>Food Not Bombs YEG Helping the Humans Update</p>
-											<ol>
-												<li>FNB YEG is running a program to provide free vegan homemade meals within 4 days of intake.</li>
-												<li>You will be supplied with an intake form requesting name, phone number, address, number in household, and dietary restrictions.</li>
-												<li>We will serve you up to 4 times</li>
-												<li>If you need permanent supports we can help with connection to resources in the city</li>
-												<li>Let us know if you need food of want to help out!</li>	
-											</ol>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-                <!-- Birthday Cake Club Card -->
-				<div class="col-xs-12 col-sm-6 col-lg-4">
-					<div class="card">
-						<h3 class="card-header">Birthday Cake Club</h3>
-						<div class="card-body">
-							<div class="content">
-								<img class="card-img" data-bs-toggle="modal" data-bs-target="#BCModal" src="/images/birthday_cake_club.png" alt="Poster for the birthday cake club."/>
-								<div class="pt-3 d-flex justify-content-center">
-									<a role="button" class="btn
-                                        btn-outline-secondary disabled">Request a Cake!</a>
-								</div>
-
-								<div class="pt-3 d-flex justify-content-center">
-									<a href="/how_to_join" role="button" class="btn btn-outline-success">Contribute a Cake</a>
-								</div>
-
-								<div class="pt-3 pb-3 d-flex justify-content-center">
-									<a href="/how_to_join" role="button" class="btn btn-outline-success">Deliver a Cake</a>
-								</div>
-								<p>
-									<a data-bs-toggle="collapse" href="#collapseBCAltText" role="button" aria-expanded="false" aria-controls="collapseBCAltText">[View Image Transcription]</a>
-								</p>
-								<div class="collapse" id="collapseBCAltText">
-									<p class="lead">Are you struggling to afford a birthday cake for yourself or a loved one?</p>
-									<p>We are running a program to provide you with the supplies you need to bake a cake or a cake baked by us (and supplies for you to decorate it!)</p>
-									<p>Also: We'd like your help: baking, delivering or providing ingredients.</p>
-								</div>
-							</div>
-						</div>
-						<div class="modal fade" id="BCModal" tabindex="-1" role="dialog" aria-labelledby="BCModalLabel" aria-hidden="true">
-							<div class="modal-dialog modal-lg" role="document">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="BCModalLabel">Birthday Cake Club</h5>
-										<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-											<span aria-hidden="true">&times;</span>
-										</button>
-									</div>
-									<div class="modal-body">
-										<img class="card-img" src="/images/birthday_cake_club.png" alt="Poster for the birthday cake club.">
-										<div class="pt-3 d-flex justify-content-center">
-											<a role="button" class="btn
-                                                btn-outline-secondary disabled">Request a Cake!</a>
-										</div>
-
-										<div class="pt-3 d-flex justify-content-center">
-											<a href="/how_to_join" role="button" class="btn btn-outline-success">Contribute a Cake</a>
-										</div>
-
-										<div class="pt-3 pb-3 d-flex justify-content-center">
-											<a href="/how_to_join" role="button" class="btn btn-outline-success">Deliver a Cake</a>
-										</div>
-										<p>
-											<a data-bs-toggle="collapse" href="#modalCollapseBCAltText" role="button" aria-expanded="false" aria-controls="modalCollapseBCAltText">[View Image Transcription]</a>
-										</p>
-										<div class="collapse" id="modalCollapseBCAltText">
-											<p class="lead">Are you struggling to afford a birthday cake for yourself or a loved one?</p>
-											<p>We are running a program to provide you with the supplies you need to bake a cake or a cake baked by us (and supplies for you to decorate it!)</p>
-											<p>Also: We'd like your help: baking, delivering or providing ingredients.</p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+            <div class="row" id="projects">
             </div>
-			
-            <div class="row">
-                    <!-- Garden Committe card -->
-				<div class="col-xs-12 col-sm-6 col-lg-4">
+
+            <template id="projectCardTemplate">
+                <div class="col-xs-12 col-sm-6 col-lg-4">
                     <div class="card">
-                        <h3 class="card-header">Garden Committee</h3>
+                        <h3 class="card-header"></h3>
                         <div class="card-body">
                             <div class="content">
-                                <img class="card-img"
-                                            src="/images/garden-committee.webp"
-                                            alt="Join us as a volunteer for Garden Committee. We need more volunteers to tend to our two gardens in Blatchford and Ritchie. Ideally, we would water every day, but we need more help to get there. The harvest will go towards feeding food insecure people"
-                                            />
-                                <p>
-                                    Our Garden Commmittee has been
-                                    re-established this year and it is full
-                                    swing. We still need folks to help with
-                                    watering and weeding throughout August and
-                                    until the harvest later in September.
-                                </p>
-
-                                <!-- Image transcription -->
-                                <!-- should this content be aria-hidden? -->
-								<p>
-									<a data-bs-toggle="collapse"
-                                        href="#collapseGardenAltText"
-                                        role="button" aria-expanded="false"
-                                        aria-controls="collapseGardenAltText">[View Image Transcription]</a>
-								</p>
-								<div class="collapse" id="collapseGardenAltText">
-									<p class="lead">Join us as a volunteer for Garden Committee</p>
-                                    <p>
-                                        We need more volunteers to tend to our
-                                        two gardens in Blatchford and Ritchie.
-                                        Ideally, we would water every day, but
-                                        we need more help to get there. The
-                                        harvest will go towards feeding food
-                                        insecure people
-                                    </p>
-								</div>
+                                <img class="card-img" />
+                                <div class="description"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-			</div>
+            </template>
+
+            <template id="actionButtonTemplate">
+                <div class="pt-3 d-flex justify-content-center">
+                    <a role="button" class="btn"></a>
+                </div>
+            </template>
+
+            <hr />
 
 			<div class="row justify-content-center">
 				<div class="col-sm-6 col-xs-12">
@@ -293,28 +130,6 @@
 			</div>
 		</div> 
 	</div>
-	<footer class="navbar-fixed-bottom bd-footer p-3 mt-5 bg-light text-center text-sm-start">
-		<small>
-			<ul class="bd-footer-links ps-0 mb-3">
-				<li class="d-inline-block"><i class="ri-facebook-fill"></i><a href="https://www.facebook.com/fnbyeg">Facebook</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="https://bsky.app/profile/foodnotbombsyeg.bsky.social">Bluesky</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-instagram-line"></i><a href="https://instagram.com/foodnotbombs_yeg?igshid=wnwyiy58vzik">Instagram</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-money-dollar-box-line"></i><a href = "https://gofund.me/97356399">GoFundMe</a></li> 
-				<li class="d-inline-block ms-3"><i class="ri-mail-line"></i><a href = "mailto: foodnotbombsedmonton@gmail.com">Email</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-mastodon-fill"></i><a rel="me" href="https://kolektiva.social/@foodnotbombsyeg">Mastodon</a></li>
-			</ul>
-			<p class="mb-0">This website is developed and maintained by people living in amiskwaciwâskahikan. You can read our full land acknowledgement <a href="/land-acknowledgement">here.</a></p>
-			<p class="mb-0">The code for this website is hosted on <a href="https://github.com/fnb-yeg/fnb-yeg.github.io">github</a> and is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons Zero v1.0 Universal</a>.</p>
-			<p class="mb-0">If you'd like us to delegate DNS for YourGroup.foodnotbombs.us to you, <a href="http://omaha.foodnotbombs.us/">contact Jay Hannah of FNB Omaha.</a> Currently YourGroup is being redirected to the global homepage.</p>
-		</small>
-	</footer>
-
-	<!-- Modals -->
-	
-
-
-
-	
-
+    <footer data-driven="innerHTML=@footer"></footer>
 </body>
 </html>

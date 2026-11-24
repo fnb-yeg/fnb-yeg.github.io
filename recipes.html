@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Bootstrap -->
 	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
@@ -11,527 +11,185 @@
 
 	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
+    <script src="/js/sitedata.min.js"></script>
 	<script src="/js/markdown.min.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <!-- Data sources -->
+    <link data-include="content" rel="preload" as="fetch"
+        title="navbar" type="text/html" href="/fragments/navbar.html" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="footer" type="text/html" href="/fragments/footer.html" />
+
+    <link data-include="data" rel="preload" as="fetch"
+        href="/data/recipes.json" />
 
 	<title>Recipes — Food Not Bombs Edmonton</title>
+
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            // Get recipe data
+            const recipes = SiteData.query("recipes");
+            let recipeGroups = { "DEFAULT": {} };
+
+            try {
+                // Insert default group at start
+                recipeGroups = Object.assign(recipeGroups, SiteData.query("recipe_groups"));
+            } catch (e) {
+                // Recipe groups are not defined
+                if (!(e instanceof ReferenceError)) throw e;
+            }
+
+            // Select template elements
+            const recipeListTemplate = document.getElementById("recipeListTemplate");
+            const recipeListItemTemplate = document.getElementById("recipeListItemTemplate");
+            const recipeDataTemplate = document.getElementById("recipeData");
+
+            // Get recipe content element
+            const recipeContent = document.getElementById("recipe-content");
+
+            // Get recipe name from URL query
+            const queried = new URLSearchParams(window.location.search).get("recipe");
+
+            if (!(queried in recipes)) {
+                // No recipe or invalid name; list all recipes
+
+                const returnBtn = document.getElementById("returnBtn");
+                returnBtn.classList.add("d-none");
+                returnBtn.ariaHidden = true;
+
+                // Create nodes for each recipe group
+                for (const [groupID, group] of Object.entries(recipeGroups)) {
+                    const container = document.createElement("div");
+                    container.id = groupID;
+
+                    // Insert lead if provided
+                    if ("lead" in group) {
+                        const lead = document.createElement("p");
+                        lead.classList.add("lead");
+                        lead.innerHTML = group.lead;
+                        container.appendChild(lead);
+                    }
+
+                    // Create subgroups, with DEFAULT group at start
+                    group["subgroups"] = Object.assign({"DEFAULT": ""}, group["subgroups"]);
+
+                    for (const subgroup in group.subgroups) {
+                        const groupElem = document.importNode(recipeListTemplate.content, true);
+
+                        groupElem.querySelector(".subgroupName").innerHTML =
+                            group.subgroups[subgroup];
+
+                        groupElem.querySelector(".recipeList").id = subgroup;
+
+                        container.appendChild(groupElem);
+                    }
+
+                    recipeContent.appendChild(container);
+                }
+
+                // Populate recipes
+                for (const [recipeName, recipeData] of Object.entries(recipes)) {
+                    // Get container
+                    const groupName = recipeData.group ?? "DEFAULT";
+                    const subgroupName = recipeData.subgroup ?? "DEFAULT";
+                    const list = document.querySelector(`#${groupName} #${subgroupName}`);
+
+                    const itemElem = document.importNode(recipeListItemTemplate.content, true);
+                    const itemName = itemElem.querySelector(".recipe-name");
+                    const itemLink = itemElem.querySelector(".recipe-link");
+
+                    itemName.innerHTML = recipeName;
+                    itemLink.href = `/recipes?recipe=${recipeName}`;
+
+                    list.appendChild(itemElem);
+                }
+            } else {
+                // Load selected recipe
+                const recipe = SiteData.query("recipes")[queried];
+
+                // Update title
+                recipeContent.querySelector("h1").innerText = queried;
+                document.title = `${queried} — ${document.title}`;
+
+                // Apply recipe data
+                const container = document.createElement("div");
+                container.classList.add("row");
+                const recipeMakes = recipeData.querySelector(".makes");
+                const recipePrep = recipeData.querySelector(".prep_time");
+                const recipeCook = recipeData.querySelector(".cook_time");
+
+                // Get list of each recipe data that needs to be displayed
+                let recipeDataKeys = [];
+                if ("makes" in recipe) recipeDataKeys.push("makes");
+                if ("prep_time" in recipe) recipeDataKeys.push("prep_time");
+                if ("cook_time" in recipe) recipeDataKeys.push("cook_time");
+
+                // Add each data value to the row
+                for (const key of recipeDataKeys) {
+                    const recipeData = document.importNode(recipeDataTemplate.content, true);
+                    const label = recipeData.querySelector("b");
+                    const value = recipeData.querySelector("span");
+
+                    // Generate a label from the key name
+                    label.innerText = `${titleCase(key.replace('_', ' '))}:`;
+                    value.innerHTML = recipe[key];
+
+                    container.appendChild(recipeData);
+                }
+
+                recipeContent.appendChild(container);
+
+                // TODO: handle non-markdown file types (pdf?)
+                const recipeBody = document.createElement("pre");
+                recipeBody.classList.add("markdown");
+                recipeBody.dataset.src = recipe.file;
+                recipeContent.appendChild(recipeBody);
+
+                renderMarkdown(recipeBody.parentNode);
+            }
+        });
+    </script>
 </head>
 
 <body>
 	<div class="content gradient">
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="/">
-					<img src="/images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="fnbnavbar">
-					<ul class="navbar-nav me-auto mb-2 mb-md-0">
-						<li class="nav-item">
-							<a class="nav-link" href="/">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/news">News</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/projects">Projects</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/how_to_join">How to Join</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Request Food
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="/hth.html">Request a Meal</a></li>
-
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Calendar
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="https://calendar.google.com/calendar/embed?src=foodnotbombsyeg%40gmail.com&ctz=America%2FEdmonton">Open Calendar</a></li>
-								<li><a class="dropdown-item" href="/request_calendar_access">Request Access</a></li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/library">Library</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/recipes">Recipes</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/local_orgs">Local</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/history">History</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
+        <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
-			<div class="card">
-				<div class="card-body">
-					<div class="row justify-content-center">
-						<h2>Recipes</h2>
-					</div>
-					<div class="content">
-						<p><a href="#gallery">Skip to Gallery</a>
-						<p class="lead"> Yummy vegan recipes, taste-tested by local Food Not Bombs members.</p>
-						<p><small>
-							<ul>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Orange Berry Muffins</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/orange_berry_muffins.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Tofu 'Egg' Sandwiches</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/tofu_egg_sandwich.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Garden Clean Up Pesto</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/garden_pesto">[full recipe]</a></div>
-										<div class="col-xs-12 col-md-2 col-xl-1"><a href="https://edmonton.foodnotbombs.us/recipes/garden_clean_up_pesto.pdf" target="_blank">[pdf]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Dal Tadka</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/dal_tadka.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Veggie Broth</div>
-										<div class="col-xs-12 col-md-2"><a href="recipes/veggie_broth.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Molasses Spice Cookies</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/molasses_spice_cookies.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Almond Lassi</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/almond_lassi.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Almond Milk</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/almond_milk.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Chapati</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/chapati.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Falafel</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/falafel.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Hot Almond Carob</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/hot_almond_carob.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">No Cheese Spread</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/no_cheese_spread.html">[full recipe]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-12 col-md-4 col-xl-3">Samosas</div>
-										<div class="col-xs-12 col-md-2"><a href="/recipes/samosas.html">[full recipe]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small></p>
-						<p class="lead">Food Not Bombs recipes as found in Hungry For Peace by Keith McHenry. Serve a crowd or just your friends!</p>
-						<p>Breakfast: <small>
-							<ul>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-3 col-lg-2">Oatmeal</div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/oatmeal_for_100">[for 100]</a></div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/oatmeal_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-3 col-lg-2">Granola</div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/granola_for_100">[for 100]</a></div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/granola_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-3 col-lg-2">Scrambled Tofu</div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/scrambled_tofu_for_24">[for 24]</a></div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/scrambled_tofu_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-3 col-lg-2">Homefries</div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/homefries_for_100">[for 100]</a></div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/homefries_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small>
-						
-						<p>Lunch and Dinner:
-						<small>
-							<ul>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Tofu Sandwich Spread</div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/tofu_sandwich_for_100">[for 100]</a></div>
-										<div class="col-xs-4 col-md-2 col-xl-1"><a href="/recipes/tofu_sandwich_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">One-Pot Rice and Beans</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/rice_beans_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/rice_beans_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Tomato Sauce with Vegetables</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tomato_sauce_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tomato_sauce_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Trident Subs</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/trident_subs_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/trident_subs_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Hummus</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/hummus_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/hummus_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Macaroni and Cheeseless</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/mac_and_cheeseless_for_90">[for 90]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/mac_and_cheeseless_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li> 
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Cauliflower Curry </div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/cauliflower_curry_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/cauliflower_curry_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Brown Rice</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/brown_rice_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/brown_rice_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li> 
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Potato-Pea Curry</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/potato_pea_curry_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/potato_pea_curry_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li> 
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Tofu-Spinach Lasagna</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tofu_spinach_lasagna_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tofu_spinach_lasagna_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small></p>
-						
-						<p> Salads: 
-						<small>
-							<ul> 
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Tossed Salad</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tossed_salad_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tossed_salad_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Carrot Raisin Salad</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/carrot_raisin_salad_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/carrot_raisin_salad_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Coleslaw</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/coleslaw_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/coleslaw_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small></p>
-						<p> Salad Dressings: <small>
-							<ul>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-6 col-lg-5 col-xl-4">Traditional Oil-and-Vinegar Salad Dressing</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/trad_dressing_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/trad_dressing_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-6 col-lg-5 col-xl-4">Tahini-Lemon Salad Dressing</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tahini_lemon_dressing_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tahini_lemon_dressing_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li> 
-									<div class="row">
-										<div class="col-xs-4 col-md-6 col-lg-5 col-xl-4">Tofu Dill Dip</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tofu_dill_dip_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/tofu_dill_dip_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small></p>
-						<p> Soups: <small>
-							<ul> 
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Miso Soup</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/miso_soup_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/miso_soup_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Yellow-Pea Soup</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/yellow_pea_soup_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/yellow_pea_soup_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Vegetable Soup</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/vegetable_soup_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/vegetable_soup_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Potato Soup</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/potato_soup_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/potato_soup_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small></p>
-						<p> Deserts <small>
-							<ul>
-								<li>
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Fruit Salad</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/fruit_salad_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/fruit_salad_for_6">[for 6]</a></div>
-									</div>
-								</li>
-								<li> 
-									<div class="row">
-										<div class="col-xs-4 col-md-4 col-lg-3">Apple Pear Crisp</div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/apple_pear_crisp_for_100">[for 100]</a></div>
-										<div class="col-xs col-md-2 col-xl-1"><a href="/recipes/apple_pear_crisp_for_6">[for 6]</a></div>
-									</div>
-								</li>
-							</ul>
-						</small></p>
-						<p>Homemade Tofu <a href="/recipes/homemade_tofu_recipe">[view recipe]</a></p> 
-					</div>
+			<div id="returnBtn" class="row mt-5">
+				<div class="text-start">
+					<a class="btn btn-light" href="/recipes.html"><i class="ri-arrow-left-s-line"></i>Return to recipe list</a>
 				</div>
 			</div>
-			<div id="gallery">
-				<div class="row">
-					<div class="col-xl-4 col-lg-6 col-md-6 offset-xl-1">
-						<div class="card">
-							<div id="carouselMuffins" class="carousel slide" data-bs-interval="false">
-								<ol class="carousel-indicators">
-									<li data-bs-target="#carouselMuffins" data-bs-slide-to="0" class="active"></li>
-								</ol>
-								<div class="carousel-inner" >
-									<div class="carousel-item active">
-										<img src="/images/orange_berry_muffins.jpg" class="d-block w-100" alt="Image of orange berry muffins.">
-										<div class="carousel-caption bg-dark">
-											<h5>Orange Berry Muffins</h5>
-											<p><small><a href="/recipes/orange_berry_muffins.html">[full recipe]</a></small></p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div> <!-- end card -->
-					</div> <!-- end col -->
-					<div class="col-xl-4 col-lg-6 col-md-6 offset-xl-1">
-						<div class="card">
-							<div id="carouselGardenPesto" class="carousel slide" data-bs-interval="false">
-								<ol class="carousel-indicators">
-									<li data-bs-target="#carouselGardenPesto" data-bs-slide-to="0" class="active"></li>
-									<li data-bs-target="#carouselGardenPesto" data-bs-slide-to="1"></li>
-									<li data-bs-target="#carouselGardenPesto" data-bs-slide-to="2"></li>
-									<li data-bs-target="#carouselGardenPesto" data-bs-slide-to="3"></li>
-								</ol>
-								<div class="carousel-inner" >
-									<div class="carousel-item active">
-										<img src="/images/garden_pesto_final.jpg" class="d-block w-100" alt="Image of pesto sauce in bowl.">
-										<div class="carousel-caption bg-dark">
-											<h5>Garden Clean Up Pesto</h5>
-											<p><small><a href="/recipes/garden_pesto">[full recipe]</a>&emsp;<a target="_blank" href="https://edmonton.foodnotbombs.us/recipes/garden_clean_up_pesto.pdf">[view pdf]</a></small></p>
-										</div>
-									</div>
-									<div class="carousel-item">
-										<img src="/images/garden_pesto_step1.jpg" class="d-block w-100" alt="Image of gathered vegetable greens.">
-										<div class="carousel-caption bg-dark">
-											<h5>Step 1 - Get your veggies</h5>
-											<p>Our member was actually able to gather these just from cleaning up and thinning out their garden, so use what you have on hand.</p>
-											<p>Pictured: carrot greens, radish greens, arugula and nasturtium. Not pictured: Basil</p>
-										</div>
-									</div>
-									<div class="carousel-item">
-										<img src="/images/garden_pesto_step2.jpg" class="d-block w-100" alt="Image of chopped pesto ingrediants.">
-										<div class="carousel-caption bg-dark">
-											<h5>Step 2 - Prepare Ingrediants </h5>
-											<p>Cut and chop your garden greens, and gather: </p>
-											<ul>
-												<li>garlic</li>
-												<li>hemp hearts or sunflower seeds</li>
-												<li>nutritional yeast</li>
-												<li>lemon juice (not pictured)</li>
-											</ul>
-										</div>
-									</div>
-									<div class="carousel-item">
-										<img src="/images/garden_pesto_step3.jpg" class="d-block w-100" alt="Image of pesto flat in a ziploc bag for freezing.">
-										<div class="carousel-caption bg-dark">
-											<h5>Step 3: Mix and Eat!</h5>
-											<p>Mix all together in a food processor until fairly smooth. Add salt to taste.</p>
-											<p>Serve over pasta or on your next sandwich, and freeze any leftovers you don't want to eat right away.</p>
-											<p>Tip: Freeze any excess flat to make it easier to break off chunks.</p>
-										</div>
-									</div>
-								</div> <!-- end carousel-inner -->
-								<a class="carousel-control-prev" href="#carouselGardenPesto" role="button" data-bs-slide="prev">
-									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Prev</span>
-								</a>
-								<a class="carousel-control-next" href="#carouselGardenPesto" role="button" data-bs-slide="next">
-									<span class="carousel-control-next-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Next</span>
-								</a>
-							</div> <!-- end carousel -->
-						</div>
-					</div>
-					<div class="col-xl-4 col-lg-6 col-md-6 offset-xl-1">
-						<div class="card">
-							<div id="carouselDalTadka" class="carousel slide" data-bs-interval="false">
-								<ol class="carousel-indicators">
-									<li data-bs-target="#carouselDalTadka" data-bs-slide-to="0" class="active"></li>
-								</ol>
-								<div class="carousel-inner" >
-									<div class="carousel-item active">
-										<img src="/images/dal_tadka.jpg" class="d-block w-100" alt="Image of dal tadka in bowl.">
-										<div class="carousel-caption bg-dark">
-											<h5>Dal Tadka</h5>
-											<p><small><a href="/recipes/dal_tadka.html">[full recipe]</a></small></p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div> <!-- end card -->
-					</div> <!-- end col -->
-					<div class="col-xl-4 col-lg-6 col-md-6 offset-xl-1">
-						<div class="card">
-							<div id="carouselVeggieBroth" class="carousel slide" data-bs-interval="false">
-								<ol class="carousel-indicators">
-									<li data-bs-target="#carouselVeggieBroth" data-bs-slide-to="0" class="active"></li>
-									<li data-bs-target="#carouselVeggieBroth" data-bs-slide-to="1"></li>
-								</ol>
-								<div class="carousel-inner" >
-									<div class="carousel-item active">
-										<img src="/images/veggie_broth_2.PNG" class="d-block w-100" alt="Image of vegetable broth in a clear glass jar.">
-										<div class="carousel-caption bg-dark">
-											<h5>Veggie Broth</h5>
-											<p><small><a href="/recipes/veggie_broth.html">[full recipe]</a></small></p>
-										</div>
-									</div>
-									<div class="carousel-item">
-										<img src="/images/veggie_broth_1.PNG" class="d-block w-100" alt="Image of pot in which vegetable scraps are cooking.">
-										<div class="carousel-caption bg-dark">
-											<p>Collect any clean, non-moldy veggie scraps you produce in a large ziploc in your freezer. Things like onions peels, herb stems, carrot or potato peels, spinach that's about to go bad, or those tiny garlic cloves that are too hard to peel are all fantastic additions to your broth-bag. Once your bag is full, place the contents of the bag in a large pot and cover with water. You can add black pepper, bay leaves, extra onions, or salt at this point if you'd like. Simmer for 3-4 hours, cool, strain, and transfer into jars for storage. Make sure to only fill jars up 3/4 of the way full if you're planning on freezing them!</p>
-										</div>
-									</div>
-								</div> <!-- end carousel inner -->
-								<a class="carousel-control-prev" href="#carouselVeggieBroth" role="button" data-bs-slide="prev">
-									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Prev</span>
-								</a>
-								<a class="carousel-control-next" href="#carouselVeggieBroth" role="button" data-bs-slide="next">
-									<span class="carousel-control-next-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Next</span>
-								</a>
-							</div> <!-- end carousel -->
-						</div> <!-- end card -->
-					</div> <!-- end col -->
-			</div> <!-- end gallery -->
-		</div>	
+            <div class="card">
+                <div class="card-body">
+                    <div id="recipe-content" class="content">
+                        <h1>Recipes</h1>
+                    </div>
+
+                    <template id="recipeListTemplate">
+                        <p><span class="subgroupName"></span><small>
+                            <ul class="recipeList"></ul>
+                        </small></p>
+                    </template>
+
+                    <template id="recipeListItemTemplate">
+                        <li>
+                            <div class="row">
+								<div class="recipe-name col-xs-12 col-md-4 col-xl-3"></div>
+								<div class="col-xs-12 col-md-2"><a class="recipe-link">[full recipe]</a></div>
+                            </div>
+                        </li>
+                    </template>
+                    <template id="recipeData">
+                        <div class="col-sm-12 col-md-4">
+                            <p class="lead"><b></b> <span></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+		</div>
 	</div>
-	<footer class="navbar-fixed-bottom bd-footer p-3 mt-5 bg-light text-center text-sm-start">
-		<small>
-			<ul class="bd-footer-links ps-0 mb-3">
-				<li class="d-inline-block"><i class="ri-facebook-fill"></i><a href="https://www.facebook.com/fnbyeg">Facebook</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="https://bsky.app/profile/foodnotbombsyeg.bsky.social">Bluesky</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-instagram-line"></i><a href="https://instagram.com/foodnotbombs_yeg?igshid=wnwyiy58vzik">Instagram</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-money-dollar-box-line"></i><a href = "https://gofund.me/97356399">GoFundMe</a></li> 
-				<li class="d-inline-block ms-3"><i class="ri-mail-line"></i><a href = "mailto: foodnotbombsedmonton@gmail.com">Email</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-mastodon-fill"></i><a rel="me" href="https://kolektiva.social/@foodnotbombsyeg">Mastodon</a></li>
-			</ul>
-			<p class="mb-0">This website is developed and maintained by people living in amiskwaciwâskahikan. You can read our full land acknowledgement <a href="/land-acknowledgement">here.</a></p>
-			<p class="mb-0">The code for this website is hosted on <a href="https://github.com/fnb-yeg/fnb-yeg.github.io">github</a> and is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons Zero v1.0 Universal</a>.</p>
-			<p class="mb-0">If you'd like us to delegate DNS for YourGroup.foodnotbombs.us to you, <a href="http://omaha.foodnotbombs.us/">contact Jay Hannah of FNB Omaha.</a> Currently YourGroup is being redirected to the global homepage.</p>
-		</small>
-	</footer>
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <footer data-driven="innerHTML=@footer"></footer>
 </body>
 </html>

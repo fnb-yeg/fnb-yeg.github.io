@@ -11,72 +11,21 @@
 
 	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
+    <script src="/js/sitedata.min.js"></script>
 	<script src="/js/markdown.min.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <!-- Data sources -->
+    <link data-include="content" rel="preload" as="fetch"
+        title="navbar" type="text/html" href="/fragments/navbar.html" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="footer" type="text/html" href="/fragments/footer.html" />
 
 	<title>FNB History — Food Not Bombs Edmonton</title>
 </head>
-
 <body>
 	<div class="content gradient">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="/">
-					<img src="/images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="fnbnavbar">
-					<ul class="navbar-nav me-auto mb-2 mb-md-0">
-						<li class="nav-item">
-							<a class="nav-link" href="/">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/news">News</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/projects">Projects</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/how_to_join">How to Join</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Request Food
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="/hth.html">Request a Meal</a></li>
-
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Calendar
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="https://calendar.google.com/calendar/embed?src=foodnotbombsyeg%40gmail.com&ctz=America%2FEdmonton">Open Calendar</a></li>
-								<li><a class="dropdown-item" href="/request_calendar_access">Request Access</a></li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/library">Library</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/recipes">Recipes</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/local_orgs">Local</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/history">History</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="http://foodnotbombs.us" target="_blank">Global Homepage</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
+        <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
 			<div class="card">
 				<div class="card-body">
@@ -84,26 +33,12 @@
 						<h2>History</h2>
 					</div>
 					<div class="content">
-                        <pre class="markdown" data-src="/history.md"></pre>
+                        <pre class="markdown" data-src="/content/history.md"></pre>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<footer class="navbar-fixed-bottom bd-footer p-3 mt-5 bg-light text-center text-sm-start">
-		<small>
-			<ul class="bd-footer-links ps-0 mb-3">
-				<li class="d-inline-block"><i class="ri-facebook-fill"></i><a href="https://www.facebook.com/fnbyeg">Facebook</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="https://bsky.app/profile/foodnotbombsyeg.bsky.social">Bluesky</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-instagram-line"></i><a href="https://instagram.com/foodnotbombs_yeg?igshid=wnwyiy58vzik">Instagram</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-money-dollar-box-line"></i><a href = "https://gofund.me/97356399">GoFundMe</a></li> 
-				<li class="d-inline-block ms-3"><i class="ri-mail-line"></i><a href = "mailto: foodnotbombsedmonton@gmail.com">Email</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-mastodon-fill"></i><a rel="me" href="https://kolektiva.social/@foodnotbombsyeg">Mastodon</a></li>
-			</ul>
-			<p class="mb-0">This website is developed and maintained by people living in amiskwaciwâskahikan. You can read our full land acknowledgement <a href="/land-acknowledgement">here.</a></p>
-			<p class="mb-0">The code for this website is hosted on <a href="https://github.com/fnb-yeg/fnb-yeg.github.io">github</a> and is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons Zero v1.0 Universal</a>.</p>
-			<p class="mb-0">If you'd like us to delegate DNS for YourGroup.foodnotbombs.us to you, <a href="http://omaha.foodnotbombs.us/">contact Jay Hannah of FNB Omaha.</a> Currently YourGroup is being redirected to the global homepage.</p>
-		</small>
-	</footer>
+    <footer data-driven="innerHTML=@footer"></footer>
 </body>
 </html>

@@ -11,69 +11,41 @@
 
 	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
+    <script src="/js/sitedata.min.js"></script>
 	<script src="/js/markdown.min.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <!-- Data sources -->
+    <link data-include="content" rel="preload" as="fetch"
+        title="navbar" type="text/html" href="/fragments/navbar.html" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="footer" type="text/html" href="/fragments/footer.html" />
+
+    <link data-include="data" rel="preload" as="fetch"
+        href="/data/local_orgs.json" />
 
 	<title>Local Organizations — Food Not Bombs Edmonton</title>
-</head>
 
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            const localOrgs = SiteData.query("local_orgs");
+            const orgLinkTemplate = document.getElementById("orgLinkTemplate");
+
+            for (const org of localOrgs) {
+                const link = document.importNode(orgLinkTemplate.content, true);
+
+                link.querySelector(".org-title").innerHTML = org.name;
+                link.querySelector(".org-desc").innerHTML = org.description;
+                link.querySelector("a").href = org.url;
+
+                document.getElementById("org-list").appendChild(link);
+            }
+        });
+    </script>
+</head>
 <body>
 	<div class="content gradient">
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="/">
-					<img src="/images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="fnbnavbar">
-					<ul class="navbar-nav me-auto mb-2 mb-md-0">
-						<li class="nav-item">
-							<a class="nav-link" href="/">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/news">News</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/projects">Projects</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/how_to_join">How to Join</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Request Food
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="/hth.html">Request a Meal</a></li>
-
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Calendar
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="https://calendar.google.com/calendar/embed?src=foodnotbombsyeg%40gmail.com&ctz=America%2FEdmonton">Open Calendar</a></li>
-								<li><a class="dropdown-item" href="/request_calendar_access">Request Access</a></li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/library">Library</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/recipes">Recipes</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/local_orgs">Local</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/history">History</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
+        <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
 			<div class="card">
 				<div class="card-body">
@@ -81,69 +53,20 @@
 						<h1>Links to Local Organizations</h1>
 					</div>
 					<div class="content">
-						<p class="lead">
-						Local groups whose work we love 💚</p>
-                        <!-- TODO: verify which groups are still active -->
-						<ul class="list-group">
-							<a href="https://m.facebook.com/bearclanedmonton/" target="_blank" class="list-group-item list-group-item-action"><h5>Bear Claw Beaver Hills House</h5><small>Famous for serving the unhoused community with food, laughter and de-escalation tactics, BCP is a Canada-wide Indigenous-led movement.</small></a>
-
-                            <a href="https://www.4bhr.org/" target="_blank" class="list-group-item list-group-item-action">
-                                <h5>4B Harm Reduction</h5>
-                                <small>
-                                    An organisation made up of healtchare
-                                    professionals and recovering substance
-                                    users, who use their combined knowledge and
-                                    experience to support people experiencing
-                                    substance addiction in Edmonton. 4B hands
-                                    out harm reduction supplies and regularly
-                                    responds to overdoses
-                                </small>
-                            </a>
-
-                            <a href="https://www.waterwarriorsyeg.com/" target="_blank" class="list-group-item list-group-item-action">
-                                <h5>Water Warriors</h5>
-                                <small>
-                                    An outreach organisation with many
-                                    Indigenous members that goes on mobile
-                                    outreach visits throughout the city,
-                                    providing food and beverages, as well as
-                                    harm reduction supplies, and doing checkups
-                                    on community members to make sure they are
-                                    safe
-                                </small>
-                            </a>
-
-                            <a href="https://newgrocerymovement.com/" target="_blank" class="list-group-item list-group-item-action">
-                                <h5>New Grocery Movement</h5>
-                                <small>
-                                    One of our partners at one of our two
-                                    community gardens this year, New Grocery
-                                    Movement is active in food security work
-                                    and believes in the right of everyone to
-                                    have access to enough food, as well as in
-                                    food sovereignty
-                                </small>
-                            </a>
+						<p class="lead">Local groups whose work we love 💚</p>
+						<ul id="org-list" class="list-group">
+                            <template id="orgLinkTemplate">
+                                <a target="_blank" class="list-group-item list-group-item-action">
+                                    <h5 class="org-title"></h5>
+                                    <small class="org-desc"></small>
+                                </a>
+                            </template>
 						</ul>
 					</div>
 				</div>
 			</div> 
 		</div>
 	</div>
-	<footer class="navbar-fixed-bottom bd-footer p-3 mt-5 bg-light text-center text-sm-start">
-		<small>
-			<ul class="bd-footer-links ps-0 mb-3">
-				<li class="d-inline-block"><i class="ri-facebook-fill"></i><a href="https://www.facebook.com/fnbyeg">Facebook</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="https://bsky.app/profile/foodnotbombsyeg.bsky.social">Bluesky</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-instagram-line"></i><a href="https://instagram.com/foodnotbombs_yeg?igshid=wnwyiy58vzik">Instagram</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-money-dollar-box-line"></i><a href = "https://gofund.me/97356399">GoFundMe</a></li> 
-				<li class="d-inline-block ms-3"><i class="ri-mail-line"></i><a href = "mailto: foodnotbombsedmonton@gmail.com">Email</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-mastodon-fill"></i><a rel="me" href="https://kolektiva.social/@foodnotbombsyeg">Mastodon</a></li>
-			</ul>
-			<p class="mb-0">This website is developed and maintained by people living in amiskwaciwâskahikan. You can read our full land acknowledgement <a href="/land-acknowledgement">here.</a></p>
-			<p class="mb-0">The code for this website is hosted on <a href="https://github.com/fnb-yeg/fnb-yeg.github.io">github</a> and is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons Zero v1.0 Universal</a>.</p>
-			<p class="mb-0">If you'd like us to delegate DNS for YourGroup.foodnotbombs.us to you, <a href="http://omaha.foodnotbombs.us/">contact Jay Hannah of FNB Omaha.</a> Currently YourGroup is being redirected to the global homepage.</p>
-		</small>
-	</footer>
+    <footer data-driven="innerHTML=@footer"></footer>
 </body>
 </html>

@@ -1,0 +1,24 @@
+{
+    "local_orgs": [
+        {
+            "name": "Bear Claw Beaver Hills House",
+            "description": "Famous for serving the unhoused community with food, laughter and de-escalation tactics, BCP is a Canada-wide Indigenous-led movement.",
+            "url": "https://www.facebook.com/bearclanedmonton/"
+        },
+        {
+            "name": "4B Harm Reduction",
+            "description": "An organisation made up of healtchare professionals and recovering substance users, who use their combined knowledge and experience to support people experiencing substance addiction in Edmonton. 4B hands out harm reduction supplies and regularly responds to overdoses",
+            "url": "https://4bharmredux.org/"
+        },
+        {
+            "name": "Water Warriors",
+            "description": "An outreach organisation with many Indigenous members that goes on mobile outreach visits throughout the city, providing food and beverages, as well as harm reduction supplies, and doing checkups on community members to make sure they are safe",
+            "url": "https://www.waterwarriorsyeg.com/"
+        },
+        {
+            "name": "New Grocery Movement",
+            "description": "One of our partners at one of our two community gardens this year, New Grocery Movement is active in food security work and believes in the right of everyone to have access to enough food, as well as in food sovereignty",
+            "url": "https://newgrocerymovement.com/"
+        }
+    ]
+}

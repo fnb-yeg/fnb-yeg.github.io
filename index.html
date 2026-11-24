@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
 	<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Bootstrap -->
 	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
@@ -11,186 +11,91 @@
 
 	<link href="/stylesheet.css" rel="stylesheet" type="text/css"/>
 
-	<script src="/js/markdown.min.js"></script>
+    <script src="/js/sitedata.min.js"></script>
+	<script src="/js/markdown.js"></script>
 
-	<title>Food Not Bombs Edmonton</title>
+    <script src="/js/utils.js"></script>
+    <script src="/js/announcements.js"></script>
+
+    <!-- Data sources -->
+    <link data-include="content" rel="preload" as="fetch"
+        title="navbar" type="text/html" href="/fragments/navbar.html" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="footer" type="text/html" href="/fragments/footer.html" />
+
+    <link data-include="data" rel="preload" as="fetch"
+        href="/data/announcements.json" />
+    <link data-include="content" rel="preload" as="fetch"
+        title="newsCard" type="text/html" href="/fragments/homeAnnouncement.html" />
+
+    <title>Food Not Bombs Edmonton</title>
+
+    <script>
+        document.addEventListener("sitedata-finish", () => {
+            // Find the homepage announcement
+            const announcementID = SiteData.query("homepage_announcement");
+            announcement = SiteData.query("announcements").find(elem => {
+                if (!("id" in elem)) return false;
+                return (elem.id === announcementID);
+            });
+
+            // Generate the announcement card
+            let container = document.getElementById("announcement");
+            createAnnouncementCard(container, announcement);
+
+            // Populate data & render markdown
+            SiteData.populateDocument(container);
+            renderMarkdown(container);
+        });
+    </script>
 </head>
 
 <body>
 	<div class="content gradient">
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="/">
-					<img src="/images/FNB_logo_color_large.webp" style="padding-bottom:10px; width:45px; height:60px">
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fnbnavbar" aria-controls="fnbnavbar" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="fnbnavbar">
-					<ul class="navbar-nav me-auto mb-2 mb-md-0">
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/news">News</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/projects">Projects</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/how_to_join">How to Join</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navRequests" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Request Food
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="/hth.html">Request a Meal</a></li>
-
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navCalendar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Calendar
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navCalendar">
-								<li><a class="dropdown-item" target="_blank" href="https://calendar.google.com/calendar/embed?src=foodnotbombsyeg%40gmail.com&ctz=America%2FEdmonton">Open Calendar</a></li>
-								<li><a class="dropdown-item" href="/request_calendar_access">Request Access</a></li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/library">Library</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/recipes">Recipes</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/local_orgs">Local</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/history">History</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
+        <nav data-driven="innerHTML=@navbar"></nav>
 		<div class="container">
-			<div class="row justify-content-center">
-				<div class="col-10">
-					<!-- Card with collapsible transcription -->
-					<div class="card">
-						<img class="card-img-top"
-                        src="/images/newsletter_winter2026.webp" alt="Food Not
-                        Bombs Newsletter for Winter 2026.">
-						<div class="card-body">
-							<p>
-								<a data-bs-toggle="collapse" href="#newsletterCollapseText" role="button" aria-expanded="false" aria-controls="newsletterCollapseText">[View Image Transcription]</a>
-							</p>
-							<div class="collapse" id="newsletterCollapseText">
-                                <header>
-                                    <h1>Food Not Bombs</h1>
-                                    <h2>Winter 2026 Newsletter</h2>
-                                </header>
-                                <section>
-                                    <h3>Future Organization Stability</h3>
-                                    <p>
-                                    Food Not Bombs has had some tumultuous
-                                    times in its history, including recent
-                                    history, but things are stable for now. We
-                                    truly are coming into our own and meeting
-                                    with a lot of success. We are in our third
-                                    year of taking on practicum students from
-                                    the U of A, our budget remains well
-                                    balanced, and our reputation continues to
-                                    improve.
-                                    </p>
-                                </section>
+            <!-- Newletter -->
+            <div class="row justify-content-center" id="announcement"></div>
 
-                                <section>
-                                    <h3>Reaching Our Community and Changing Lives</h3>
-                                    <p>
-                                    Food Not Bombs recently took a closer look
-                                    at the numbers behind our programs to
-                                    better understand the impact we are making
-                                    within our community. What we found
-                                    highlights just how many individuals and
-                                    families rely on these programs and the
-                                    growing demand for accessible food and
-                                    community support.
-                                    </p>
-                                    <p>
-                                    Through our Helping the Humans programming,
-                                    we serve approximately 1500 people every
-                                    year. Our Community Meals program also
-                                    provides ongoing support, serving roughly
-                                    40 people each month. Additionally, our
-                                    Birthday Club registration form fills up
-                                    every time it opens, demonstrating the
-                                    continued interest and need for the
-                                    opportunities we provide.
-                                    </p>
-                                </section>
+            <!-- Buttons -->
+            <br>
+            <div class="d-flex flex-column mb-2 flex-fill">
+                <a class="btn btn-success btn-lg flex-fill" role="button" href="hth.html">
+                    Request a Meal!
+                </a>
+            </div>
+            <div class="d-flex flex-row gap-2">
+                <div class="d-flex flex-column gap-1" style="flex:1">
+                    <a class="btn btn-primary btn-lg flex-fill" role="button" href="how_to_join.html">
+                        Volunteer with Us!
+                    </a>
+                    <a class="btn btn-secondary btn-lg flex-fill" role="button" href="projects.html">
+                        Our Projects
+                    </a>
+                </div>
+                <div class="d-flex flex-column gap-1" style="flex:1">
+                    <a class="btn btn-primary btn-lg flex-fill" role="button" data-driven="href=links.gofundme">
+                        Donate!
+                    </a>
+                    <a class="btn btn-secondary btn-lg flex-fill" role="button" href="library.html">
+                        Our Library
+                    </a>
+                </div>
+            </div>
 
-                                <section>
-                                    <h3>Our Programs</h3>
-                                    <p>
-                                    Food Not Bombs offers a variety of
-                                    community programming!
-                                    </p>
-                                    <p>
-                                    Our core programming includes:
-                                    <ul>
-                                        <li>
-                                            Community garden (wrapped up for
-                                            2026, will resume in 2027)
-                                        </li>
-                                        <li>Community pantry</li>
-                                        <li>
-                                            Community meals and encampment
-                                            outreach
-                                        </li>
-                                        <li>
-                                            Helping the Humans and Birthday
-                                            Club
-                                        </li>
-                                        <li>
-                                            Fruit Collection (wrapped up for
-                                            2026, will resume in 2027)
-                                        </li>
-                                        <li>Community Service Learning</li>
-                                    </ul>
-                                </section>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            <!-- About Us -->
 			<div class="row justify-content-center">
 				<div class="col-12">
                     
 					<div class="card">
 						<div class="card-body">
-                            <pre class="markdown" data-src="/about.md"></pre>
+                            <pre class="markdown" data-src="/content/about.md"></pre>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<footer class="navbar-fixed-bottom bd-footer p-3 mt-5 bg-light text-center text-sm-start">
-		<small>
-			<ul class="bd-footer-links ps-0 mb-3">
-				<li class="d-inline-block"><i class="ri-facebook-fill"></i><a href="https://www.facebook.com/fnbyeg">Facebook</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-bluesky-fill"></i><a rel="me" href="https://bsky.app/profile/foodnotbombsyeg.bsky.social">Bluesky</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-instagram-line"></i><a href="https://instagram.com/foodnotbombs_yeg?igshid=wnwyiy58vzik">Instagram</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-money-dollar-box-line"></i><a href = "https://gofund.me/97356399">GoFundMe</a></li> 
-				<li class="d-inline-block ms-3"><i class="ri-mail-line"></i><a href = "mailto: foodnotbombsedmonton@gmail.com">Email</a></li>
-				<li class="d-inline-block ms-3"><i class="ri-mastodon-fill"></i><a rel="me" href="https://kolektiva.social/@foodnotbombsyeg">Mastodon</a></li>
-			</ul>
-			<p class="mb-0">This website is developed and maintained by people living in amiskwaciwâskahikan. You can read our full land acknowledgement <a href="/land-acknowledgement">here.</a></p>
-			<p class="mb-0">The code for this website is hosted on <a href="https://github.com/fnb-yeg/fnb-yeg.github.io">github</a> and is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons Zero v1.0 Universal</a>.</p>
-			<p class="mb-0">If you'd like us to delegate DNS for YourGroup.foodnotbombs.us to you, <a href="http://omaha.foodnotbombs.us/">contact Jay Hannah of FNB Omaha.</a> Currently YourGroup is being redirected to the global homepage.</p>
-		</small>
-	</footer>
+    <footer data-driven="innerHTML=@footer"></footer>
 </body>
 </html>

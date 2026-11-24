@@ -38,8 +38,9 @@ body {
 }
 
 .carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(100%);
+.carousel-control-next-icon,
+.carousel-indicators {
+  filter: drop-shadow(1px 1px 1px black);
 }
 
 /* Styles for markdown */
@@ -146,4 +147,8 @@ div.markdown .md-table-align-right {
 
 div.markdown .md-table-align-justify {
 	text-align: justify;
+}
+
+div.markdown img {
+    max-width: 100%;
 }

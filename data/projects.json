@@ -1,0 +1,57 @@
+{
+    "projects": [
+        {
+            "title": "Community Meals",
+            "image": { "src": "/images/kinistinaw-park.jpeg", "alt": "Kinistinâw Park" },
+            "description": "We serve monthly free vegan meals at Kinistin&acirc;w Park. The meals are open to anyone who wants to eat.\n\nPlease contact us if you want to help sponsor a meal, donate, or get involved!"
+        },
+        {
+            "title": "Helping the Humans",
+            "image": "/images/2021/hth_poster.jpg",
+            "actions": [
+                {
+                    "label": "Request a Meal!",
+                    "url": "/hth.html"
+                },
+                {
+                    "label": "Contribute a Meal",
+                    "url": "/how_to_join",
+                    "style": "btn-outline-primary"
+                },
+                {
+                    "label": "Deliver a Meal",
+                    "url": "/how_to_join",
+                    "style": "btn-outline-primary"
+                }
+            ],
+            "transcription": { "src": "/content/hth_poster_transcription.md" }
+        },
+        {
+            "title": "Birthday Cake Club",
+            "image": { "src": "/images/birthday_cake_club.png", "alt": "Poster for the birthday cake club" },
+            "actions": [
+                {
+                    "label": "Request a Cake",
+                    "disabled": true
+                },
+                {
+                    "label": "Contribute a Cake",
+                    "url": "/how_to_join",
+                    "style": "btn-outline-primary"
+                },
+                {
+                    "label": "Deliver a Cake",
+                    "url": "/how_to_join",
+                    "style": "btn-outline-primary"
+                }
+            ],
+            "transcription": { "src": "/content/birthday_cake_club_poster_transcription.md" }
+        },
+        {
+            "title": "Garden Committee",
+            "image": "images/garden-committee.webp",
+            "description": "Our Garden Commmittee has been re-established this year and it is full swing. We still need folks to help with watering and weeding throughout August and until the harvest later in September.",
+            "transcription": { "src": "/content/garden-committee-poster-transcription.md" }
+        }
+    ]
+}

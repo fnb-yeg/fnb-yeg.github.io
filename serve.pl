@@ -149,11 +149,10 @@ sub main {
 	listen($server, SOMAXCONN) || die "listen: $!";
 
 	print "Serving directory $workingDir at http://$host:$port\n";
-
-
 	while (my $paddr = accept(my $client, $server)) {
 		if (fork() == 0) {
 			my $logLine = "";
+            my $logAndExit = sub { print "$logLine\n"; exit @_; };
 
 			# Get client name
 			my ($cport, $ciaddr) = sockaddr_in($paddr);
@@ -161,6 +160,8 @@ sub main {
 
 			# Read request line
 			my ($method, $target, $protoVersion) = split(/\s/, <$client>);
+            my $queryIndex = index($target, '?');
+            my $path = ($queryIndex != -1) ? substr($target, 0, $queryIndex) : $target;
 
 			my $datetime = localtime();
 			$logLine .= "[$datetime] $name:$cport: $method $target ";
@@ -174,18 +175,18 @@ sub main {
 					sendHTTPErrPage($client, 501, "Not Implemented");
 					$logLine .= "501";
 				}
-				exit 0;
+                $logAndExit->(0);
 			}
 
 			if ($protoVersion ne "HTTP/1.1") {
 				sendHTTPErrPage($client, 505, "HTTP Version Not Supported");
 				$logLine .= "505";
-				exit 0;
+                $logAndExit->(0);
 			}
-			if (isPathForbidden($target)) {
+			if (isPathForbidden($path)) {
 				sendHTTPErrPage($client, 403, "Forbidden");
 				$logLine .= "403";
-				exit 0;
+                $logAndExit->(0);
 			}
 
 			# Collect headers
@@ -197,35 +198,35 @@ sub main {
 				$headers{$headerField} = $headerValue;
 			}
 
-			# Handle request headers
+			# Handle request headers (not implemented)
 
 			# Locate target
-			$target = resolvePath("$workingDir/$target");  # move root to server working directory
-			if (!defined $target) {
+			$path = resolvePath("$workingDir/$path");  # move root to server working directory
+			if (!defined $path) {
 				sendHTTPErrPage($client, 404, "Not Found");
 				$logLine .= "404";
-				exit 0;
+                $logAndExit->(0);
 			}
 
 			# The page exists!
-			open(my $fh, "<:raw", $target);
+			open(my $fh, "<:raw", $path);
 			if (not defined $fh) {
 				sendHTTPErrPage($client, 500, "Internal Server Error");
 				$logLine .= "500";
-				exit 0;
+                $logAndExit->(0);
 			}
 
 			print $client "HTTP/1.1 200 OK\r\n";
 			$logLine .= "200";
+			print "$logLine\n";
 
 			# send response headers
-			my $mimeType = getMimeType($target);
+			my $mimeType = getMimeType($path);
 			print $client "Content-Type: $mimeType\r\n";
 			print $client "Cache-Control: no-store, must-revalidate\r\n";  # Prevent caching during testing
 			print $client "Expires: 0\r\n";
 
 			print $client "\r\n";
-			print "$logLine\n";
 
 			next if ($method eq "HEAD");  # don't need to send message body
 
