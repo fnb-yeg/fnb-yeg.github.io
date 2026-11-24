@@ -71,11 +71,8 @@
                         container.appendChild(lead);
                     }
 
-                    // Create subgroups
-                    if (!("subgroups" in group)) {
-                        // All one group
-                        group["subgroups"] = { "DEFAULT": "" };
-                    }
+                    // Create subgroups, with DEFAULT group at start
+                    group["subgroups"] = Object.assign({"DEFAULT": ""}, group["subgroups"]);
 
                     for (const subgroup in group.subgroups) {
                         const groupElem = document.importNode(recipeListTemplate.content, true);
@@ -113,6 +110,7 @@
 
                 // Update title
                 recipeContent.querySelector("h1").innerText = queried;
+                document.title = `${queried} — ${document.title}`;
 
                 // Apply recipe data
                 const container = document.createElement("div");
