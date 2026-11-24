@@ -1,10 +1,4 @@
 /*
- * Sort announcements sitedata by descending date.
- */
-function orderAnnouncements() {
-}
-
-/*
  * Creates a card for the announcement
  */
 function createAnnouncementCard(container, announcement) {
